@@ -29,7 +29,7 @@
 
 
 #menu, #menu-date, #menu-time {
-    overflow: scroll;
+    overflow-y: scroll;
     border: 1px solid gray;
 }
 
@@ -40,6 +40,12 @@
     font-size: 1.3rem;
     border-radius: 10px;
 }
+
+
+#menu-time {
+    background-color: transparent
+}
+
 
 #menutitle, #menutitleb {
     font-weight: bold;

@@ -33,8 +33,8 @@ stationdata = data2.default
 var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['stationvstrip2', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
-    ['menu-date', 0, 30, 2, 70],
-    ['menu-time', 2, 30, 8, 70],
+    ['menu-date', 0, 30, 9, 70],
+    ['menu-time', 10, 30, 15, 70],
 ['menutitleb', 10, 24.3, 70, 4],
 ['menutitle', 10, 24.3, 70, 4],
 ['filterStations', 55, 24.9, 80, 3],
@@ -116,7 +116,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 stacknHide([], 1, ['circle', 'downloadboard', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
 
 
-
+stacknHide(['menu-time'], 1, [])
 //koira(startdatestring)
 
 
@@ -163,6 +163,7 @@ function changeDate() {
             let param = this.getAttribute("data-param");              
             document.getElementById(sss).style.backgroundColor = '#ffffff'
             document.getElementById(param).style.backgroundColor = '#999999'
+            document.getElementById("currentdate").innerHTML = param
             var dates = param.split('.')
             startdatestring = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
             getDates(startDate, endDate);
@@ -288,34 +289,12 @@ function getDates(startDate, endDate) {
 }
 
 function getHours() {
-    let selectedItem = null;
     menuTime.innerHTML = '';
-
-    for (let i = 0; i < 200; i++) {
-
+    for (let i = 0; i < coarseSteps; i++) {
         const item = document.createElement("div");
         item.classList.add("menu-time"); 
-        item.textContent = i.toString().padStart(2, '0');
-        if (i == starthour) {
-            item.style.backgroundColor = "gray";
-            selectedItem = item
-        }
-
-        item.addEventListener("click", function () {
-
-            if (selectedItem !== null) {
-                selectedItem.style.backgroundColor = "";
-            }
-            selectedItem = this;
-            selectedItem.style.backgroundColor = "gray";
-            starthour = Number(selectedItem.innerHTML)
-            showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1],1)
-        });
-
+        item.innerHTML = "&nbsp;";
         menuTime.appendChild(item);
-
-
-
     }
 }
 
@@ -323,13 +302,9 @@ function getHours() {
 const menuDate = document.getElementById('menu-date');
 const menuTime = document.getElementById('menu-time');
 
-const menuid = document.getElementById('menu');
-
-
 
 const item = document.createElement("div");
-//item.classList.add("menu-date");
-//item.textContent = 'BG'
+
 
 menuDate.appendChild(item);
 
@@ -362,14 +337,20 @@ menu.addEventListener('scroll', () => {
 menuTime.addEventListener('scroll', () => {
    
     var nroitems = Number(Object.entries(tripdata).length - 1)  
-    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight) * (1 - 1 / coarseSteps);
-  //  if (scrollPercentage == 0) { setslide=-1 }
-  //  if (scrollPercentage >= 1 - 1 / coarseSteps) { setslide = 1 }
+    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight) * (1 + 2 / coarseSteps) - 2 / coarseSteps;
+    var scrollpos = 0.5
+    if (scrollPercentage < 0) { scrollPercentage = 0; scrollpos = 0 }
+    if (scrollPercentage >= 1) { scrollPercentage = 1 - 1 / coarseSteps; scrollpos = 1}
+
+    if (menu.scrollTop === 0) {
+       // scrollpos = 1
+    }
+
+ 
 
 
 
-
-    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, 0.5)
+    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, scrollpos)
 
 
    
