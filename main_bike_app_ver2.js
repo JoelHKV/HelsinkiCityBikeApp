@@ -1,5 +1,5 @@
 import './style.css'
-import { openCalendarWindow } from './aux_functions.js';
+import { erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -16,7 +16,7 @@ var daterange = [[2021, 5, 1], [2021, 7, 31]]
 
 var startdatestring = '2021-06-17'
 var starthour = 12
-
+var bookmarks = []
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
@@ -69,6 +69,11 @@ window.onresize = function () {
         fixitemsize(placeitems, 0.9, 1, 1)
  
 };
+
+
+
+
+
 
 
 function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
@@ -135,8 +140,11 @@ function changeDate() {
 
 
     if (stationview == 1) { return }
-    var thisdate = document.getElementById("currentdate").innerHTML
-    var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], thisdate)
+    //var thisdate = document.getElementById("currentdate").innerHTML
+    const selectedDateNumerical = startdatestring.split("-").map(Number);
+    var sss = selectedDateNumerical[2] + '.' + selectedDateNumerical[1] + '.' + selectedDateNumerical[0]
+  
+    var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], '2.5.2021')
     document.getElementById("innercalendar").innerHTML = generatedHTML;
     let generatedCells = document.getElementsByClassName("generatedCell");
     document.getElementById("innercalendar").style.zIndex = 10
@@ -151,7 +159,7 @@ function changeDate() {
             var datestr = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
             alert(datestr)
 
-            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
+           // getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
 
             setTimeout(() => {
                 document.getElementById("innercalendar").style.zIndex = -1
@@ -180,36 +188,29 @@ function gettripdata(data) {
 
         var nroitems =  Object.entries(data).length - 1
         var hourcounter = 0
-        var bookmarks =[]
+        
         for (let i = 0; i < nroitems; i++) {
             if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
                 var temp = data[i]
                 tripdata[counter] = temp
                 counter++
 
-               // alert(temp)
-
-
-                var temp = Number(temp["Departure"].substring(11, 13)) + Number(temp["Departure"].substring(14, 16)) / 60
-
+                var temp = Number(temp["Departure"].substring(11, 13)) + (Number(temp["Departure"].substring(14, 16))+1) / 60
 
                 if (temp > hourcounter) {
-                    bookmarks[hourcounter] = counter
+                    bookmarks[hourcounter] = counter-1
                        hourcounter++
                     }
-
 
             }
         
         }
-       
-        alert(bookmarks)
-        pagerange = Math.round(Object.entries(tripdata).length)
+        
+        
+      //  pagerange = Math.round(Object.entries(tripdata).length)
+        bookmarks[24] = counter-2
 
-       // alert(pagerange)
-
-       // alert(Math.round(Object.entries(data).length))
-        showtripdata(tripdata, 0)
+        showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1])
     }
     else {
 
@@ -236,34 +237,7 @@ function gettripdata(data) {
 
 const menu = document.querySelector("#menu");
 
-function additemtopulldown(text, mode) {
-   
-    // populate station data to pull down menus
-    const item = document.createElement("div");
-    item.classList.add("menu-item");
-    const col = document.createElement("div");
-    col.classList.add(`col`, `col-1`);
-    col.style.width = `100%`;
-    if (mode != 2) {
-        col.style.border = '1px solid black'
-        col.style.backgroundColor = '#A5A5A5'
-    }
-    col.style.textAlign = "center";
-    col.textContent = text
-    item.appendChild(col);
 
-    if (mode != 2) {
-        item.addEventListener("click", function () {
-            if (mode == -1) { pagerange -= 1000; showtripdata(tripdata, 1) }
-            if (mode == 1) { pagerange += 1000; showtripdata(tripdata, -1) }
-
-            if (mode == 3) { changeday(1) }
-            if (mode == -3) { changeday(-1) }
-        });
-    }
-    menu.appendChild(item)
-
-}
 
 function changeday(step) {
     // increment or decrement one day if user browses to the end of the list and chooses to do so
@@ -282,6 +256,9 @@ function changeday(step) {
     getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
 
 }
+
+
+
 
 
 function getDates(startDate, endDate) {
@@ -352,7 +329,7 @@ function getHours() {
             selectedItem = this;
             selectedItem.style.backgroundColor = "gray";
             starthour = Number(selectedItem.innerHTML)
-            alert(starthour)
+            showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1])
         });
 
         menuTime.appendChild(item);
@@ -378,7 +355,7 @@ const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + date
 const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
 getDates(startDate, endDate);
 
-function showtripdata(triptempdata, scroll) {
+function showtripdata(triptempdata, startindex,endindex) {
     // displays part of trip data and appropriate endings for browsing
     while (menu.firstChild) {
         menu.removeChild(menu.firstChild);
@@ -392,21 +369,25 @@ function showtripdata(triptempdata, scroll) {
     }
 
 
+
+    additemtopulldown('Earlier Time', -1)
+
+
     if (nroitems == 0) {
         additemtopulldown('No trips', 2)
         return
     }
 
     const columnWidths = [25, 25, 25, 10, 10];
-    var lenlen = 500
+    //var lenlen = 500
 
-    var startoffset = Math.max((pagerange - lenlen), 0)
+  //  var startoffset = Math.max((pagerange - lenlen), 0)
 
  
 
-    for (let i = startoffset; i < Math.min((pagerange + lenlen), nroitems); i++) {
+    for (let i = startindex; i < endindex; i++) {
         //  a few invalid station id codes are filtered here (next time filter in data import already)
-        if (triptempdata[i]["did"] in stationdata && triptempdata[i]["rid"] in stationdata) {
+      //  if (triptempdata[i]["did"] in stationdata && triptempdata[i]["rid"] in stationdata) {
 
             const item = document.createElement("div");
             item.classList.add("menu-item");
@@ -444,12 +425,12 @@ function showtripdata(triptempdata, scroll) {
             });
 
             menu.appendChild(item);
-        }
+      //  }
     }
 
-
-
-   // menu.scrollTop = 0
+    additemtopulldown('Later Time', 1)
+    menu.scrollTop = menu.scrollHeight / 2;
+ 
  
 
 }
@@ -695,4 +676,130 @@ function stationTripView() {
     update2stations(stationdata)
 }
 
+
+
+export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
+    var date = new Date(startdatestring);
+    date.setDate(date.getDate() + daysToAddOrSubtract);
+    var year = date.getFullYear();
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    return year + '-' + month + '-' + day;
+}
+
+function additemtopulldown(text, mode) {
+
+    // populate station data to pull down menus
+    const item = document.createElement("div");
+    item.classList.add("menu-item");
+    const col = document.createElement("div");
+    col.classList.add(`col`, `col-1`);
+    col.style.width = `100%`;
+    if (mode == -1 || mode == 1) {
+        col.style.border = '1px solid black'
+        col.style.backgroundColor = '#A5A5A5'
+    }
+    col.style.textAlign = "center";
+    col.textContent = text
+    item.appendChild(col);
+
+    if (mode == -1 || mode == 1) {
+        item.addEventListener("click", function () {
+
+            starthour += mode
+            //alert('dd')
+            if (starthour == -1) {
+                starthour = 23;
+                startdatestring = incrementOrDecrementDate(startdatestring, -1)
+                getDates(startDate, endDate);
+                getHours(); return
+            }
+            if (starthour == 24) {
+                ;
+                startdatestring = incrementOrDecrementDate(startdatestring, 1)
+                getDates(startDate, endDate);
+                getHours(); return
+            }
+            else {
+                getHours()
+                showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1])
+            }
+
+        });
+    }
+    menu.appendChild(item)
+
+}
+
+
+function openCalendarWindow(currentYear, startMonth, endMonth, graydate) {
+    /// custom calendar selector as innerHTML
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+
+    let colcol = '#ffffff'
+    let calendarHTML = `
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+      }</style>`
+
+    for (let currentMonth = startMonth; currentMonth < endMonth; currentMonth++) {
+        const numberOfDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        calendarHTML += `
+ 
+    <table>
+      <thead>
+        <tr>            
+          <th colspan="7">${monthNames[currentMonth]} ${currentYear}</th>          
+        </tr>
+        <tr>
+            <th colspan="7">&nbsp;</th>
+        </tr>
+        <tr>
+          <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  `;
+
+        let firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+        let firstDayOfWeek = firstDayOfMonth.getDay() || 7;
+        let currentDay = 1;
+        for (let i = 1; i < firstDayOfWeek; i++) {
+            calendarHTML += `<td></td>`;
+        }
+
+        while (currentDay <= numberOfDaysInMonth) {
+            if (firstDayOfWeek === 8) {
+                calendarHTML += "</tr><tr>";
+                firstDayOfWeek = 1;
+            }
+
+            var thisdate = currentDay + '.' + (currentMonth + 1) + '.' + currentYear
+            if (thisdate == graydate) { colcol = '#999999' }
+            calendarHTML += `<td style="cursor: pointer; background-color: ${colcol};" id='${thisdate}' class="generatedCell" data-param='${thisdate}'>${currentDay}</td>`;
+            colcol = '#ffffff'
+
+            firstDayOfWeek++;
+            currentDay++;
+        }
+        calendarHTML += `
+        </tr>
+      </tbody>
+    </table>`
+
+    }
+    return calendarHTML
+}
 
