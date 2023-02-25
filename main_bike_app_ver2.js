@@ -34,17 +34,17 @@ var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['stationvstrip2', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
     ['menu-time', 10, 30, 15, 70],
-['menutitleb', 10, 24.3, 70, 4],
-['menutitle', 10, 24.3, 70, 4],
+['menutitleb', 25, 24.3, 70, 4],
+['menutitle', 65, 24.3, 20, 4],
 ['filterStations', 55, 24.9, 80, 3],
 ['map-container', 10, 30, 70, 70],
 ['innercalendar', 10, 30, 70, 70],
-['departure_dropdown', 10, 17, 30, 6],
-['return_dropdown', 50, 17, 30, 6],
+['departure_dropdown', 28, 23, 16, 6],
+['return_dropdown', 46, 23, 16, 6],
 ['infoboard', 10, 16, 40, 10],
 ['infoboard3', 51, 16, 30, 10],
 
-['currentdate', 73, 60, 17, 17],
+['currentdate', 12, 12, 11, 17],
 
 ['stationdetailsFrom', 12, 31, 10, 10],
 ['stationdetailsTo', 24, 31, 10, 10],
@@ -185,26 +185,16 @@ function gettripdata(data) {
     tripdata = {}
     var counter = 0
     var nroitems = Object.entries(data).length - 1
-    var hourcounter = 0
-
+ 
     for (let i = 0; i < nroitems; i++) {
         if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
             var temp = data[i]
             tripdata[counter] = temp
             counter++
 
-            var temp = Number(temp["Departure"].substring(11, 13)) + (Number(temp["Departure"].substring(14, 16)) + 1) / 60
-
-            if (temp > hourcounter) {
-                bookmarks[hourcounter] = counter - 1
-                hourcounter++
-            }
-
         }
 
     }
-    bookmarks[24] = counter - 2
-
 
     var stationdid = 0
     var stationrid = 0
@@ -213,10 +203,21 @@ function gettripdata(data) {
     if (return_dropdown.selectedIndex > 0) { stationrid = pulldownitemToStationID[return_dropdown.selectedIndex - 1]; }
 
     if (stationdid == 0 && stationrid == 0) {
-        showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
+
+
+        stacknHide(['menu-time','currentdate'], 1, [])
+
+
+       // showtripdata(tripdata, 344, 566, 1)
+
+        menu.scrollTop = menu.scrollHeight * 0.5
+        menuTime.scrollTop = menuTime.scrollHeight * (0.45 + 0.1 * Math.random())
     }
     else {
         var triptempdata = []
+
+        stacknHide([], 1, ['menu-time', 'currentdate'])
+
         for (let i = 0; i < Object.entries(tripdata).length; i++) {
             if (tripdata[i]["did"] == stationdid && tripdata[i]["rid"] == stationrid) {
                 triptempdata.push(tripdata[i])
@@ -229,7 +230,7 @@ function gettripdata(data) {
             }
 
         }
-        showtripdata(triptempdata, 0, Object.entries(triptempdata).length - 1,0)
+        showtripdata(triptempdata, 0, Object.entries(triptempdata).length - 1,0, 0.5)
 
     }
 
@@ -270,25 +271,23 @@ menu.addEventListener('scroll', () => {
 });
 
 menuTime.addEventListener('scroll', () => {
-   
+
+    if (departure_dropdown.selectedIndex > 0 || return_dropdown.selectedIndex > 0) {
+        return
+    }
+
     var nroitems = Number(Object.entries(tripdata).length - 1)  
     var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight) * (1 + 2 / coarseSteps) - 2 / coarseSteps;
     var scrollpos = 0.5
     if (scrollPercentage < 0) { scrollPercentage = 0; scrollpos = 0 }
     if (scrollPercentage >= 1) { scrollPercentage = 1 - 1 / coarseSteps; scrollpos = 1}
 
-    if (menu.scrollTop === 0) {
-       // scrollpos = 1
-    }
     showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, scrollpos)
 
 });
 
 
 
-//const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + daterange[0][2]);
-//const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
-//getDates(startDate, endDate);
 
 function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
     // displays part of trip data and appropriate endings for browsing
@@ -300,9 +299,7 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
 
     
 
-    if (fullinput == 1) {
-        additemtopulldown('Earlier Time', -1)
-    }
+  
 
 
     if (nroitems == 0) {
@@ -341,7 +338,7 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
                     it.style.backgroundColor = "";
                 }
                 this.style.backgroundColor = "gray";
-                var thisitemnro = 1 - fullinput + startindex + Array.from(items).indexOf(this) - 1
+                var thisitemnro = startindex + Array.from(items).indexOf(this) - 1
                 
                 var dep_loc = [stationdata[triptempdata[thisitemnro]["did"]]["y"], stationdata[triptempdata[thisitemnro]["did"]]["x"]]
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
@@ -357,13 +354,8 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
             menu.appendChild(item);
 
     }
-    if (fullinput == 1) {
-        additemtopulldown('Later Time', 1)
-    }
-   // if (setbar == 0) { menu.scrollTop = menu.scrollHeight / 2; }
-  //  if (setbar == -1) { menu.scrollTop = 0; }
-  //  if (setbar == 1) { menu.scrollTop = menu.scrollHeight; }
- 
+
+
     menu.scrollTop = menu.scrollHeight * setslider
 
 }
@@ -386,10 +378,9 @@ function onSelectChange() {
 
 
     if (stationdid == 0 && stationrid == 0) {
-        document.getElementById("currentdate").style.opacity = 1;
-        var dates = document.getElementById("currentdate").innerHTML.split('.')
-        var datestr = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
-        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
+    
+        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
+
         return
     }
     if (stationdid > 0) {
@@ -624,7 +615,7 @@ function additemtopulldown(text, mode) {
             }
             else {
              //   getHours()
-                showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
+              //  showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
             }
 
         });
