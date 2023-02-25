@@ -166,7 +166,8 @@ function changeDate() {
 
 function gettripdata(data) {
     // filter trip data based on pull down menu selections
-    tripdata = data
+    tripdata ={}
+
     let regex = /\(([^)]+)\)/;
     var stationdid = 0
     var stationrid = 0
@@ -174,9 +175,40 @@ function gettripdata(data) {
 
     if (return_dropdown.value != 'Select Return') { stationrid = regex.exec(return_dropdown.value)[1]; }
 
-
+    var counter = 0
     if (stationdid == 0 && stationrid == 0) {
-        pagerange = Math.round(Object.entries(tripdata).length / 2)
+
+        var nroitems =  Object.entries(data).length - 1
+        var hourcounter = 0
+        var bookmarks =[]
+        for (let i = 0; i < nroitems; i++) {
+            if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
+                var temp = data[i]
+                tripdata[counter] = temp
+                counter++
+
+               // alert(temp)
+
+
+                var temp = Number(temp["Departure"].substring(11, 13)) + Number(temp["Departure"].substring(14, 16)) / 60
+
+
+                if (temp > hourcounter) {
+                    bookmarks[hourcounter] = counter
+                       hourcounter++
+                    }
+
+
+            }
+        
+        }
+       
+        alert(bookmarks)
+        pagerange = Math.round(Object.entries(tripdata).length)
+
+       // alert(pagerange)
+
+       // alert(Math.round(Object.entries(data).length))
         showtripdata(tripdata, 0)
     }
     else {
@@ -370,15 +402,7 @@ function showtripdata(triptempdata, scroll) {
 
     var startoffset = Math.max((pagerange - lenlen), 0)
 
-    if (startoffset == 0 && filteredview == 0) {
-        additemtopulldown('Previous Day', -3)
-    }
-    if (startoffset > 0 && filteredview == 0) {
-        additemtopulldown('Earlier Time', -1)
-    }
-    if (filteredview == 1) {
-        additemtopulldown('Beginning of Data', 2)
-    }
+ 
 
     for (let i = startoffset; i < Math.min((pagerange + lenlen), nroitems); i++) {
         //  a few invalid station id codes are filtered here (next time filter in data import already)
@@ -423,15 +447,6 @@ function showtripdata(triptempdata, scroll) {
         }
     }
 
-    if (nroitems <= pagerange + lenlen && filteredview == 0) {
-        additemtopulldown('Next Day', 3)
-    }
-    if (nroitems > pagerange + lenlen && filteredview == 0) {
-        additemtopulldown('Later Time', 1)
-    }
-    if (filteredview == 1) {
-        additemtopulldown('End of Data', 2)
-    }
 
 
    // menu.scrollTop = 0
