@@ -1,5 +1,5 @@
 import './style.css'
-import { erasemarkersandpolylines } from './aux_functions.js';
+import { openCalendarWindow, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -141,26 +141,26 @@ function changeDate() {
 
     if (stationview == 1) { return }
     //var thisdate = document.getElementById("currentdate").innerHTML
+
     const selectedDateNumerical = startdatestring.split("-").map(Number);
     var sss = selectedDateNumerical[2] + '.' + selectedDateNumerical[1] + '.' + selectedDateNumerical[0]
-  
-    var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], '2.5.2021')
+    //alert(sss)
+    var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], sss)
     document.getElementById("innercalendar").innerHTML = generatedHTML;
+    
     let generatedCells = document.getElementsByClassName("generatedCell");
     document.getElementById("innercalendar").style.zIndex = 10
+    
     for (let i = 0; i < generatedCells.length; i++) {
         generatedCells[i].addEventListener('click', function () {
-            let param = this.getAttribute("data-param");
-            document.getElementById("currentdate").innerHTML = param
-            document.getElementById(thisdate).style.backgroundColor = '#ffffff'
+            let param = this.getAttribute("data-param");              
+            document.getElementById(sss).style.backgroundColor = '#ffffff'
             document.getElementById(param).style.backgroundColor = '#999999'
-            var dates = document.getElementById("currentdate").innerHTML.split('.')
-            alert(dates)
-            var datestr = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
-            alert(datestr)
+            var dates = param.split('.')
+            startdatestring = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
+            getDates(startDate, endDate);
 
-           // getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
-
+           getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
             setTimeout(() => {
                 document.getElementById("innercalendar").style.zIndex = -1
             }, 400)
@@ -236,26 +236,6 @@ function gettripdata(data) {
 }
 
 const menu = document.querySelector("#menu");
-
-
-
-function changeday(step) {
-    // increment or decrement one day if user browses to the end of the list and chooses to do so
-    var dates = document.getElementById("currentdate").innerHTML.split('.')
-
-    var date = new Date(dates[2], dates[1] - 1, dates[0])
-    date.setDate(date.getDate() + step);
-    var minDate = new Date(daterange[0]);
-    var maxDate = new Date(daterange[1]);
-
-    date = date > maxDate ? maxDate : date < minDate ? minDate : date;
-    dates = [date.getDate(), date.getMonth() + 1, date.getFullYear()]
-    var datestr = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
-    document.getElementById("currentdate").innerHTML = dates[0].toString() + '.' + dates[1].toString() + '.' + dates[2].toString()
-
-    getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + datestr, 3)
-
-}
 
 
 
@@ -678,15 +658,6 @@ function stationTripView() {
 
 
 
-export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
-    var date = new Date(startdatestring);
-    date.setDate(date.getDate() + daysToAddOrSubtract);
-    var year = date.getFullYear();
-    var month = ('0' + (date.getMonth() + 1)).slice(-2);
-    var day = ('0' + date.getDate()).slice(-2);
-    return year + '-' + month + '-' + day;
-}
-
 function additemtopulldown(text, mode) {
 
     // populate station data to pull down menus
@@ -731,75 +702,11 @@ function additemtopulldown(text, mode) {
 
 }
 
-
-function openCalendarWindow(currentYear, startMonth, endMonth, graydate) {
-    /// custom calendar selector as innerHTML
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-
-    let colcol = '#ffffff'
-    let calendarHTML = `
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-        cursor: pointer;
-      }</style>`
-
-    for (let currentMonth = startMonth; currentMonth < endMonth; currentMonth++) {
-        const numberOfDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-        calendarHTML += `
- 
-    <table>
-      <thead>
-        <tr>            
-          <th colspan="7">${monthNames[currentMonth]} ${currentYear}</th>          
-        </tr>
-        <tr>
-            <th colspan="7">&nbsp;</th>
-        </tr>
-        <tr>
-          <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-  `;
-
-        let firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-        let firstDayOfWeek = firstDayOfMonth.getDay() || 7;
-        let currentDay = 1;
-        for (let i = 1; i < firstDayOfWeek; i++) {
-            calendarHTML += `<td></td>`;
-        }
-
-        while (currentDay <= numberOfDaysInMonth) {
-            if (firstDayOfWeek === 8) {
-                calendarHTML += "</tr><tr>";
-                firstDayOfWeek = 1;
-            }
-
-            var thisdate = currentDay + '.' + (currentMonth + 1) + '.' + currentYear
-            if (thisdate == graydate) { colcol = '#999999' }
-            calendarHTML += `<td style="cursor: pointer; background-color: ${colcol};" id='${thisdate}' class="generatedCell" data-param='${thisdate}'>${currentDay}</td>`;
-            colcol = '#ffffff'
-
-            firstDayOfWeek++;
-            currentDay++;
-        }
-        calendarHTML += `
-        </tr>
-      </tbody>
-    </table>`
-
-    }
-    return calendarHTML
+export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
+    var date = new Date(startdatestring);
+    date.setDate(date.getDate() + daysToAddOrSubtract);
+    var year = date.getFullYear();
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    return year + '-' + month + '-' + day;
 }
-
