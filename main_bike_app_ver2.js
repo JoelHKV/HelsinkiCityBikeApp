@@ -13,7 +13,7 @@ var heatmapmaxradius = 200
 var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
-
+var coarseSteps=200
 var startdatestring = '2021-06-17'
 var starthour = 12
 var bookmarks = []
@@ -241,7 +241,6 @@ const menu = document.querySelector("#menu");
 
 
 
-
 function getDates(startDate, endDate) {
 
 
@@ -292,7 +291,7 @@ function getHours() {
     let selectedItem = null;
     menuTime.innerHTML = '';
 
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 200; i++) {
 
         const item = document.createElement("div");
         item.classList.add("menu-time"); 
@@ -323,20 +322,66 @@ function getHours() {
 
 const menuDate = document.getElementById('menu-date');
 const menuTime = document.getElementById('menu-time');
+
+const menuid = document.getElementById('menu');
+
+
+
 const item = document.createElement("div");
-item.classList.add("menu-date");
-item.textContent = 'BG'
+//item.classList.add("menu-date");
+//item.textContent = 'BG'
 
 menuDate.appendChild(item);
 
 getHours()
 
 
+menu.addEventListener('scroll', () => {
+
+
+
+
+    if (menu.scrollTop === 0) {
+        const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
+        const scrollAmount = scrollHeight / coarseSteps;
+        menuTime.scrollTop -= scrollAmount;
+
+    }
+
+
+    if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight)) {
+        const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
+        const scrollAmount = scrollHeight / coarseSteps;
+        menuTime.scrollTop += scrollAmount;
+    }
+
+
+
+});
+
+menuTime.addEventListener('scroll', () => {
+   
+    var nroitems = Number(Object.entries(tripdata).length - 1)  
+    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight) * (1 - 1 / coarseSteps);
+  //  if (scrollPercentage == 0) { setslide=-1 }
+  //  if (scrollPercentage >= 1 - 1 / coarseSteps) { setslide = 1 }
+
+
+
+
+    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, 0.5)
+
+
+   
+});
+
+
+
 const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + daterange[0][2]);
 const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
 getDates(startDate, endDate);
 
-function showtripdata(triptempdata, startindex,endindex, fullinput) {
+function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
     // displays part of trip data and appropriate endings for browsing
     while (menu.firstChild) {
         menu.removeChild(menu.firstChild);
@@ -406,10 +451,11 @@ function showtripdata(triptempdata, startindex,endindex, fullinput) {
     if (fullinput == 1) {
         additemtopulldown('Later Time', 1)
     }
-    
-    menu.scrollTop = menu.scrollHeight / 2;
+   // if (setbar == 0) { menu.scrollTop = menu.scrollHeight / 2; }
+  //  if (setbar == -1) { menu.scrollTop = 0; }
+  //  if (setbar == 1) { menu.scrollTop = menu.scrollHeight; }
  
- 
+    menu.scrollTop = menu.scrollHeight * setslider
 
 }
 
