@@ -16,6 +16,43 @@ export function erasemarkersandpolylines() {
 
 
 
+export function popupstations(stationdata, tempkeys, name) {
+
+   // alert(pulldownitemToStationID)
+    departure_dropdown.options.length = 0;
+    return_dropdown.options.length = 0;
+    var pulldownitemToStationID = {}
+    for (let i = -1; i < tempkeys.length; i++) {
+        let option = document.createElement("option");
+        if (i > -1) {
+            pulldownitemToStationID[i] = tempkeys[i]
+            option.text = stationdata[tempkeys[i]][name]
+            //  option.style.textAlign = "left";
+            departure_dropdown.add(option);
+            return_dropdown.add(option.cloneNode(true));
+        }
+
+        else {
+            option.text = 'All'
+            departure_dropdown.add(option);
+
+            let option2 = document.createElement("option");
+            option2.text = 'All'
+            return_dropdown.add(option2);
+
+        }
+    }
+    return pulldownitemToStationID
+}
+
+
+
+
+export function koira(startdatestring) {
+    stacknHide(['downloadboard'], 1, [])
+}
+
+
 export function openCalendarWindow(currentYear, startMonth, endMonth, graydate) {
     /// custom calendar selector as innerHTML
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

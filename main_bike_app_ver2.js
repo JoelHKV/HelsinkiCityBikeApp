@@ -1,5 +1,5 @@
 import './style.css'
-import { openCalendarWindow, erasemarkersandpolylines } from './aux_functions.js';
+import { openCalendarWindow, popupstations, koira, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -12,7 +12,7 @@ var activestationid = 501
 var heatmapmaxradius = 200
 var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
-
+var pulldownitemToStationID = []
 
 var startdatestring = '2021-06-17'
 var starthour = 12
@@ -23,6 +23,8 @@ var city = 'Kaupunki'
 var helsinki = 'Helsinki'
 
 
+
+
 // station data transformed to json where station id is the key. json is imported and hardcoded into js for speed and importance
 import * as data2 from './stations_HelsinkiEspoo.json'
 stationdata = data2.default
@@ -31,8 +33,8 @@ stationdata = data2.default
 var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['stationvstrip2', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
-    ['menu-date', 0, 30, 5, 70],
-    ['menu-time', 5, 30, 5, 70],
+    ['menu-date', 0, 30, 2, 70],
+    ['menu-time', 2, 30, 8, 70],
 ['menutitleb', 10, 24.3, 70, 4],
 ['menutitle', 10, 24.3, 70, 4],
 ['filterStations', 55, 24.9, 80, 3],
@@ -115,6 +117,11 @@ stacknHide([], 1, ['circle', 'downloadboard', 'departure_dropdown', 'return_drop
 
 
 
+//koira(startdatestring)
+
+
+//
+
 
 //  add listeners to buttons and the like
 
@@ -136,7 +143,7 @@ filterStations.addEventListener("input", () => {
 
 function changeDate() {
     // run when inner calendar date is selected. then fetch data for that date
-    if (departure_dropdown.value != 'Select Departure' || return_dropdown.value != 'Select Return') { return }
+    if (departure_dropdown.value != 'All' || return_dropdown.value != 'All') { return }
 
 
     if (stationview == 1) { return }
@@ -196,12 +203,11 @@ function gettripdata(data) {
     bookmarks[24] = counter - 2
 
 
-    let regex = /\(([^)]+)\)/;
     var stationdid = 0
     var stationrid = 0
-    if (departure_dropdown.value != 'Select Departure') { stationdid = regex.exec(departure_dropdown.value)[1]; }
-    if (return_dropdown.value != 'Select Return') { stationrid = regex.exec(return_dropdown.value)[1]; }
 
+    if (departure_dropdown.selectedIndex > 0) { stationdid = pulldownitemToStationID[departure_dropdown.selectedIndex - 1]; }
+    if (return_dropdown.selectedIndex > 0) { stationrid = pulldownitemToStationID[return_dropdown.selectedIndex - 1]; }
 
     if (stationdid == 0 && stationrid == 0) {
         showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
@@ -415,14 +421,14 @@ departure_dropdown.onchange = onSelectChange;
 return_dropdown.onchange = onSelectChange;
 
 function onSelectChange() {
-    
-    // when pull down menu is changes new data need to be fetched
-    let regex = /\(([^)]+)\)/;
+ 
     var stationdid = 0
     var stationrid = 0
-    if (departure_dropdown.value != 'Select Departure') { stationdid = regex.exec(departure_dropdown.value)[1]; }
+   
+    if (departure_dropdown.selectedIndex > 0) {  stationdid = pulldownitemToStationID[departure_dropdown.selectedIndex-1]; }
 
-    if (return_dropdown.value != 'Select Return') { stationrid = regex.exec(return_dropdown.value)[1]; }
+    if (return_dropdown.selectedIndex > 0) { stationrid = pulldownitemToStationID[return_dropdown.selectedIndex-1]; }
+
 
     if (stationdid == 0 && stationrid == 0) {
         document.getElementById("currentdate").style.opacity = 1;
@@ -508,30 +514,6 @@ function getdata(thisaddress, mode, display) {
 }
 
 
-function popupstations(stationdata, tempkeys) {
-    departure_dropdown.options.length = 0;
-    return_dropdown.options.length = 0;
-    for (let i = -1; i < tempkeys.length; i++) {
-        let option = document.createElement("option");
-        if (i > -1) {
-            option.text = stationdata[tempkeys[i]][name] + ' (' + tempkeys[i] + ')'
-            departure_dropdown.add(option);
-            return_dropdown.add(option.cloneNode(true));
-        }
-
-        else {
-            option.text = 'Select Departure'
-            departure_dropdown.add(option);
-
-            let option2 = document.createElement("option");
-            option2.text = 'Select Return'
-            return_dropdown.add(option2);
-
-        }
-    }
-
-}
-
 
 function update2stations(data) {
     // updates station info
@@ -552,7 +534,7 @@ function update2stations(data) {
     });
 
     stationskeys = sortedData.map(item => item[0]);
-    popupstations(stationdata, stationskeys)
+    pulldownitemToStationID = popupstations(stationdata, stationskeys, name)
 
     //stationskeys = []
     let filteredkeys = []
