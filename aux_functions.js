@@ -15,6 +15,18 @@ export function erasemarkersandpolylines() {
 }
 
 
+export function mockSlider(coarseSteps, menuTime) {
+    menuTime.innerHTML = '';
+    for (let i = 0; i < coarseSteps; i++) {
+        const item = document.createElement("div");
+        item.classList.add("menu-time");
+        item.innerHTML = "&nbsp;";
+        menuTime.appendChild(item);
+    }
+}
+
+
+
 
 export function popupstations(stationdata, tempkeys, name) {
 

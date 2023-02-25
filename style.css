@@ -161,16 +161,28 @@ button {
     border-radius: 30px;
 }
 
-#goUp, #goDown, #scrollUp, #scrollDown, #currentdate, #closemap, #stationdetailsTo2, #stationdetailsFrom2, #stationdetailsTo, #stationdetailsFrom, #language {
+#closemap, #stationdetailsTo2, #stationdetailsFrom2, #stationdetailsTo, #stationdetailsFrom, #language {
     position: absolute;
     width: 80%;
     cursor: pointer;
-    font-size: 1.0rem;
     line-height: 1.3;
     border: 3px solid gray;
     border-radius: 10px;
     font-size: 1.1rem;
 }
+
+#currentdate {
+    position: absolute;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Calendar_icon_2.svg/141px-Calendar_icon_2.svg.png?20180310071421");
+    line-height: 1.3;
+    border: 0px solid gray;
+    border-radius: 10px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    padding-top: 3rem;
+    padding-left: 0rem;
+}
+
 
 #closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
     transition: all 0.03s ease;

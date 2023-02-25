@@ -1,5 +1,5 @@
 import './style.css'
-import { openCalendarWindow, popupstations, koira, erasemarkersandpolylines } from './aux_functions.js';
+import { openCalendarWindow, popupstations, mockSlider, koira, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -33,7 +33,6 @@ stationdata = data2.default
 var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['stationvstrip2', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
-    ['menu-date', 0, 30, 9, 70],
     ['menu-time', 10, 30, 15, 70],
 ['menutitleb', 10, 24.3, 70, 4],
 ['menutitle', 10, 24.3, 70, 4],
@@ -44,11 +43,9 @@ var placeitems = [['stationvstrip', 10, 2, 30, 9],
 ['return_dropdown', 50, 17, 30, 6],
 ['infoboard', 10, 16, 40, 10],
 ['infoboard3', 51, 16, 30, 10],
-['goUp', 83, 36, 10, 10],
-['scrollUp', 83, 48, 10, 10],
-['currentdate', 83, 60, 10, 10],
-['scrollDown', 83, 72, 10, 10],
-['goDown', 83, 84, 10, 10],
+
+['currentdate', 73, 60, 17, 17],
+
 ['stationdetailsFrom', 12, 31, 10, 10],
 ['stationdetailsTo', 24, 31, 10, 10],
 ['stationdetailsFrom2', 41, 31, 10, 10],
@@ -142,6 +139,7 @@ filterStations.addEventListener("input", () => {
 
 
 function changeDate() {
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     // run when inner calendar date is selected. then fetch data for that date
     if (departure_dropdown.value != 'All' || return_dropdown.value != 'All') { return }
 
@@ -163,10 +161,14 @@ function changeDate() {
             let param = this.getAttribute("data-param");              
             document.getElementById(sss).style.backgroundColor = '#ffffff'
             document.getElementById(param).style.backgroundColor = '#999999'
-            document.getElementById("currentdate").innerHTML = param
+            
             var dates = param.split('.')
             startdatestring = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
-            getDates(startDate, endDate);
+
+            document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[0].toString() + '<BR>' + dates[2].toString()
+
+
+          //  getDates(startDate, endDate);
 
            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
             setTimeout(() => {
@@ -240,75 +242,8 @@ function gettripdata(data) {
 const menu = document.querySelector("#menu");
 
 
-
-
-function getDates(startDate, endDate) {
-
-
-    const selectedDateNumerical = startdatestring.split("-").map(Number);
-
-    let selectedItem = null;
-    menuDate.innerHTML = '';
-    let currentDate = new Date(startDate);
-    var topOffSet = [0,0] 
-    let incrementIndex = 0;
-    while (currentDate <= endDate) {
-        
-        const item = document.createElement("div");
-        item.classList.add("menu-date");
-
-        if (selectedDateNumerical[2] == currentDate.getDate() && selectedDateNumerical[1] == currentDate.getMonth() + 1) {
-            item.style.backgroundColor = "gray";
-
-            selectedItem = item
-            incrementIndex++
-        }
-        
-        item.textContent = currentDate.getDate() + '.' + (currentDate.getMonth() + 1)
-       
-        item.addEventListener("click", function () {
-
-            if (selectedItem !== null) {
-                selectedItem.style.backgroundColor = "";
-            }
-            selectedItem = this;
-            
-            const newDateNumerical = (selectedItem.innerHTML).split(".").map(Number);
-            startdatestring = '2021-' + newDateNumerical[1].toString().padStart(2, '0') + '-' + newDateNumerical[0].toString().padStart(2, '0')
-            alert(startdatestring)
-            selectedItem.style.backgroundColor = "gray";
-
-        });
-
-        menuDate.appendChild(item);
-        topOffSet[incrementIndex] = topOffSet[incrementIndex] + item.offsetHeight
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
- 
-    menuDate.scrollTop = topOffSet[0]
-}
-
-function getHours() {
-    menuTime.innerHTML = '';
-    for (let i = 0; i < coarseSteps; i++) {
-        const item = document.createElement("div");
-        item.classList.add("menu-time"); 
-        item.innerHTML = "&nbsp;";
-        menuTime.appendChild(item);
-    }
-}
-
-
-const menuDate = document.getElementById('menu-date');
 const menuTime = document.getElementById('menu-time');
-
-
-const item = document.createElement("div");
-
-
-menuDate.appendChild(item);
-
-getHours()
+mockSlider(coarseSteps, menuTime)
 
 
 menu.addEventListener('scroll', () => {
@@ -345,22 +280,15 @@ menuTime.addEventListener('scroll', () => {
     if (menu.scrollTop === 0) {
        // scrollpos = 1
     }
-
- 
-
-
-
     showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, scrollpos)
 
-
-   
 });
 
 
 
-const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + daterange[0][2]);
-const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
-getDates(startDate, endDate);
+//const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + daterange[0][2]);
+//const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
+//getDates(startDate, endDate);
 
 function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
     // displays part of trip data and appropriate endings for browsing
@@ -683,17 +611,19 @@ function additemtopulldown(text, mode) {
             if (starthour == -1) {
                 starthour = 23;
                 startdatestring = incrementOrDecrementDate(startdatestring, -1)
-                getDates(startDate, endDate);
-                getHours(); return
+              //  getDates(startDate, endDate);
+              //  getHours();
+                return
             }
             if (starthour == 24) {
                 ;
                 startdatestring = incrementOrDecrementDate(startdatestring, 1)
-                getDates(startDate, endDate);
-                getHours(); return
+             //   getDates(startDate, endDate);
+              //  getHours();
+                return
             }
             else {
-                getHours()
+             //   getHours()
                 showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
             }
 
