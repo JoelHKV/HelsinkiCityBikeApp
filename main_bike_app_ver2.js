@@ -171,49 +171,42 @@ function changeDate() {
 }
 
 
-
 function gettripdata(data) {
-    // filter trip data based on pull down menu selections
-    tripdata ={}
+    tripdata = {}
+    var counter = 0
+    var nroitems = Object.entries(data).length - 1
+    var hourcounter = 0
+
+    for (let i = 0; i < nroitems; i++) {
+        if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
+            var temp = data[i]
+            tripdata[counter] = temp
+            counter++
+
+            var temp = Number(temp["Departure"].substring(11, 13)) + (Number(temp["Departure"].substring(14, 16)) + 1) / 60
+
+            if (temp > hourcounter) {
+                bookmarks[hourcounter] = counter - 1
+                hourcounter++
+            }
+
+        }
+
+    }
+    bookmarks[24] = counter - 2
+
 
     let regex = /\(([^)]+)\)/;
     var stationdid = 0
     var stationrid = 0
     if (departure_dropdown.value != 'Select Departure') { stationdid = regex.exec(departure_dropdown.value)[1]; }
-
     if (return_dropdown.value != 'Select Return') { stationrid = regex.exec(return_dropdown.value)[1]; }
 
-    var counter = 0
+
     if (stationdid == 0 && stationrid == 0) {
-
-        var nroitems =  Object.entries(data).length - 1
-        var hourcounter = 0
-        
-        for (let i = 0; i < nroitems; i++) {
-            if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
-                var temp = data[i]
-                tripdata[counter] = temp
-                counter++
-
-                var temp = Number(temp["Departure"].substring(11, 13)) + (Number(temp["Departure"].substring(14, 16))+1) / 60
-
-                if (temp > hourcounter) {
-                    bookmarks[hourcounter] = counter-1
-                       hourcounter++
-                    }
-
-            }
-        
-        }
-        
-        
-      //  pagerange = Math.round(Object.entries(tripdata).length)
-        bookmarks[24] = counter-2
-
-        showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1])
+        showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
     }
     else {
-
         var triptempdata = []
         for (let i = 0; i < Object.entries(tripdata).length; i++) {
             if (tripdata[i]["did"] == stationdid && tripdata[i]["rid"] == stationrid) {
@@ -227,13 +220,15 @@ function gettripdata(data) {
             }
 
         }
-        pagerange = Object.entries(triptempdata).length
-        showtripdata(triptempdata, 0)
-        return
+        showtripdata(triptempdata, 0, Object.entries(triptempdata).length - 1,0)
 
     }
 
+    
+
 }
+
+
 
 const menu = document.querySelector("#menu");
 
@@ -309,7 +304,7 @@ function getHours() {
             selectedItem = this;
             selectedItem.style.backgroundColor = "gray";
             starthour = Number(selectedItem.innerHTML)
-            showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1])
+            showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour+1],1)
         });
 
         menuTime.appendChild(item);
@@ -335,7 +330,7 @@ const startDate = new Date(daterange[0][0] + '-' +  daterange[0][1] + '-' + date
 const endDate = new Date(daterange[1][0] + '-' + daterange[1][1] + '-' + daterange[1][2]);
 getDates(startDate, endDate);
 
-function showtripdata(triptempdata, startindex,endindex) {
+function showtripdata(triptempdata, startindex,endindex, fullinput) {
     // displays part of trip data and appropriate endings for browsing
     while (menu.firstChild) {
         menu.removeChild(menu.firstChild);
@@ -343,14 +338,11 @@ function showtripdata(triptempdata, startindex,endindex) {
 
     var nroitems = Object.entries(triptempdata).length
 
-    var filteredview = 1
-    if (departure_dropdown.value == 'Select Departure' && return_dropdown.value == 'Select Return') {
-        filteredview = 0
+    
+
+    if (fullinput == 1) {
+        additemtopulldown('Earlier Time', -1)
     }
-
-
-
-    additemtopulldown('Earlier Time', -1)
 
 
     if (nroitems == 0) {
@@ -359,15 +351,12 @@ function showtripdata(triptempdata, startindex,endindex) {
     }
 
     const columnWidths = [25, 25, 25, 10, 10];
-    //var lenlen = 500
 
-  //  var startoffset = Math.max((pagerange - lenlen), 0)
 
  
 
     for (let i = startindex; i < endindex; i++) {
-        //  a few invalid station id codes are filtered here (next time filter in data import already)
-      //  if (triptempdata[i]["did"] in stationdata && triptempdata[i]["rid"] in stationdata) {
+
 
             const item = document.createElement("div");
             item.classList.add("menu-item");
@@ -392,23 +381,26 @@ function showtripdata(triptempdata, startindex,endindex) {
                     it.style.backgroundColor = "";
                 }
                 this.style.backgroundColor = "gray";
-                var thisitemnro = startoffset + Array.from(items).indexOf(this) - 1
-
+                var thisitemnro = 1 - fullinput + startindex + Array.from(items).indexOf(this) - 1
+                
                 var dep_loc = [stationdata[triptempdata[thisitemnro]["did"]]["y"], stationdata[triptempdata[thisitemnro]["did"]]["x"]]
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
 
 
                 activestationid = triptempdata[thisitemnro]
+ 
                 writeinfoboard(activestationid, 'trip')
                 showmap([dep_loc, ret_loc], 2)
 
             });
 
             menu.appendChild(item);
-      //  }
-    }
 
-    additemtopulldown('Later Time', 1)
+    }
+    if (fullinput == 1) {
+        additemtopulldown('Later Time', 1)
+    }
+    
     menu.scrollTop = menu.scrollHeight / 2;
  
  
@@ -693,7 +685,7 @@ function additemtopulldown(text, mode) {
             }
             else {
                 getHours()
-                showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1])
+                showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
             }
 
         });
