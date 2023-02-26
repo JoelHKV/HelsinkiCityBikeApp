@@ -30,8 +30,8 @@ import * as data2 from './stations_HelsinkiEspoo.json'
 var stationdata = data2.default
 
 // here we define the layout 
-var placeitems = [['stationvstrip', 10, 2, 30, 9],
-    ['stationvstrip2', 50, 2, 30, 9],
+var placeitems = [['stationview', 10, 2, 30, 9],
+    ['tripview', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
     ['stat_menu', 10, 30, 70, 70],
     ['menu-time', 10, 30, 15, 70],
@@ -121,20 +121,20 @@ stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard',
 
 
 
-document.getElementById('stationvstrip2').addEventListener("click", () => {
+document.getElementById('tripview').addEventListener("click", () => {
 
     stationview = -1
-    document.getElementById('stationvstrip').style.backgroundColor = '#ffffff'
-    document.getElementById('stationvstrip2').style.backgroundColor = '#eeeeee'
+    document.getElementById('stationview').style.backgroundColor = '#ffffff'
+    document.getElementById('tripview').style.backgroundColor = '#eeeeee'
     getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
 
 })
 
 
-document.getElementById('stationvstrip').addEventListener("click", () => {
+document.getElementById('stationview').addEventListener("click", () => {
     stationview = 1
-    document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'
-    document.getElementById('stationvstrip').style.backgroundColor = '#eeeeee'
+    document.getElementById('tripview').style.backgroundColor = '#ffffff'
+    document.getElementById('stationview').style.backgroundColor = '#eeeeee'
     update2stations()
 })
 
@@ -235,7 +235,7 @@ function changeDate() {
 
 function gettripdata(data) {
 
-    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, ['stationtitle', 'cleartext', 'operator', 'capacity'])
+    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, ['filterStations','stationtitle', 'cleartext', 'operator', 'capacity'])
 
    
 
@@ -525,7 +525,7 @@ function getdata(thisaddress, mode, display) {
 function update2stations() {
 
 
-    stacknHide(['stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+    stacknHide(['filterStations','stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
 
    
 
@@ -683,7 +683,7 @@ function additemtopulldown(text, mode) {
 
 }
 
-export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
+function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
     var date = new Date(startdatestring);
     date.setDate(date.getDate() + daysToAddOrSubtract);
     var year = date.getFullYear();
