@@ -215,12 +215,11 @@ button {
 
 
 
-#distance, #duration, #closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
+#innercalendar, #distance, #duration, #closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
     transition: all 0.03s ease;
 }
 
 
 #currentdate {
-    opacity: 0.4;
-    cursor: default;
+    cursor: pointer;
 }

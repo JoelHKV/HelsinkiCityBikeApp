@@ -124,8 +124,17 @@ stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard',
 
 
 
-document.getElementById('stationvstrip').addEventListener("click", stationTripView);
+//document.getElementById('stationvstrip').addEventListener("click", stationTripView);
 document.getElementById('stationvstrip2').addEventListener("click", stationTripView2);
+
+
+
+document.getElementById('stationvstrip').addEventListener("click", () => {
+    alert('dd')
+})
+
+
+
 document.getElementById('currentdate').addEventListener("click", changeDate);
 
 
@@ -213,6 +222,12 @@ function changeDate() {
 
 
 function gettripdata(data) {
+
+    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, ['stationtitle', 'cleartext', 'operator', 'capacity'])
+
+   
+
+
     tripdata = {}
     var counter = 0
     var nroitems = Object.entries(data).length - 1
@@ -498,6 +513,10 @@ function getdata(thisaddress, mode, display) {
 function update2stations() {
 
 
+    stacknHide(['stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+
+   
+
 
     while (stat_menu.firstChild) {
         stat_menu.removeChild(stat_menu.firstChild);
@@ -606,9 +625,9 @@ function writeinfoboard(stationid, mode, whichtextfield) {
 function stationTripView2() {
     // initializes the screen to trip view operations and fetches the data
     stationview = -1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
-    document.getElementById("currentdate").style.cursor = "pointer"
-    document.getElementById("currentdate").style.opacity = 1;
+  //  stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+ //   document.getElementById("currentdate").style.cursor = "pointer"
+ //   document.getElementById("currentdate").style.opacity = 1;
 
     document.getElementById('stationvstrip').style.backgroundColor = '#ffffff'
     document.getElementById('stationvstrip2').style.backgroundColor = '#eeeeee'
@@ -621,9 +640,9 @@ function stationTripView2() {
 function stationTripView() {
     // initializes the screen to station view operations
     stationview = 1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
-    document.getElementById("currentdate").style.cursor = "default"
-    document.getElementById("currentdate").style.opacity = 0.4;
+  //  stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+   // document.getElementById("currentdate").style.cursor = "default"
+   // document.getElementById("currentdate").style.opacity = 0.4;
     document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'
     document.getElementById('stationvstrip').style.backgroundColor = '#eeeeee'
     update2stations()
