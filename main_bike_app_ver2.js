@@ -121,17 +121,29 @@ stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard',
 
 
 
+document.getElementById('stationvstrip2').addEventListener("click", () => {
 
+    stationview = -1
+    document.getElementById('stationvstrip').style.backgroundColor = '#ffffff'
+    document.getElementById('stationvstrip2').style.backgroundColor = '#eeeeee'
+    getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
 
-
-//document.getElementById('stationvstrip').addEventListener("click", stationTripView);
-document.getElementById('stationvstrip2').addEventListener("click", stationTripView2);
-
+})
 
 
 document.getElementById('stationvstrip').addEventListener("click", () => {
-    alert('dd')
+    stationview = 1
+    document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'
+    document.getElementById('stationvstrip').style.backgroundColor = '#eeeeee'
+    update2stations()
 })
+
+
+
+
+
+
+
 
 
 
@@ -622,31 +634,6 @@ function writeinfoboard(stationid, mode, whichtextfield) {
 }
 
 
-function stationTripView2() {
-    // initializes the screen to trip view operations and fetches the data
-    stationview = -1
-  //  stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
- //   document.getElementById("currentdate").style.cursor = "pointer"
- //   document.getElementById("currentdate").style.opacity = 1;
-
-    document.getElementById('stationvstrip').style.backgroundColor = '#ffffff'
-    document.getElementById('stationvstrip2').style.backgroundColor = '#eeeeee'
-
-    getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
-
-}
-
-
-function stationTripView() {
-    // initializes the screen to station view operations
-    stationview = 1
-  //  stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
-   // document.getElementById("currentdate").style.cursor = "default"
-   // document.getElementById("currentdate").style.opacity = 0.4;
-    document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'
-    document.getElementById('stationvstrip').style.backgroundColor = '#eeeeee'
-    update2stations()
-}
 
 
 
