@@ -171,7 +171,7 @@ button {
     border-radius: 30px;
 }
 
-#closemap, #stationdetailsTo2, #stationdetailsFrom2, #stationdetailsTo, #stationdetailsFrom {
+#closemap, .statdetails {
     position: absolute;
     width: 80%;
     cursor: pointer;
@@ -180,6 +180,8 @@ button {
     border-radius: 10px;
     font-size: 1.1rem;
 }
+
+
 
 #fin, #swe, #eng {
     position: absolute;

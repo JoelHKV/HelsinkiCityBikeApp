@@ -54,9 +54,9 @@ var placeitems = [['stationview', 10, 2, 30, 9],
 
 ['currentdate', 12, 12, 11, 17],
 
-['stationdetailsFrom', 12, 31, 10, 10],
+    ['TopDeparture', 12, 31, 10, 10],
 ['stationdetailsTo', 24, 31, 10, 10],
-['stationdetailsFrom2', 41, 31, 10, 10],
+    ['HeatmapDeparture', 41, 31, 10, 10],
 ['stationdetailsTo2', 53, 31, 10, 10],
 ['closemap', 70, 31, 10, 10],
 ['backgroundgray', 5, 13, 90, 92],
@@ -116,7 +116,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'TopDeparture', 'stationdetailsTo', 'HeatmapDeparture', 'stationdetailsTo2', 'map-container'])
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -478,7 +478,7 @@ document.querySelector("#closemap").addEventListener("click", function () {
     erasemarkersandpolylines(regulargooglemarker, polyline)
 
     if (stationview == 1) {
-        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['stationdetailsFrom2', 'stationdetailsFrom','stationdetailsTo2', 'stationdetailsTo','closemap', 'map-container', 'infoboard'])
+        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture','stationdetailsTo2', 'stationdetailsTo','closemap', 'map-container', 'infoboard'])
     }
     else {
         stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard'])
@@ -494,7 +494,7 @@ function showmap(coords) {
         stacknHide(['closemap', 'map-container', 'infoboard'], 1, [])
 
         stacknHide(['stationdetailsTo2', 'stationdetailsTo'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
-        stacknHide(['stationdetailsFrom2', 'stationdetailsFrom'], 1, [])
+    stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
         map.setCenter({ lat: coords[0], lng: coords[1] });
 
         var temp = new google.maps.Marker({
