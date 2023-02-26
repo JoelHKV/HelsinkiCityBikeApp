@@ -31,14 +31,23 @@
 
         <button id="stationvstrip">Stations</button>
         <button id="stationvstrip2">Trips</button>
-        <button id="language">FI</button>
+       
+
+        <button id="fin"></button>
+        <button id="swe"></button>
+        <button id="eng"></button>
 
         <select id="departure_dropdown"></select>
         <select id="return_dropdown"></select>
         <button id="distance">km</button>
         <button id="duration">min</button>
-        <div id="menutitleb"><div class="col" style="width: 50%; text-align: left;">Station</div><div class="col" style="width: 14%; text-align: left;">Search</div></div>
-        <input type="text" id="filterStations">
+
+        <button id="stationtitle">Station name:</button>
+        <button id="cleartext">Clear</button>
+        <button id="operator">Operator:</button>
+        <button id="capacity">Capacity:</button>
+
+        <input type="text" id="filterStations" placeholder="Search">
 
         <div id="menu-time">
             <div class="menu-time">dd</div>
@@ -59,7 +68,7 @@
                 <div class="col col-3"></div>
                 <div class="col col-4"></div>
                 <div class="col col-5"></div>
-            
+
             </div>
         </div>
 
@@ -68,13 +77,14 @@
 
 
 
+
         <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
 
     </div>
 
 
-            <script src="secret.js"></script>
-            <script type="module" src="/main_bike_app_ver2.js"></script>
+        <script src="secret.js"></script>
+        <script type="module" src="/main_bike_app_ver2.js"></script>
 
 </body>
 </html>

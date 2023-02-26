@@ -35,10 +35,13 @@ var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
     ['stat_menu', 10, 30, 70, 70],
     ['menu-time', 10, 30, 15, 70],
-    ['menutitleb', 25, 24.3, 70, 4],
+    ['stationtitle', 10, 23, 20, 6],
+    ['cleartext', 42, 23, 8, 6],
+    ['operator', 57, 23, 11, 6],
+    ['capacity', 69, 23, 11, 6],
     ['distance', 62, 23, 6, 6],
     ['duration', 70, 23, 6, 6],
-['filterStations', 55, 24.9, 80, 3],
+['filterStations', 31.5, 23, 6, 5],
 ['map-container', 10, 30, 70, 70],
 ['innercalendar', 10, 30, 70, 70],
 ['departure_dropdown', 28, 23, 16, 6],
@@ -55,7 +58,9 @@ var placeitems = [['stationvstrip', 10, 2, 30, 9],
 ['closemap', 70, 31, 10, 10],
 ['backgroundgray', 5, 13, 90, 92],
 ['downloadboard', 10.5, 30.2, 68, 68],
-['language', 83, 15, 10, 10]]
+    ['fin', 77, 1, 3.4, 3.7],
+    ['swe', 77, 5, 3.4, 3.7],
+    ['eng', 77, 9, 3.4, 3.7]]
 
 
 
@@ -97,7 +102,7 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
 
 
     }
-    document.getElementById('filterStations').style.width = containerwidth * 20 / 100 + 'px'
+
 }
 
 function stacknHide(stackElements, startZ, hideElements) {
@@ -112,7 +117,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['menu', 'menu-time','circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
 
 
 
@@ -126,10 +131,37 @@ document.getElementById('currentdate').addEventListener("click", changeDate);
 
 const filterStations = document.getElementById('filterStations')
 
-
 filterStations.addEventListener("input", () => {
     update2stations()
 })
+
+const cleartext = document.getElementById('cleartext')
+
+cleartext.addEventListener("click", () => {
+    filterStations.value = "";
+    update2stations()
+})
+
+document.getElementById('fin').addEventListener("click", () => {
+    name = 'Nimi'; address = 'Osoite'; helsinki = 'Helsinki'
+    updatelanguage('fin')
+})
+document.getElementById('swe').addEventListener("click", () => {
+    name = 'Namn'; address = 'Adress'; helsinki = 'Helsingfors'
+    updatelanguage('swe')
+})
+document.getElementById('eng').addEventListener("click", () => {
+    name = 'Name'; address = 'Osoite'; helsinki = 'Helsinki'
+    updatelanguage('eng')
+})
+
+function updatelanguage(thislang) {
+    document.getElementById('fin').style.opacity = 0.4
+    document.getElementById('swe').style.opacity = 0.4
+    document.getElementById('eng').style.opacity = 0.4
+    document.getElementById(thislang).style.opacity = 1
+    update2stations()
+}
 
 
 
@@ -574,7 +606,7 @@ function writeinfoboard(stationid, mode, whichtextfield) {
 function stationTripView2() {
     // initializes the screen to trip view operations and fetches the data
     stationview = -1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'menutitleb', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+    stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
     document.getElementById("currentdate").style.cursor = "pointer"
     document.getElementById("currentdate").style.opacity = 1;
 
@@ -589,7 +621,7 @@ function stationTripView2() {
 function stationTripView() {
     // initializes the screen to station view operations
     stationview = 1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations', 'menutitleb'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+    stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
     document.getElementById("currentdate").style.cursor = "default"
     document.getElementById("currentdate").style.opacity = 0.4;
     document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'

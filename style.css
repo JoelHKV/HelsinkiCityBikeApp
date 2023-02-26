@@ -75,14 +75,15 @@
 #filterStations {
     position: absolute;
     text-align: left;
-    padding: 0.15rem 0rem;
+    padding: 0.15rem 1rem;
     font-size: 1.3rem;
     font-weight: bold;
-    border: none;
+    border: 3px solid gray;
     background-color: #aaaaaa;
+    border-radius: 10px;
 }
 
-#departure_dropdown, #return_dropdown, #distance, #duration {
+#departure_dropdown, #return_dropdown, #distance, #cleartext, #duration, #stationtitle, #operator, #capacity {
     position: absolute;
     text-align: center;
     font-size: 1.3rem;
@@ -92,8 +93,13 @@
     font-weight: bold;
 }
 
+
+
+
+
 #distance, #duration {
     background-color: #ffffff;
+    
 }
 #downloadboard {
     position: absolute;
@@ -111,6 +117,7 @@
     font-weight: bold;
     opacity: 1;
     background-color: #eeeeee;
+    
 }
 
 
@@ -164,7 +171,7 @@ button {
     border-radius: 30px;
 }
 
-#closemap, #stationdetailsTo2, #stationdetailsFrom2, #stationdetailsTo, #stationdetailsFrom, #language {
+#closemap, #stationdetailsTo2, #stationdetailsFrom2, #stationdetailsTo, #stationdetailsFrom {
     position: absolute;
     width: 80%;
     cursor: pointer;
@@ -174,7 +181,25 @@ button {
     font-size: 1.1rem;
 }
 
-#currentdate {
+#fin, #swe, #eng {
+    position: absolute;
+    cursor: pointer;
+}
+
+
+#fin {
+    background-image: url('fi.svg');
+}
+#swe {
+    background-image: url('se.svg');
+    opacity: 0.4;
+}
+#eng {
+    background-image: url('gb.svg');
+    opacity: 0.4;
+}
+
+    #currentdate {
     position: absolute;
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Calendar_icon_2.svg/141px-Calendar_icon_2.svg.png?20180310071421");
     line-height: 1.3;
