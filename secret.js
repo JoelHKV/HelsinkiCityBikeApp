@@ -1,4 +1,4 @@
-const API_KEY = "https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=initMap"
+const API_KEY = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCPacIGlmg9szUozm45gKCyE4iO2F1OI2k&callback=initMap"
 const script = document.createElement('script');
 
 script.src = API_KEY;

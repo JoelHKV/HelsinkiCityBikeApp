@@ -1,6 +1,6 @@
 
 
-export function erasemarkersandpolylines() {
+export function erasemarkersandpolylines(regulargooglemarker, polyline) {
     // erase markers and drawings on google maps
     for (let i = 0; i < regulargooglemarker.length; i++) {
         regulargooglemarker[i].setMap(null);

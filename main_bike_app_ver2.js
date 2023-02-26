@@ -10,20 +10,23 @@ var stationview = 1
 var pagerange
 var activestationid = 501
 var heatmapmaxradius = 200
-var displaymap = 0
+var displaymap = 1
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
 var startdatestring = '2021-06-17'
-var starthour = 12
-//var bookmarks = []
+
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
 var helsinki = 'Helsinki'
 
+const canvas = document.getElementById("circle");
+const ctx = canvas.getContext("2d");
 
 
+
+var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // station data transformed to json where station id is the key. json is imported and hardcoded into js for speed and importance
 import * as data2 from './stations_HelsinkiEspoo.json'
@@ -68,16 +71,12 @@ fixitemsize(placeitems, 0.9, 1, 1)
 
 
 
-
 // adjust layout after window resize
 window.onresize = function () {
  
         fixitemsize(placeitems, 0.9, 1, 1)
  
 };
-
-
-
 
 
 
@@ -120,6 +119,12 @@ function stacknHide(stackElements, startZ, hideElements) {
 stacknHide([], 1, ['currentdate', 'menu', 'menu-time','circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
 
 
+let departure_dropdown = document.getElementById("departure_dropdown");
+let return_dropdown = document.getElementById("return_dropdown");
+
+departure_dropdown.onchange = onSelectChange;
+return_dropdown.onchange = onSelectChange;
+
 
 document.getElementById('tripview').addEventListener("click", () => {
 
@@ -135,32 +140,23 @@ document.getElementById('stationview').addEventListener("click", () => {
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
     document.getElementById('stationview').style.backgroundColor = '#eeeeee'
-    update2stations()
+    showstations()
 })
-
-
-
-
-
-
-
-
 
 
 document.getElementById('currentdate').addEventListener("click", changeDate);
 
-
 const filterStations = document.getElementById('filterStations')
 
 filterStations.addEventListener("input", () => {
-    update2stations()
+    showstations()
 })
 
 const cleartext = document.getElementById('cleartext')
 
 cleartext.addEventListener("click", () => {
     filterStations.value = "";
-    update2stations()
+    showstations()
 })
 
 document.getElementById('fin').addEventListener("click", () => {
@@ -181,32 +177,22 @@ function updatelanguage(thislang) {
     document.getElementById('swe').style.opacity = 0.4
     document.getElementById('eng').style.opacity = 0.4
     document.getElementById(thislang).style.opacity = 1
-    update2stations()
+    showstations()
 }
 
 
-
-
-
 function changeDate() {
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    // run when inner calendar date is selected. then fetch data for that date
-    if (departure_dropdown.selectedIndex != 0 || return_dropdown.selectedIndex != 0 != 0) { return }
 
-
-    
-
-    if (stationview == 1) { return }
-    //var thisdate = document.getElementById("currentdate").innerHTML
+    if (stationview == 1 || departure_dropdown.selectedIndex != 0 || return_dropdown.selectedIndex != 0) { return }
 
     const selectedDateNumerical = startdatestring.split("-").map(Number);
     var sss = selectedDateNumerical[2] + '.' + selectedDateNumerical[1] + '.' + selectedDateNumerical[0]
-    //alert(sss)
+ 
     var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], sss)
     document.getElementById("innercalendar").innerHTML = generatedHTML;
     
     let generatedCells = document.getElementsByClassName("generatedCell");
-    document.getElementById("innercalendar").style.zIndex = 10
+    document.getElementById("innercalendar").style.zIndex = 100
     
     for (let i = 0; i < generatedCells.length; i++) {
         generatedCells[i].addEventListener('click', function () {
@@ -218,9 +204,6 @@ function changeDate() {
             startdatestring = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
 
             document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[0].toString() + '<BR>' + dates[2].toString()
-
-
-          //  getDates(startDate, endDate);
 
            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
             setTimeout(() => {
@@ -236,9 +219,6 @@ function changeDate() {
 function gettripdata(data) {
 
     stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, ['filterStations','stationtitle', 'cleartext', 'operator', 'capacity'])
-
-   
-
 
     tripdata = {}
     var counter = 0
@@ -262,11 +242,7 @@ function gettripdata(data) {
 
     if (stationdid == 0 && stationrid == 0) {
 
-
         stacknHide(['menu-time','currentdate'], 1, [])
-
-
-       // showtripdata(tripdata, 344, 566, 1)
 
         menu.scrollTop = menu.scrollHeight * 0.5
         menuTime.scrollTop = menuTime.scrollHeight * (0.45 + 0.1 * Math.random())
@@ -288,30 +264,21 @@ function gettripdata(data) {
             }
 
         }
-        showtripdata(triptempdata, 0, Object.entries(triptempdata).length - 1,0, 0.5)
+        showtripdata(triptempdata, 0, Object.entries(triptempdata).length - 1, 0.5)
 
     }
 
-    
-
 }
-
 
 
 const menu = document.querySelector("#menu");
 const stat_menu = document.querySelector("#stat_menu");
  
-
-
-
 const menuTime = document.getElementById('menu-time');
 mockSlider(coarseSteps, menuTime)
 
 
 menu.addEventListener('scroll', () => {
-
-
-
 
     if (menu.scrollTop === 0) {
         const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
@@ -327,8 +294,6 @@ menu.addEventListener('scroll', () => {
         menuTime.scrollTop += scrollAmount;
     }
 
-
-
 });
 
 menuTime.addEventListener('scroll', () => {
@@ -343,14 +308,14 @@ menuTime.addEventListener('scroll', () => {
     if (scrollPercentage < 0) { scrollPercentage = 0; scrollpos = 0 }
     if (scrollPercentage >= 1) { scrollPercentage = 1 - 1 / coarseSteps; scrollpos = 1}
 
-    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), 1, scrollpos)
+    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), scrollpos)
 
 });
 
 
 
 
-function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
+function showtripdata(triptempdata, startindex, endindex, setslider) {
     // displays part of trip data and appropriate endings for browsing
     while (menu.firstChild) {
         menu.removeChild(menu.firstChild);
@@ -359,9 +324,9 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
     var nroitems = Object.entries(triptempdata).length
 
     
-
-  
-
+    if (startindex == 0) {
+        additemtopulldown('Previous Day', -1)
+    }
 
     if (nroitems == 0) {
         additemtopulldown('No trips', 2)
@@ -399,7 +364,7 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
                     it.style.backgroundColor = "";
                 }
                 this.style.backgroundColor = "gray";
-                var thisitemnro = startindex + Array.from(items).indexOf(this) - 1
+                var thisitemnro = startindex + 1 + Array.from(items).indexOf(this) - 1
                 
                 var dep_loc = [stationdata[triptempdata[thisitemnro]["did"]]["y"], stationdata[triptempdata[thisitemnro]["did"]]["x"]]
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
@@ -407,13 +372,18 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
 
                 activestationid = triptempdata[thisitemnro]
  
-                writeinfoboard(activestationid, 'trip')
-                showmap([dep_loc, ret_loc], 2)
+                writeinfoboard(activestationid, 'trip')           
+                showmaptrip(dep_loc, ret_loc)
 
             });
 
             menu.appendChild(item);
 
+    }
+
+    var nroitems = Number(Object.entries(tripdata).length - 1) 
+    if (endindex == nroitems) {
+        additemtopulldown('Next Day', 1)
     }
 
 
@@ -422,11 +392,175 @@ function showtripdata(triptempdata, startindex,endindex, fullinput, setslider) {
 }
 
 
-let departure_dropdown = document.getElementById("departure_dropdown");
-let return_dropdown = document.getElementById("return_dropdown");
+function showstations() {
 
-departure_dropdown.onchange = onSelectChange;
-return_dropdown.onchange = onSelectChange;
+    stacknHide(['filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+
+    while (stat_menu.firstChild) {
+        stat_menu.removeChild(stat_menu.firstChild);
+    }
+
+    const filterValue = filterStations.value.toLowerCase();
+
+    let sortedData = Object.entries(stationdata).sort((a, b) => {
+        if (a[1][name] > b[1][name]) {
+            return 1;
+        } else {
+            return -1;
+        }
+    });
+
+    stationskeys = sortedData.map(item => item[0]);
+    pulldownitemToStationID = popupstations(stationdata, stationskeys, name)
+    var columnWidths = [30, 30, 12, 20, 10]
+    //stationskeys = []
+    let filteredkeys = []
+    for (let i = 0; i < stationskeys.length; i++) {
+        var thisname = stationdata[stationskeys[i]][name]
+        if (thisname.toLowerCase().startsWith(filterValue) == true) {
+            filteredkeys.push(stationskeys[i]) // we need this to make a shorted index list for filtered stations
+            const item = document.createElement("div");
+            item.classList.add("menu-item");
+            for (let j = 1; j <= 5; j++) {
+                const col = document.createElement("div");
+                col.classList.add(`col`, `col-${i}`);
+                //  col.style.width = `40%`;
+                col.style.width = `${columnWidths[j - 1]}%`;
+                col.style.textAlign = "left";
+                col.style.overflow = "hidden";
+                if (j == 1) { col.textContent = thisname }
+                if (j == 2) { col.textContent = stationdata[stationskeys[i]][address] }
+                if (j == 3) {
+                    if (stationdata[stationskeys[i]][city].length > 1) {
+                        col.textContent = stationdata[stationskeys[i]][city]
+                    }
+                    else { col.textContent = helsinki }
+                }
+                if (j == 4) {
+                    if (stationdata[stationskeys[i]]['Operaattor'].length > 1) {
+                        col.textContent = stationdata[stationskeys[i]]['Operaattor']
+                    }
+                    else { col.textContent += 'Unknown' }
+
+                }
+                if (j == 5) { col.textContent = stationdata[stationskeys[i]]['Kapasiteet'] }
+                item.appendChild(col);
+            }
+
+            item.addEventListener("click", function () {
+                const items = stat_menu.querySelectorAll(".menu-item");
+                for (const it of items) {
+                    it.style.backgroundColor = "";
+                }
+                this.style.backgroundColor = "gray";
+                var thisitemnro = Array.from(items).indexOf(this)
+
+                writeinfoboard(filteredkeys[thisitemnro], 'station')
+
+                var coords = [stationdata[filteredkeys[thisitemnro]]["y"], stationdata[filteredkeys[thisitemnro]]["x"]]
+                activestationid = filteredkeys[thisitemnro]
+                showmap(coords)
+
+            });
+
+            stat_menu.appendChild(item)
+
+        }
+
+    }
+
+
+}
+
+
+document.querySelector("#closemap").addEventListener("click", function () {
+
+    erasemarkersandpolylines(regulargooglemarker, polyline)
+
+    if (stationview == 1) {
+        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['stationdetailsFrom2', 'stationdetailsFrom','stationdetailsTo2', 'stationdetailsTo','closemap', 'map-container', 'infoboard'])
+    }
+    else {
+        stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard'])
+    }
+
+});
+
+
+
+
+function showmap(coords) {
+        if (displaymap == 0) { return }
+        stacknHide(['closemap', 'map-container', 'infoboard'], 1, [])
+
+        stacknHide(['stationdetailsTo2', 'stationdetailsTo'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
+        stacknHide(['stationdetailsFrom2', 'stationdetailsFrom'], 1, [])
+        map.setCenter({ lat: coords[0], lng: coords[1] });
+
+        var temp = new google.maps.Marker({
+            position: { lat: coords[0], lng: coords[1] },
+            map: map,
+        });
+        regulargooglemarker.push(temp)
+ 
+        fitMapToBounds([
+            { lat: coords[0] + 0.005, lng: coords[1] + 0.005 },
+            { lat: coords[0] - 0.005, lng: coords[1] - 0.005 },
+        ]);
+
+}
+
+function showmaptrip(dep_loc, ret_loc) {
+    if (displaymap == 0) { return }
+
+
+    stacknHide(['closemap', 'map-container', 'infoboard'], 1, ['distance', 'duration','currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'])
+
+
+
+
+
+    map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
+    fitMapToBounds([
+        { lat: Math.max(dep_loc[0], ret_loc[0]), lng: Math.max(dep_loc[1], ret_loc[1]) },
+        { lat: Math.min(dep_loc[0], ret_loc[0]), lng: Math.min(dep_loc[1], ret_loc[1]) },
+    ]);
+
+   // stacknHide([], 1, ['stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2'])
+
+    var start = { lat: dep_loc[0], lng: dep_loc[1] };
+    var end = { lat: ret_loc[0], lng: ret_loc[1] };
+
+    var temp = new google.maps.Polyline({
+        path: [start, end],
+        geodesic: true,
+        strokeColor: "#ff0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 4,
+        icons: [{
+            icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
+            offset: "100%",
+        }],
+        map: map
+    });
+
+    polyline.push(temp)
+}
+
+
+
+
+
+// selects the area of google maps so that start and end is visible 
+function fitMapToBounds(latLngArray) {
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < latLngArray.length; i++) {
+        bounds.extend(latLngArray[i]);
+    }
+    map.fitBounds(bounds);
+}
+
+
 
 function onSelectChange() {
  
@@ -458,14 +592,9 @@ function onSelectChange() {
 }
 
 
-const canvas = document.getElementById("circle");
-const ctx = canvas.getContext("2d");
 
 
-
-
-
-update2stations()
+showstations()
 
 window.onload = function () {
 
@@ -480,9 +609,6 @@ window.onload = function () {
 };
 
 
-
-
-
 function getdata(thisaddress, mode, display) {
     // fetches the data from a google cloud function
     if (mode != 'did' && mode != 'rid') {
@@ -492,7 +618,6 @@ function getdata(thisaddress, mode, display) {
     fetchThis(thisaddress, mode, display)
         .then((data) => {
             stacknHide([], 1, ['downloadboard'])
-            // if (mode == 1) { update2stations(data) }
             if (mode == 3) { gettripdata(data) }
             if (mode == 'did' || mode == 'rid') { stationDetailMap(data, mode, display) }
         })
@@ -521,90 +646,6 @@ function getdata(thisaddress, mode, display) {
 }
 
 
-
-function update2stations() {
-
-
-    stacknHide(['filterStations','stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
-
-   
-
-
-    while (stat_menu.firstChild) {
-        stat_menu.removeChild(stat_menu.firstChild);
-    }
-
-    const filterValue = filterStations.value.toLowerCase();
-    
-    let sortedData = Object.entries(stationdata).sort((a, b) => {
-        if (a[1][name] > b[1][name]) {
-            return 1;
-        } else {
-            return -1;
-        }
-    });
-
-    stationskeys = sortedData.map(item => item[0]);
-    pulldownitemToStationID = popupstations(stationdata, stationskeys, name)
-    var columnWidths =[30,30,12,20,10] 
-    //stationskeys = []
-    let filteredkeys = []
-    for (let i = 0; i < stationskeys.length; i++) {
-        var thisname = stationdata[stationskeys[i]][name]
-        if (thisname.toLowerCase().startsWith(filterValue) == true) {
-            filteredkeys.push(stationskeys[i]) // we need this to make a shorted index list for filtered stations
-            const item = document.createElement("div");
-            item.classList.add("menu-item");
-            for (let j = 1; j <= 5; j++) {
-                const col = document.createElement("div");
-                col.classList.add(`col`, `col-${i}`);
-              //  col.style.width = `40%`;
-                col.style.width = `${columnWidths[j - 1]}%`;
-                col.style.textAlign = "left";
-                col.style.overflow = "hidden";
-                if (j == 1) { col.textContent = thisname }
-                if (j == 2) { col.textContent = stationdata[stationskeys[i]][address] }
-                if (j == 3) {
-                    if (stationdata[stationskeys[i]][city].length > 1) {
-                        col.textContent = stationdata[stationskeys[i]][city]
-                    }
-                    else { col.textContent = helsinki }
-                }
-                if (j == 4) {
-                    if (stationdata[stationskeys[i]]['Operaattor'].length > 1) {
-                        col.textContent = stationdata[stationskeys[i]]['Operaattor']
-                    }
-                    else { col.textContent += 'Unknown' }
-                  
-                }
-                if (j == 5) { col.textContent = stationdata[stationskeys[i]]['Kapasiteet'] }
-                item.appendChild(col);
-            }
-
-            item.addEventListener("click", function () {
-                const items = stat_menu.querySelectorAll(".menu-item");
-                for (const it of items) {
-                    it.style.backgroundColor = "";
-                }
-                this.style.backgroundColor = "gray";
-                var thisitemnro = Array.from(items).indexOf(this)
-
-                writeinfoboard(filteredkeys[thisitemnro], 'station')
-
-                var coords = [stationdata[filteredkeys[thisitemnro]]["y"], stationdata[filteredkeys[thisitemnro]]["x"]]
-                activestationid = filteredkeys[thisitemnro]
-                showmap(coords, 1)
-
-            });
-
-            stat_menu.appendChild(item)
-
-        }
-
-    }
-
-
-}
 
 function writeinfoboard(stationid, mode, whichtextfield) {
     // writes specific station info
@@ -654,29 +695,11 @@ function additemtopulldown(text, mode) {
     item.appendChild(col);
 
     if (mode == -1 || mode == 1) {
-        item.addEventListener("click", function () {
-
-            starthour += mode
-            //alert('dd')
-            if (starthour == -1) {
-                starthour = 23;
-                startdatestring = incrementOrDecrementDate(startdatestring, -1)
-              //  getDates(startDate, endDate);
-              //  getHours();
-                return
-            }
-            if (starthour == 24) {
-                ;
-                startdatestring = incrementOrDecrementDate(startdatestring, 1)
-             //   getDates(startDate, endDate);
-              //  getHours();
-                return
-            }
-            else {
-             //   getHours()
-              //  showtripdata(tripdata, bookmarks[starthour], bookmarks[starthour + 1],1)
-            }
-
+        item.addEventListener("click", function () {              
+        startdatestring = incrementOrDecrementDate(startdatestring, mode)
+        const dates = startdatestring.split("-").map(Number);
+        document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + '<BR>' + dates[0].toString() 
+        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)     
         });
     }
     menu.appendChild(item)
