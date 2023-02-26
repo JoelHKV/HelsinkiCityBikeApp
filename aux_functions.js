@@ -45,11 +45,11 @@ export function popupstations(stationdata, tempkeys, name) {
         }
 
         else {
-            option.text = 'All'
+            option.text = 'Departure: All'
             departure_dropdown.add(option);
 
             let option2 = document.createElement("option");
-            option2.text = 'All'
+            option2.text = 'Return: All'
             return_dropdown.add(option2);
 
         }

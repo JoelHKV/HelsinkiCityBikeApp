@@ -28,12 +28,12 @@
 }
 
 
-#menu, #menu-date, #menu-time {
+#menu, #stat_menu, #menu-date, #menu-time {
     overflow-y: scroll;
     border: 1px solid gray;
 }
 
-#menu, #menu-date, #menu-time, #menutitle, #menutitleb {
+#menu, #stat_menu, #menu-date, #menu-time, #menutitle, #menutitleb {
     position: absolute;
     background-color: white;
     border: 3px solid gray;
@@ -82,7 +82,7 @@
     background-color: #aaaaaa;
 }
 
-#departure_dropdown, #return_dropdown {
+#departure_dropdown, #return_dropdown, #distance, #duration {
     position: absolute;
     text-align: center;
     font-size: 1.3rem;
@@ -92,7 +92,9 @@
     font-weight: bold;
 }
 
-
+#distance, #duration {
+    background-color: #ffffff;
+}
 #downloadboard {
     position: absolute;
     font-size: 2rem;
@@ -185,7 +187,10 @@ button {
 }
 
 
-#closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
+
+
+
+#distance, #duration, #closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
     transition: all 0.03s ease;
 }
 

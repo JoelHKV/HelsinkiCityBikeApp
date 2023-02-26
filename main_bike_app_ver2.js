@@ -3,7 +3,7 @@ import { openCalendarWindow, popupstations, mockSlider, koira, erasemarkersandpo
 var map;
 var regulargooglemarker = []
 var polyline = [];
-var stationdata
+//var stationdata
 var stationskeys = []
 var tripdata
 var stationview = 1
@@ -16,7 +16,7 @@ var pulldownitemToStationID = []
 var coarseSteps=200
 var startdatestring = '2021-06-17'
 var starthour = 12
-var bookmarks = []
+//var bookmarks = []
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
@@ -27,15 +27,17 @@ var helsinki = 'Helsinki'
 
 // station data transformed to json where station id is the key. json is imported and hardcoded into js for speed and importance
 import * as data2 from './stations_HelsinkiEspoo.json'
-stationdata = data2.default
+var stationdata = data2.default
 
 // here we define the layout 
 var placeitems = [['stationvstrip', 10, 2, 30, 9],
     ['stationvstrip2', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
+    ['stat_menu', 10, 30, 70, 70],
     ['menu-time', 10, 30, 15, 70],
-['menutitleb', 25, 24.3, 70, 4],
-['menutitle', 65, 24.3, 20, 4],
+    ['menutitleb', 25, 24.3, 70, 4],
+    ['distance', 62, 23, 6, 6],
+    ['duration', 70, 23, 6, 6],
 ['filterStations', 55, 24.9, 80, 3],
 ['map-container', 10, 30, 70, 70],
 ['innercalendar', 10, 30, 70, 70],
@@ -110,17 +112,12 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['circle', 'downloadboard', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+stacknHide([], 1, ['menu', 'menu-time','circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
 
 
-stacknHide(['menu-time'], 1, [])
-//koira(startdatestring)
 
 
-//
 
-
-//  add listeners to buttons and the like
 
 document.getElementById('stationvstrip').addEventListener("click", stationTripView);
 document.getElementById('stationvstrip2').addEventListener("click", stationTripView2);
@@ -131,7 +128,7 @@ const filterStations = document.getElementById('filterStations')
 
 
 filterStations.addEventListener("input", () => {
-    update2stations(stationdata)
+    update2stations()
 })
 
 
@@ -141,8 +138,10 @@ filterStations.addEventListener("input", () => {
 function changeDate() {
     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     // run when inner calendar date is selected. then fetch data for that date
-    if (departure_dropdown.value != 'All' || return_dropdown.value != 'All') { return }
+    if (departure_dropdown.selectedIndex != 0 || return_dropdown.selectedIndex != 0 != 0) { return }
 
+
+    
 
     if (stationview == 1) { return }
     //var thisdate = document.getElementById("currentdate").innerHTML
@@ -241,6 +240,9 @@ function gettripdata(data) {
 
 
 const menu = document.querySelector("#menu");
+const stat_menu = document.querySelector("#stat_menu");
+ 
+
 
 
 const menuTime = document.getElementById('menu-time');
@@ -404,7 +406,7 @@ const ctx = canvas.getContext("2d");
 
 
 
-update2stations(stationdata)
+update2stations()
 
 window.onload = function () {
 
@@ -461,16 +463,16 @@ function getdata(thisaddress, mode, display) {
 
 
 
-function update2stations(data) {
-    // updates station info
+function update2stations() {
 
-    while (menu.firstChild) {
-        menu.removeChild(menu.firstChild);
+
+
+    while (stat_menu.firstChild) {
+        stat_menu.removeChild(stat_menu.firstChild);
     }
 
     const filterValue = filterStations.value.toLowerCase();
-    //  stationdata = data
-
+    
     let sortedData = Object.entries(stationdata).sort((a, b) => {
         if (a[1][name] > b[1][name]) {
             return 1;
@@ -481,7 +483,7 @@ function update2stations(data) {
 
     stationskeys = sortedData.map(item => item[0]);
     pulldownitemToStationID = popupstations(stationdata, stationskeys, name)
-
+    var columnWidths =[30,30,12,20,10] 
     //stationskeys = []
     let filteredkeys = []
     for (let i = 0; i < stationskeys.length; i++) {
@@ -490,15 +492,34 @@ function update2stations(data) {
             filteredkeys.push(stationskeys[i]) // we need this to make a shorted index list for filtered stations
             const item = document.createElement("div");
             item.classList.add("menu-item");
-            const col = document.createElement("div");
-            col.classList.add(`col`, `col-1`);
-            col.style.width = `100%`;
-            col.style.textAlign = "left";
-            col.textContent = thisname
-            item.appendChild(col);
+            for (let j = 1; j <= 5; j++) {
+                const col = document.createElement("div");
+                col.classList.add(`col`, `col-${i}`);
+              //  col.style.width = `40%`;
+                col.style.width = `${columnWidths[j - 1]}%`;
+                col.style.textAlign = "left";
+                col.style.overflow = "hidden";
+                if (j == 1) { col.textContent = thisname }
+                if (j == 2) { col.textContent = stationdata[stationskeys[i]][address] }
+                if (j == 3) {
+                    if (stationdata[stationskeys[i]][city].length > 1) {
+                        col.textContent = stationdata[stationskeys[i]][city]
+                    }
+                    else { col.textContent = helsinki }
+                }
+                if (j == 4) {
+                    if (stationdata[stationskeys[i]]['Operaattor'].length > 1) {
+                        col.textContent = stationdata[stationskeys[i]]['Operaattor']
+                    }
+                    else { col.textContent += 'Unknown' }
+                  
+                }
+                if (j == 5) { col.textContent = stationdata[stationskeys[i]]['Kapasiteet'] }
+                item.appendChild(col);
+            }
 
             item.addEventListener("click", function () {
-                const items = menu.querySelectorAll(".menu-item");
+                const items = stat_menu.querySelectorAll(".menu-item");
                 for (const it of items) {
                     it.style.backgroundColor = "";
                 }
@@ -513,7 +534,7 @@ function update2stations(data) {
 
             });
 
-            menu.appendChild(item)
+            stat_menu.appendChild(item)
 
         }
 
@@ -553,7 +574,7 @@ function writeinfoboard(stationid, mode, whichtextfield) {
 function stationTripView2() {
     // initializes the screen to trip view operations and fetches the data
     stationview = -1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'menutitle', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'menutitleb', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+    stacknHide(['stationvstrip', 'stationvstrip2', 'distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['filterStations', 'menutitleb', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
     document.getElementById("currentdate").style.cursor = "pointer"
     document.getElementById("currentdate").style.opacity = 1;
 
@@ -568,12 +589,12 @@ function stationTripView2() {
 function stationTripView() {
     // initializes the screen to station view operations
     stationview = 1
-    stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations', 'menutitleb'], 1, ['menutitle', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
+    stacknHide(['stationvstrip', 'stationvstrip2', 'filterStations', 'menutitleb'], 1, ['distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard3', 'closemap', 'stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2', 'map-container'])
     document.getElementById("currentdate").style.cursor = "default"
     document.getElementById("currentdate").style.opacity = 0.4;
     document.getElementById('stationvstrip2').style.backgroundColor = '#ffffff'
     document.getElementById('stationvstrip').style.backgroundColor = '#eeeeee'
-    update2stations(stationdata)
+    update2stations()
 }
 
 
