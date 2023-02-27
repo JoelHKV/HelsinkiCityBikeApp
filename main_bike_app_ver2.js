@@ -542,7 +542,7 @@ function computeStatDir(tempstatdata, tofrom) {
     const averageDist = Math.round(10 * (distArray.reduce((a, b) => a + b, 0) / distArray.length)) / 10;
     const averageTime = Math.round(1 * (timeArray.reduce((a, b) => a + b, 0) / timeArray.length)) / 1;
 
-    return { averageDist, averageTime, nroTrips };
+    return { averageDist, averageTime, nroTrips, stationCount, circularArray };
 }
 
 
@@ -550,15 +550,12 @@ function computeStatDir(tempstatdata, tofrom) {
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     // tofrom is either did or rid for dep or ret station id respectively
 
-    const { averageDist, averageTime, nroTrips } = computeStatDir(tempstatdata, tofrom)
-    //const averageDist = returnarray[0]
-   // const averageTime = returnarray[1]
-   // const nroTrips = returnarray[2]
-    alert(averageDist)
+    const { averageDist, averageTime, nroTrips, stationCount, circularArray } = computeStatDir(tempstatdata, tofrom)
+     
 
     stacknHide(['infoboard3'], 1, [])
-     document.getElementById('infoboard3').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
-    alert(nroTrips)
+    document.getElementById('infoboard3').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
+     
 
     if (isheatmap == 1) {
 
@@ -590,23 +587,27 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 
         }
-        alert('dd')
+        alert('hm')
         addmarker([stationdata[activestationid]["y"], stationdata[activestationid]["x"]], ' ', 1, movingAverage)
         return
     }
 
     if (isheatmap == 0) {
-
+        
         var indices = new Array(1000);
         for (var i = 0; i < 1000; ++i) indices[i] = i;
-        indices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; });
-
+        indices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; });  
         var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
-       
         for (var i = 999; i > 994; i--) {
 
             var other_loc = [stationdata[indices[i]]["y"], stationdata[indices[i]]["x"]]
-           // addPolyline(this_loc, other_loc, 1000 - i, 'markersnocenter', tofrom, indices[i])
+
+            if (tofrom == 'did') { showpolyline(this_loc, other_loc) }
+            if (tofrom == 'rid') { showpolyline(other_loc, this_loc) }
+             
+
+
+            // addPolyline(this_loc, other_loc, 1000 - i, 'markersnocenter', tofrom, indices[i])
 
         }
         
@@ -653,10 +654,24 @@ function showmaptrip(dep_loc, ret_loc) {
         { lat: Math.min(dep_loc[0], ret_loc[0]), lng: Math.min(dep_loc[1], ret_loc[1]) },
     ]);
 
-    
+    showpolyline(dep_loc, ret_loc)
+
+}
+
+
+function showmarkerline(coords, markertext) {
+
+
+
+}
+
+
+
+function showpolyline(dep_loc, ret_loc) {
+    alert('ss')
     var start = { lat: dep_loc[0], lng: dep_loc[1] };
     var end = { lat: ret_loc[0], lng: ret_loc[1] };
-
+    alert('sss')
     var temp = new google.maps.Polyline({
         path: [start, end],
         geodesic: true,
@@ -671,11 +686,6 @@ function showmaptrip(dep_loc, ret_loc) {
     });
 
     polyline.push(temp)
-}
-
-
-function showpolyline(dep_loc, ret_loc) {
-
 
 }
 
