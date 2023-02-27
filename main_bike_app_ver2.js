@@ -1,5 +1,5 @@
 import './style.css'
-import { openCalendarWindow, popupstations, mockSlider, drawCircle, computeStatDir, koira, erasemarkersandpolylines } from './aux_functions.js';
+import { openCalendarWindow, popupstations, mockSlider, drawCircle, computeStatDir, movingaveragecalc, koira, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -39,21 +39,19 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['stat_menu', 10, 30, 70, 70],
     ['menu-time', 10, 30, 15, 70],
     ['stationtitle', 10, 23, 20, 6],
-    ['cleartext', 42, 23, 8, 6],
+    ['cleartext', 42.5, 24.5, 3, 3],
     ['operator', 57, 23, 11, 6],
     ['capacity', 69, 23, 11, 6],
     ['distance', 62, 23, 6, 6],
     ['duration', 70, 23, 6, 6],
-['filterStations', 31.5, 23, 6, 5],
+['filterStations', 31.5, 23, 11, 5],
 ['map-container', 10, 30, 70, 70],
 ['innercalendar', 10, 30, 70, 70],
 ['departure_dropdown', 28, 23, 16, 6],
 ['return_dropdown', 46, 23, 16, 6],
-['infoboard', 10, 16, 40, 10],
-['infoboard3', 51, 16, 30, 10],
-
+['infoboard', 10, 16, -1, 10],
+    ['infoboard3', 51, 16, -1, 10],
 ['currentdate', 12, 12, 11, 17],
-
     ['TopDeparture', 12, 31, 10, 10],
     ['TopReturn', 24, 31, 10, 10],
     ['HeatmapDeparture', 41, 31, 10, 10],
@@ -96,7 +94,14 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
         const element = document.getElementById(placeitems[i][0])
         element.style.left = (containerwidth * placeitems[i][1] / 100 - woff) + 'px'
         element.style.top = containerheight * placeitems[i][2] / 100 + 'px'
-        element.style.width = wfac * (containerwidth * placeitems[i][3] / 100) + 'px'
+        if (placeitems[i][3] > 0) {
+            element.style.width = wfac * (containerwidth * placeitems[i][3] / 100) + 'px'
+        }
+        else {
+            element.style.width = 'width:fit-content;'
+
+            
+        }
         element.style.height = containerheight * placeitems[i][4] / 100 + 'px'
 
 
@@ -149,28 +154,47 @@ document.getElementById('currentdate').addEventListener("click", changeDate);
 const filterStations = document.getElementById('filterStations')
 
 filterStations.addEventListener("input", () => {
+    if (filterStations.value == "") { var xbutton = '' }
+    else { var xbutton = 'X' }
+    document.getElementById('cleartext').innerHTML = xbutton
     showstations()
 })
 
 const cleartext = document.getElementById('cleartext')
 
 cleartext.addEventListener("click", () => {
+    document.getElementById('cleartext').innerHTML = ''
     filterStations.value = "";
     showstations()
 })
 
-document.getElementById('fin').addEventListener("click", () => {
-    name = 'Nimi'; address = 'Osoite'; helsinki = 'Helsinki'
-    updatelanguage('fin')
-})
-document.getElementById('swe').addEventListener("click", () => {
-    name = 'Namn'; address = 'Adress'; helsinki = 'Helsingfors'
-    updatelanguage('swe')
-})
-document.getElementById('eng').addEventListener("click", () => {
-    name = 'Name'; address = 'Osoite'; helsinki = 'Helsinki'
-    updatelanguage('eng')
-})
+
+const languageButtons = document.querySelectorAll('.langselect');
+
+languageButtons.forEach(button => {
+    button.addEventListener('click', event => {
+
+        document.getElementById('fin').style.opacity = 0.4
+        document.getElementById('swe').style.opacity = 0.4
+        document.getElementById('eng').style.opacity = 0.4
+
+        if (event.target.id == 'fin') {
+            name = 'Nimi'; address = 'Osoite'; helsinki = 'Helsinki'
+        }
+        if (event.target.id == 'swe') {
+            name = 'Namn'; address = 'Adress'; helsinki = 'Helsingfors'
+        }
+        if (event.target.id == 'eng') {
+            name = 'Name'; address = 'Osoite'; helsinki = 'Helsinki'
+        }
+
+        document.getElementById(event.target.id).style.opacity = 1
+        showstations()
+    });
+ 
+});
+
+
 
 const statDetailButtons = document.querySelectorAll('.statdetails');
 
@@ -194,14 +218,6 @@ statDetailButtons.forEach(button => {
     });
 });
 
-
-function updatelanguage(thislang) {
-    document.getElementById('fin').style.opacity = 0.4
-    document.getElementById('swe').style.opacity = 0.4
-    document.getElementById('eng').style.opacity = 0.4
-    document.getElementById(thislang).style.opacity = 1
-    showstations()
-}
 
 
 function changeDate() {
@@ -297,7 +313,7 @@ function gettripdata(data) {
 const menu = document.querySelector("#menu");
 const stat_menu = document.querySelector("#stat_menu");
  
-const menuTime = document.getElementById('menu-time');
+const menuTime = document.getElementById("menu-time");
 mockSlider(coarseSteps, menuTime)
 
 
@@ -417,7 +433,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
 function showstations() {
 
-    stacknHide(['filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+    stacknHide(['cleartext', 'filterStations', 'stationtitle', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
 
     while (stat_menu.firstChild) {
         stat_menu.removeChild(stat_menu.firstChild);
@@ -501,7 +517,7 @@ document.querySelector("#closemap").addEventListener("click", function () {
     erasemarkersandpolylines(regulargooglemarker, polyline)
 
     if (stationview == 1) {
-        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn','closemap', 'map-container', 'infoboard'])
+        stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard3'])
     }
     else {
         stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard'])
@@ -510,10 +526,6 @@ document.querySelector("#closemap").addEventListener("click", function () {
 });
 
 
-function movingaveragecalc() {
-
-
-}
 
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     // tofrom is either did or rid for dep or ret station id respectively
@@ -527,34 +539,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
     if (isheatmap == 1) {
 
-        const movingAverageWindow = 10;
-        const movingAverage = [];
-        var MAAverage = 0;
-        for (let i = 0; i < circularArray.length; i++) {
-            let sum = 0;
-            for (let j = i - movingAverageWindow; j <= i + movingAverageWindow; j++) {
-                const index = j >= 0 && j < circularArray.length
-                    ? j
-                    : j < 0
-                        ? j + circularArray.length
-                        : j - circularArray.length;
-                sum += circularArray[index];
-            }
-            var temp = sum / (movingAverageWindow * 2 + 1)
-            MAAverage += temp
-            movingAverage.push(temp);
-        }
-
-
-        MAAverage = MAAverage / movingAverage.length
-
-        for (let i = 0; i < movingAverage.length; i++) {
-            movingAverage[i] = movingAverage[i] * 40 / MAAverage
-            if (movingAverage[i] < 10) { movingAverage[i] = 10 }
-            if (movingAverage[i] > 200) { movingAverage[i] = 200 }
-
-
-        }
+        var movingAverage = movingaveragecalc(circularArray)
         
         var customMarker = drawCircle(movingAverage, canvas, ctx)
 
@@ -585,7 +570,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 function showmap(coords) {
         if (displaymap == 0) { return }
-        stacknHide(['closemap', 'map-container', 'infoboard'], 1, [])
+    stacknHide(['closemap', 'map-container', 'infoboard'], 1, ['stationtitle'])
 
     stacknHide(['HeatmapReturn', 'TopReturn'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
     stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
@@ -655,13 +640,11 @@ function showmarker(coords, labeltext, thisid, type) {
         });
     }
 
-
+    if (thisid > 0) { 
     temp.addListener('click', function () {
-
         writeinfoboard(thisid, 'station', 2)
-
     });
-
+    }
 
     regulargooglemarker.push(temp)
 

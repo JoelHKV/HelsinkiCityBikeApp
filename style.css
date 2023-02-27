@@ -83,7 +83,7 @@
     border-radius: 10px;
 }
 
-#departure_dropdown, #return_dropdown, #distance, #cleartext, #duration, #stationtitle, #operator, #capacity {
+#departure_dropdown, #return_dropdown, #distance, #duration, #stationtitle, #operator, #capacity {
     position: absolute;
     text-align: center;
     font-size: 1.3rem;
@@ -94,12 +94,17 @@
 }
 
 
-
-
-
+#cleartext {
+    position: absolute;
+    text-align: center;
+    font-size: 1.6rem;
+    border: none;
+    background-color: #aaaaaa;
+    cursor: pointer;
+    color: #555555
+}
 #distance, #duration {
     background-color: #ffffff;
-    
 }
 #downloadboard {
     position: absolute;
@@ -112,12 +117,12 @@
 #infoboard, #infoboard3 {
     position: absolute;
     text-align: left;
-    font-size: 1.4rem;
-    padding: 0rem 0rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+    border: 3px solid gray;
+    border-radius: 10px;
     font-weight: bold;
-    opacity: 1;
-    background-color: #eeeeee;
-    
+ 
 }
 
 
@@ -149,6 +154,10 @@ button {
 ::-webkit-scrollbar-thumb:hover {
         background-color: #555;
     }
+
+
+
+
 .menu-item, .menu-date, .menu-time {
     display: flex;
 }
@@ -183,7 +192,9 @@ button {
 
 
 
-#fin, #swe, #eng {
+
+
+.langselect {
     position: absolute;
     cursor: pointer;
 }

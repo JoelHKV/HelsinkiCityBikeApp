@@ -50,6 +50,38 @@ export function drawCircle(radiusList, canvas, ctx) {
 
 }
 
+export function movingaveragecalc(circularArray) {
+    const movingAverageWindow = 10;
+    const movingAverage = [];
+    var MAAverage = 0;
+    for (let i = 0; i < circularArray.length; i++) {
+        let sum = 0;
+        for (let j = i - movingAverageWindow; j <= i + movingAverageWindow; j++) {
+            const index = j >= 0 && j < circularArray.length
+                ? j
+                : j < 0
+                    ? j + circularArray.length
+                    : j - circularArray.length;
+            sum += circularArray[index];
+        }
+        var temp = sum / (movingAverageWindow * 2 + 1)
+        MAAverage += temp
+        movingAverage.push(temp);
+    }
+
+
+    MAAverage = MAAverage / movingAverage.length
+
+    for (let i = 0; i < movingAverage.length; i++) {
+        movingAverage[i] = movingAverage[i] * 40 / MAAverage
+        if (movingAverage[i] < 10) { movingAverage[i] = 10 }
+        if (movingAverage[i] > 200) { movingAverage[i] = 200 }
+
+
+    }
+    return movingAverage
+}
+
 
 export function computeStatDir(tempstatdata, stationdata, activestationid, tofrom) {
     var nroTrips = Object.entries(tempstatdata).length
