@@ -55,9 +55,9 @@ var placeitems = [['stationview', 10, 2, 30, 9],
 ['currentdate', 12, 12, 11, 17],
 
     ['TopDeparture', 12, 31, 10, 10],
-['stationdetailsTo', 24, 31, 10, 10],
+    ['TopReturn', 24, 31, 10, 10],
     ['HeatmapDeparture', 41, 31, 10, 10],
-['stationdetailsTo2', 53, 31, 10, 10],
+    ['HeatmapReturn', 53, 31, 10, 10],
 ['closemap', 70, 31, 10, 10],
 ['backgroundgray', 5, 13, 90, 92],
 ['downloadboard', 10.5, 30.2, 68, 68],
@@ -116,7 +116,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'TopDeparture', 'stationdetailsTo', 'HeatmapDeparture', 'stationdetailsTo2', 'map-container'])
+stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -171,6 +171,29 @@ document.getElementById('eng').addEventListener("click", () => {
     name = 'Name'; address = 'Osoite'; helsinki = 'Helsinki'
     updatelanguage('eng')
 })
+
+const statDetailButtons = document.querySelectorAll('.statdetails');
+
+statDetailButtons.forEach(button => {
+    button.addEventListener('click', event => {
+       // alert(`Button ${event.target.id} was pressed.`);
+        var addr = 'https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?'
+       
+        if (event.target.id == 'TopDeparture') {
+            getdata(addr + 'action=D' + activestationid.toString(), 'rid', 0)
+        }
+        if (event.target.id == 'TopReturn') {
+            getdata(addr + 'action=R' + activestationid.toString(), 'did', 0)
+        }
+        if (event.target.id == 'HeatmapDeparture') {
+            getdata(addr + 'action=D' + activestationid.toString(), 'rid', 1)
+        }
+        if (event.target.id == 'HeatmapReturn') {
+            getdata(addr + 'action=R' + activestationid.toString(), 'did', 1)
+        }
+    });
+});
+
 
 function updatelanguage(thislang) {
     document.getElementById('fin').style.opacity = 0.4
@@ -478,7 +501,7 @@ document.querySelector("#closemap").addEventListener("click", function () {
     erasemarkersandpolylines(regulargooglemarker, polyline)
 
     if (stationview == 1) {
-        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture','stationdetailsTo2', 'stationdetailsTo','closemap', 'map-container', 'infoboard'])
+        stacknHide(['filterStations', 'cleartext', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn','closemap', 'map-container', 'infoboard'])
     }
     else {
         stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard'])
@@ -487,13 +510,117 @@ document.querySelector("#closemap").addEventListener("click", function () {
 });
 
 
+function computeStatDir(tempstatdata, tofrom) {
+    var nroTrips = Object.entries(tempstatdata).length
+    var distArray = []
+    var timeArray = []
+    var stationCount = new Array(1000).fill(0); // init array for station id count
+    var circularArray = new Array(360).fill(0);
+    for (let i = 0; i < nroTrips; i++) {
+        let distnum = parseFloat(tempstatdata[i]["dis"]);
+        if (isFinite(distnum)) { distArray.push(distnum) }
+        let timenum = parseInt(tempstatdata[i]["time"]);
+        if (isFinite(timenum)) { timeArray.push(timenum) }
+        let statnum = parseInt(tempstatdata[i][tofrom]);
+
+
+        if (statnum in stationdata) {
+
+            var xShift = parseFloat(stationdata[statnum]["x"] - stationdata[activestationid]["x"])
+            var yShift = parseFloat(stationdata[activestationid]["y"] - stationdata[statnum]["y"])
+
+            var direction = parseInt(Math.atan2(yShift, xShift) * 180 / Math.PI);
+            if (direction < 0) { direction = 360 + direction; }
+
+
+            circularArray[direction]++
+            stationCount[statnum]++ // increment if dep/ret is founf
+        }
+    }
+
+
+    const averageDist = Math.round(10 * (distArray.reduce((a, b) => a + b, 0) / distArray.length)) / 10;
+    const averageTime = Math.round(1 * (timeArray.reduce((a, b) => a + b, 0) / timeArray.length)) / 1;
+
+    return { averageDist, averageTime, nroTrips };
+}
+
+
+
+function stationDetailMap(tempstatdata, tofrom, isheatmap) {
+    // tofrom is either did or rid for dep or ret station id respectively
+
+    const { averageDist, averageTime, nroTrips } = computeStatDir(tempstatdata, tofrom)
+    //const averageDist = returnarray[0]
+   // const averageTime = returnarray[1]
+   // const nroTrips = returnarray[2]
+    alert(averageDist)
+
+    stacknHide(['infoboard3'], 1, [])
+     document.getElementById('infoboard3').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
+    alert(nroTrips)
+
+    if (isheatmap == 1) {
+
+        const movingAverageWindow = 10;
+        const movingAverage = [];
+        var MAAverage = 0;
+        for (let i = 0; i < circularArray.length; i++) {
+            let sum = 0;
+            for (let j = i - movingAverageWindow; j <= i + movingAverageWindow; j++) {
+                const index = j >= 0 && j < circularArray.length
+                    ? j
+                    : j < 0
+                        ? j + circularArray.length
+                        : j - circularArray.length;
+                sum += circularArray[index];
+            }
+            var temp = sum / (movingAverageWindow * 2 + 1)
+            MAAverage += temp
+            movingAverage.push(temp);
+        }
+
+
+        MAAverage = MAAverage / movingAverage.length
+
+        for (let i = 0; i < movingAverage.length; i++) {
+            movingAverage[i] = movingAverage[i] * 40 / MAAverage
+            if (movingAverage[i] < 10) { movingAverage[i] = 10 }
+            if (movingAverage[i] > 200) { movingAverage[i] = 200 }
+
+
+        }
+        alert('dd')
+        addmarker([stationdata[activestationid]["y"], stationdata[activestationid]["x"]], ' ', 1, movingAverage)
+        return
+    }
+
+    if (isheatmap == 0) {
+
+        var indices = new Array(1000);
+        for (var i = 0; i < 1000; ++i) indices[i] = i;
+        indices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; });
+
+        var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
+       
+        for (var i = 999; i > 994; i--) {
+
+            var other_loc = [stationdata[indices[i]]["y"], stationdata[indices[i]]["x"]]
+           // addPolyline(this_loc, other_loc, 1000 - i, 'markersnocenter', tofrom, indices[i])
+
+        }
+        
+        return
+    }
+}
+
 
 
 function showmap(coords) {
         if (displaymap == 0) { return }
         stacknHide(['closemap', 'map-container', 'infoboard'], 1, [])
 
-        stacknHide(['stationdetailsTo2', 'stationdetailsTo'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
+    stacknHide(['HeatmapReturn', 'TopReturn'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
     stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
         map.setCenter({ lat: coords[0], lng: coords[1] });
 
@@ -526,8 +653,7 @@ function showmaptrip(dep_loc, ret_loc) {
         { lat: Math.min(dep_loc[0], ret_loc[0]), lng: Math.min(dep_loc[1], ret_loc[1]) },
     ]);
 
-   // stacknHide([], 1, ['stationdetailsFrom', 'stationdetailsTo', 'stationdetailsFrom2', 'stationdetailsTo2'])
-
+    
     var start = { lat: dep_loc[0], lng: dep_loc[1] };
     var end = { lat: ret_loc[0], lng: ret_loc[1] };
 
@@ -548,7 +674,10 @@ function showmaptrip(dep_loc, ret_loc) {
 }
 
 
+function showpolyline(dep_loc, ret_loc) {
 
+
+}
 
 
 // selects the area of google maps so that start and end is visible 
