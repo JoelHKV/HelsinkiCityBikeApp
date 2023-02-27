@@ -538,20 +538,60 @@ function computeStatDir(tempstatdata, tofrom) {
         }
     }
 
+    var stationPopularityIndices = new Array(1000);
+    for (var i = 0; i < 1000; ++i) stationPopularityIndices[i] = i;
+    stationPopularityIndices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; }); 
+
+
 
     const averageDist = Math.round(10 * (distArray.reduce((a, b) => a + b, 0) / distArray.length)) / 10;
     const averageTime = Math.round(1 * (timeArray.reduce((a, b) => a + b, 0) / timeArray.length)) / 1;
 
-    return { averageDist, averageTime, nroTrips, stationCount, circularArray };
+    return { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices };
 }
 
+function drawCircle(radiusList) {
+    // this is the draw the heatmap
+
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    canvas.width = canvas.width;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    for (let i = 0; i < 360; i++) {
+        const angle = (i * Math.PI) / 180;
+        const x = centerX + radiusList[i] * Math.cos(angle);
+        const y = centerY + radiusList[i] * Math.sin(angle);
+
+        ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+
+    var gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+    gradient.addColorStop(0, "blue");
+    gradient.addColorStop(0.2, "green");
+    gradient.addColorStop(0.5, "yellow");
+    gradient.addColorStop(1, "red");
+
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    const dataURI = canvas.toDataURL();
+
+    return dataURI
+
+}
 
 
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     // tofrom is either did or rid for dep or ret station id respectively
-
-    const { averageDist, averageTime, nroTrips, stationCount, circularArray } = computeStatDir(tempstatdata, tofrom)
-     
+    erasemarkersandpolylines(regulargooglemarker, polyline)
+    const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, tofrom)
+    var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
 
     stacknHide(['infoboard3'], 1, [])
     document.getElementById('infoboard3').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
@@ -587,28 +627,26 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 
         }
-        alert('hm')
-        addmarker([stationdata[activestationid]["y"], stationdata[activestationid]["x"]], ' ', 1, movingAverage)
+        
+        var customMarker = drawCircle(movingAverage)
+
+        showmarker([this_loc[0], this_loc[1]], customMarker, activestationid, 'custom')
         return
     }
 
     if (isheatmap == 0) {
+         
         
-        var indices = new Array(1000);
-        for (var i = 0; i < 1000; ++i) indices[i] = i;
-        indices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; });  
-        var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
-        for (var i = 999; i > 994; i--) {
+        for (var i = 1; i <= 5; i++) {
 
-            var other_loc = [stationdata[indices[i]]["y"], stationdata[indices[i]]["x"]]
+            var other_loc = [stationdata[stationPopularityIndices[1000 - i]]["y"], stationdata[stationPopularityIndices[1000 - i]]["x"]]
 
-            if (tofrom == 'did') { showpolyline(this_loc, other_loc) }
-            if (tofrom == 'rid') { showpolyline(other_loc, this_loc) }
+            if (tofrom == 'rid') { showpolyline(this_loc, other_loc) }
+            if (tofrom == 'did') { showpolyline(other_loc, this_loc) }
              
+            showmarker([other_loc[0], other_loc[1]], i.toString(), stationPopularityIndices[1000 - i], 'reg')
 
-
-            // addPolyline(this_loc, other_loc, 1000 - i, 'markersnocenter', tofrom, indices[i])
-
+ 
         }
         
         return
@@ -625,11 +663,8 @@ function showmap(coords) {
     stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
         map.setCenter({ lat: coords[0], lng: coords[1] });
 
-        var temp = new google.maps.Marker({
-            position: { lat: coords[0], lng: coords[1] },
-            map: map,
-        });
-        regulargooglemarker.push(temp)
+
+    showmarker(coords, ' ', 0, 'reg')
  
         fitMapToBounds([
             { lat: coords[0] + 0.005, lng: coords[1] + 0.005 },
@@ -644,10 +679,6 @@ function showmaptrip(dep_loc, ret_loc) {
 
     stacknHide(['closemap', 'map-container', 'infoboard'], 1, ['distance', 'duration','currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'])
 
-
-
-
-
     map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
     fitMapToBounds([
         { lat: Math.max(dep_loc[0], ret_loc[0]), lng: Math.max(dep_loc[1], ret_loc[1]) },
@@ -659,19 +690,60 @@ function showmaptrip(dep_loc, ret_loc) {
 }
 
 
-function showmarkerline(coords, markertext) {
+function showmarker(coords, labeltext, thisid, type) {
 
+
+    if (type == 'reg') {
+
+        var temp = new google.maps.Marker({
+            position: { lat: coords[0], lng: coords[1] },
+            map: map,
+
+            label: {
+                text: labeltext,
+                color: 'black',
+                fontSize: "24px",
+                fontWeight: 'bold'
+            },
+
+        });
+    }
+
+    if (type == 'custom') {
+
+        var markerImage = new google.maps.MarkerImage(
+            labeltext,
+
+            new google.maps.Size(2 * heatmapmaxradius, 2 * heatmapmaxradius),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(heatmapmaxradius, heatmapmaxradius)
+        )
+
+        var temp = new google.maps.Marker({
+            position: { lat: coords[0], lng: coords[1] },
+            map: map,
+            icon: markerImage,
+
+        });
+    }
+
+
+    temp.addListener('click', function () {
+
+        writeinfoboard(thisid, 'station', 2)
+
+    });
+
+
+    regulargooglemarker.push(temp)
 
 
 }
 
 
-
 function showpolyline(dep_loc, ret_loc) {
-    alert('ss')
     var start = { lat: dep_loc[0], lng: dep_loc[1] };
     var end = { lat: ret_loc[0], lng: ret_loc[1] };
-    alert('sss')
     var temp = new google.maps.Polyline({
         path: [start, end],
         geodesic: true,
