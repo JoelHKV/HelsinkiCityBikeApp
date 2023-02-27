@@ -14,6 +14,85 @@ export function erasemarkersandpolylines(regulargooglemarker, polyline) {
 
 }
 
+export function drawCircle(radiusList, canvas, ctx) {
+    // this is the draw the heatmap
+
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    canvas.width = canvas.width;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    for (let i = 0; i < 360; i++) {
+        const angle = (i * Math.PI) / 180;
+        const x = centerX + radiusList[i] * Math.cos(angle);
+        const y = centerY + radiusList[i] * Math.sin(angle);
+
+        ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+
+    var gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 200);
+    gradient.addColorStop(0, "blue");
+    gradient.addColorStop(0.2, "green");
+    gradient.addColorStop(0.5, "yellow");
+    gradient.addColorStop(1, "red");
+
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    const dataURI = canvas.toDataURL();
+
+    return dataURI
+
+}
+
+
+export function computeStatDir(tempstatdata, stationdata, activestationid, tofrom) {
+    var nroTrips = Object.entries(tempstatdata).length
+    var distArray = []
+    var timeArray = []
+    var stationCount = new Array(1000).fill(0); // init array for station id count
+    var circularArray = new Array(360).fill(0);
+    for (let i = 0; i < nroTrips; i++) {
+        let distnum = parseFloat(tempstatdata[i]["dis"]);
+        if (isFinite(distnum)) { distArray.push(distnum) }
+        let timenum = parseInt(tempstatdata[i]["time"]);
+        if (isFinite(timenum)) { timeArray.push(timenum) }
+        let statnum = parseInt(tempstatdata[i][tofrom]);
+
+        if (statnum in stationdata) {
+
+            var xShift = parseFloat(stationdata[statnum]["x"] - stationdata[activestationid]["x"])
+            var yShift = parseFloat(stationdata[activestationid]["y"] - stationdata[statnum]["y"])
+
+            var direction = parseInt(Math.atan2(yShift, xShift) * 180 / Math.PI);
+            if (direction < 0) { direction = 360 + direction; }
+
+
+            circularArray[direction]++
+            stationCount[statnum]++ // increment if dep/ret is founf
+        }
+    }
+
+    var stationPopularityIndices = new Array(1000);
+    for (var i = 0; i < 1000; ++i) stationPopularityIndices[i] = i;
+    stationPopularityIndices.sort(function (a, b) { return stationCount[a] < stationCount[b] ? -1 : stationCount[a] > stationCount[b] ? 1 : 0; });
+
+    const averageDist = Math.round(10 * (distArray.reduce((a, b) => a + b, 0) / distArray.length)) / 10;
+    const averageTime = Math.round(1 * (timeArray.reduce((a, b) => a + b, 0) / timeArray.length)) / 1;
+
+    return { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices };
+}
+
+
+
+
+
+
 
 export function mockSlider(coarseSteps, menuTime) {
     menuTime.innerHTML = '';
