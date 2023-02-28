@@ -15,7 +15,7 @@ var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
 var startdatestring = '2021-06-17'
-
+var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
@@ -48,9 +48,10 @@ var placeitems = [['stationview', 10, 2, 30, 9],
 ['map-container', 10, 30, 70, 70],
 ['innercalendar', 10, 30, 70, 70],
 ['departure_dropdown', 28, 23, 16, 6],
-['return_dropdown', 46, 23, 16, 6],
+    ['return_dropdown', 46, 23, 16, 6],
+    ['infoboard-container', 10, 16, 70, 10],
     ['infoboard', 10, 16, -1, 10],
-    ['infoboard2', 37, 16, -1, 10],
+ //   ['infoboard2', 37, 16, -1, 10],
     ['infoboard3', -20, 16, -1, 10],
 ['currentdate', 12, 12, 11, 17],
     ['TopDeparture', 12, 31, 10, 10],
@@ -136,6 +137,7 @@ let return_dropdown = document.getElementById("return_dropdown");
 
 departure_dropdown.onchange = onSelectChange;
 return_dropdown.onchange = onSelectChange;
+
 
 
 document.getElementById('tripview').addEventListener("click", () => {
@@ -505,7 +507,9 @@ function showstations() {
                 var thisitemnro = Array.from(items).indexOf(this)
 
                 writeinfoboard(filteredkeys[thisitemnro], 'station')
-                writeinfoboard(filteredkeys[thisitemnro], 'station', 2)
+                stacknHide(['infoboard2'], 1, [])
+                document.getElementById("infoboard2").innerHTML = 'Capacity:<BR>' + stationdata[filteredkeys[thisitemnro]]['Kapasiteet'] + ' bikes'
+                //writeinfoboard(stationdata[filteredkeys[thisitemnro]]['Kapasiteet'], 'bikes', 1)
 
                 var coords = [stationdata[filteredkeys[thisitemnro]]["y"], stationdata[filteredkeys[thisitemnro]]["x"]]
                 activestationid = filteredkeys[thisitemnro]
@@ -527,8 +531,11 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
     erasemarkersandpolylines(regulargooglemarker, polyline)
 
+    document.getElementById('arr1').innerHTML = ''
+    document.getElementById('arr2').innerHTML = ''
+
     if (stationview == 1) {
-        stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard3'])
+        stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
     }
     else {
         stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
@@ -544,14 +551,17 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, stationdata, activestationid, tofrom)
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
 
-    stacknHide(['infoboard2'], 1, [])
-    document.getElementById('infoboard2').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
-
+    
+    var arrowtext = '&nbsp&#8594&nbsp'
+    if (tofrom == 'did') { arrowtext = '&nbsp&#8592&nbsp' }
+    document.getElementById('arr1').innerHTML = arrowtext
+    document.getElementById('arr2').innerHTML = arrowtext
   
     if (isheatmap == 1) {
+        stacknHide(['infoboard2'], 1, ['infoboard3'])
+        document.getElementById('infoboard2').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
 
-        var movingAverage = movingaveragecalc(circularArray)
-        
+        var movingAverage = movingaveragecalc(circularArray)     
         var customMarker = drawCircle(movingAverage, canvas, ctx)
 
         showmarker([this_loc[0], this_loc[1]], customMarker, activestationid, 'custom')
@@ -559,8 +569,8 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     }
 
     if (isheatmap == 0) {
-        stacknHide(['infoboard2'], 1, [])
-        document.getElementById('infoboard2').innerHTML = 'Click markers<BR>for info.'
+        stacknHide(['infoboard3'], 1, ['infoboard2'])
+        document.getElementById('infoboard3').innerHTML = 'Click markers<BR>for route info.'
 
 
         
@@ -587,11 +597,13 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
                     ccounter++
             }
             }
-            distval = distval / ccounter;
-            timeval = timeval / ccounter;
-            alert(ccounter + '  ' + distval + '  ' + timeval)
+           // distval = distval / ccounter;
+          //  timeval = timeval / ccounter;
+          //  alert(ccounter + '  ' + distval + '  ' + timeval)
 
-
+            toptripstats[0][i - 1] = ccounter
+            toptripstats[1][i - 1] = Math.round(10 * distval / ccounter)/10
+            toptripstats[2][i - 1] = Math.round(10 * timeval / ccounter) / 10
 
             if (tofrom == 'rid') { showpolyline(this_loc, other_loc) }
             if (tofrom == 'did') { showpolyline(other_loc, this_loc) }
@@ -609,7 +621,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 function showmap(coords) {
         if (displaymap == 0) { return }
-    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard3'], 1, ['stationtitle'])
+    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2'], 1, ['stationtitle'])
 
     stacknHide(['HeatmapReturn', 'TopReturn'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
     stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
@@ -682,6 +694,10 @@ function showmarker(coords, labeltext, thisid, type) {
     if (thisid > 0) { 
     temp.addListener('click', function () {
         writeinfoboard(thisid, 'station', 2)
+
+        stacknHide(['infoboard2'], 1, [])
+        document.getElementById('infoboard2').innerHTML = 'Trips: ' + toptripstats[0][Number(labeltext) - 1] + '<BR>Avg dist: ' + toptripstats[1][Number(labeltext) - 1] + ' km<BR>Avg time: ' + toptripstats[2][Number(labeltext) - 1] + ' min'
+
     });
     }
 
@@ -811,10 +827,14 @@ function getdata(thisaddress, mode, display) {
 function writeinfoboard(stationid, mode, whichtextfield) {
     // writes specific station info
     if (mode == 'trip') {
-        let temphtml = 'Dist: '
-        temphtml += stationid["dis"] + ' km Time: ' + stationid["time"] + ' min'
+        let temphtml = stationid["Departure"] + '<BR>Dist: '
+        temphtml += stationid["dis"] + ' km<BR>Time: ' + stationid["time"] + ' min'
         document.getElementById("infoboard2").innerHTML = temphtml
     }
+
+
+
+
 
     if (mode == 'station') {
 
