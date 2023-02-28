@@ -114,7 +114,7 @@
     text-align: center;
 }
 
-#infoboard, #infoboard3 {
+#infoboard, #infoboard2, #infoboard3 {
     position: absolute;
     text-align: left;
     font-size: 1.3rem;
@@ -122,13 +122,15 @@
     border: 3px solid gray;
     border-radius: 10px;
     font-weight: bold;
- 
 }
 
+    #infoboard2 {
 
-button {
-    transition: all 0.3s ease;
-}
+    }
+
+    button {
+        transition: all 0.3s ease;
+    }
 
     button:active {
         transform: scale(0.95);

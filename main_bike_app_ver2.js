@@ -49,8 +49,9 @@ var placeitems = [['stationview', 10, 2, 30, 9],
 ['innercalendar', 10, 30, 70, 70],
 ['departure_dropdown', 28, 23, 16, 6],
 ['return_dropdown', 46, 23, 16, 6],
-['infoboard', 10, 16, -1, 10],
-    ['infoboard3', 51, 16, -1, 10],
+    ['infoboard', 10, 16, -1, 10],
+    ['infoboard2', 37, 16, -1, 10],
+    ['infoboard3', -20, 16, -1, 10],
 ['currentdate', 12, 12, 11, 17],
     ['TopDeparture', 12, 31, 10, 10],
     ['TopReturn', 24, 31, 10, 10],
@@ -92,7 +93,13 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
     for (let i = 0; i < placeitems.length; i++) {
 
         const element = document.getElementById(placeitems[i][0])
-        element.style.left = (containerwidth * placeitems[i][1] / 100 - woff) + 'px'
+        if (placeitems[i][1] > 0) {
+            element.style.left = (containerwidth * placeitems[i][1] / 100 - woff) + 'px'
+        }
+        if (placeitems[i][1] < 0) {
+            element.style.right = (-containerwidth * placeitems[i][1] / 100 - woff) + 'px'
+        }
+
         element.style.top = containerheight * placeitems[i][2] / 100 + 'px'
         if (placeitems[i][3] > 0) {
             element.style.width = wfac * (containerwidth * placeitems[i][3] / 100) + 'px'
@@ -121,7 +128,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
+stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -410,8 +417,11 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
 
                 activestationid = triptempdata[thisitemnro]
- 
-                writeinfoboard(activestationid, 'trip')           
+                writeinfoboard(triptempdata[thisitemnro]["did"], 'station', 0)
+                writeinfoboard(triptempdata[thisitemnro]["rid"], 'station', 2)
+
+                writeinfoboard(triptempdata[thisitemnro], 'trip', 0)
+              //  writeinfoboard(activestationid, 'trip')           
                 showmaptrip(dep_loc, ret_loc)
 
             });
@@ -495,6 +505,7 @@ function showstations() {
                 var thisitemnro = Array.from(items).indexOf(this)
 
                 writeinfoboard(filteredkeys[thisitemnro], 'station')
+                writeinfoboard(filteredkeys[thisitemnro], 'station', 2)
 
                 var coords = [stationdata[filteredkeys[thisitemnro]]["y"], stationdata[filteredkeys[thisitemnro]]["x"]]
                 activestationid = filteredkeys[thisitemnro]
@@ -520,7 +531,7 @@ document.querySelector("#closemap").addEventListener("click", function () {
         stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard3'])
     }
     else {
-        stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard'])
+        stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
     }
 
 });
@@ -533,10 +544,10 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, stationdata, activestationid, tofrom)
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
 
-    stacknHide(['infoboard3'], 1, [])
-    document.getElementById('infoboard3').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
-     
+    stacknHide(['infoboard2'], 1, [])
+    document.getElementById('infoboard2').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
 
+  
     if (isheatmap == 1) {
 
         var movingAverage = movingaveragecalc(circularArray)
@@ -548,11 +559,39 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     }
 
     if (isheatmap == 0) {
-         
+        stacknHide(['infoboard2'], 1, [])
+        document.getElementById('infoboard2').innerHTML = 'Click markers<BR>for info.'
+
+
         
         for (var i = 1; i <= 5; i++) {
 
             var other_loc = [stationdata[stationPopularityIndices[1000 - i]]["y"], stationdata[stationPopularityIndices[1000 - i]]["x"]]
+
+            //stationPopularityIndices[1000 - i]
+            //
+            //alert(stationPopularityIndices[1000 - i])
+
+            var nro2Trips = Object.entries(tempstatdata).length
+            var distval = 0
+            var timeval = 0
+            var ccounter = 0
+
+            if (tofrom == 'did') { var spot1 = 'rid'; var spot2 = 'did' }
+            if (tofrom == 'rid') { var spot1 = 'did'; var spot2 = 'rid' }
+
+            for (let j = 0; j < nro2Trips; j++) {
+                if (tempstatdata[i][spot1] == activestationid && tempstatdata[j][spot2] == stationPopularityIndices[1000 - i]) { 
+                    distval += Number(tempstatdata[i]["dis"])
+                    timeval += Number(tempstatdata[i]["time"])
+                    ccounter++
+            }
+            }
+            distval = distval / ccounter;
+            timeval = timeval / ccounter;
+            alert(ccounter + '  ' + distval + '  ' + timeval)
+
+
 
             if (tofrom == 'rid') { showpolyline(this_loc, other_loc) }
             if (tofrom == 'did') { showpolyline(other_loc, this_loc) }
@@ -570,7 +609,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 function showmap(coords) {
         if (displaymap == 0) { return }
-    stacknHide(['closemap', 'map-container', 'infoboard'], 1, ['stationtitle'])
+    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard3'], 1, ['stationtitle'])
 
     stacknHide(['HeatmapReturn', 'TopReturn'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
     stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
@@ -590,7 +629,7 @@ function showmaptrip(dep_loc, ret_loc) {
     if (displaymap == 0) { return }
 
 
-    stacknHide(['closemap', 'map-container', 'infoboard'], 1, ['distance', 'duration','currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'])
+    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'], 1, ['distance', 'duration','currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'])
 
     map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
     fitMapToBounds([
@@ -772,10 +811,9 @@ function getdata(thisaddress, mode, display) {
 function writeinfoboard(stationid, mode, whichtextfield) {
     // writes specific station info
     if (mode == 'trip') {
-        let temphtml = 'From: ' + stationdata[stationid["did"]][name] + '<BR>To: '
-        temphtml += stationdata[stationid["rid"]][name] + '<BR>Dist: '
+        let temphtml = 'Dist: '
         temphtml += stationid["dis"] + ' km Time: ' + stationid["time"] + ' min'
-        document.getElementById("infoboard").innerHTML = temphtml
+        document.getElementById("infoboard2").innerHTML = temphtml
     }
 
     if (mode == 'station') {
@@ -789,8 +827,10 @@ function writeinfoboard(stationid, mode, whichtextfield) {
         else {
             temphtml += helsinki
         }
-        if (whichtextfield == 2) { document.getElementById("infoboard3").innerHTML = temphtml }
-        else { document.getElementById("infoboard").innerHTML = temphtml }
+        var whichboard ='infoboard'
+        if (whichtextfield == 2) { whichboard += '3' }
+        document.getElementById(whichboard).innerHTML = temphtml
+        
 
     }
 
