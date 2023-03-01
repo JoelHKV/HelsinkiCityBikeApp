@@ -3,22 +3,21 @@ import { openCalendarWindow, popupstations, mockSlider, drawCircle, computeStatD
 var map;
 var regulargooglemarker = []
 var polyline = [];
-//var stationdata
 var stationskeys = []
 var tripdata
 var stationview = 1
-var pagerange
 var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 1
+var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
 var startdatestring = '2021-06-17'
 var arrowdirection  = 0
 var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
@@ -40,33 +39,32 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['tripview', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
     ['stat_menu', 10, 30, 70, 70],
-    ['menu-time', 10, 30, 15, 70],
+    ['menu-time', 10, 30, 13.5, 70],
     ['stationtitle', 10, 23, 20, 6],
     ['cleartext', 42.5, 24.5, 3, 3],
     ['operator', 57, 23, 11, 6],
     ['capacity', 69, 23, 11, 6],
-    ['distance', 62, 23, 6, 6],
-    ['duration', 70, 23, 6, 6],
-['filterStations', 31.5, 23, 11, 5],
-['map-container', 10, 30, 70, 70],
-['innercalendar', 10, 30, 70, 70],
-['departure_dropdown', 28, 23, 16, 6],
-    ['return_dropdown', 46, 23, 16, 6],
+    ['distance', 62.7, 23, 6, 6],
+    ['duration', 70.5, 23, 6, 6],
+    ['filterStations', 31.5, 23, 11, 5],
+    ['map-container', 10, 30, 70, 70],
+    ['innercalendar', 10, 30, 70, 70],
+    ['departure_dropdown', 25, 23, 16, 6],
+    ['return_dropdown', 43, 23, 16, 6],
     ['infoboard-container', 10, 16, 70, 10],
     ['infoboard', 10, 16, -1, 10],
- //   ['infoboard2', 37, 16, -1, 10],
     ['infoboard3', -20, 16, -1, 10],
-['currentdate', 12, 12, 11, 17],
+    ['currentdate', 10, 23, 13, 6],
     ['TopDeparture', 12, 31, 10, 10],
     ['TopReturn', 24, 31, 10, 10],
     ['HeatmapDeparture', 41, 31, 10, 10],
     ['HeatmapReturn', 53, 31, 10, 10],
-['closemap', 70, 31, 10, 10],
-['backgroundgray', 5, 13, 90, 92],
-['downloadboard', 10.5, 30.2, 68, 68],
-    ['fin', 77, 1, 3.4, 3.7],
-    ['swe', 77, 5, 3.4, 3.7],
-    ['eng', 77, 9, 3.4, 3.7]]
+    ['closemap', 70, 31, 10, 10],
+    ['backgroundgray', 5, 13, 82, 94],
+    ['downloadboard', 10.5, 30.2, 68, 70],
+    ['fin', 69, 102, 3.4, 3.7],
+    ['swe', 73, 102, 3.4, 3.7],
+    ['eng', 77, 102, 3.4, 3.7]]
 
 
 
@@ -314,7 +312,7 @@ function changeDate() {
             var dates = param.split('.')
             startdatestring = dates[2].toString() + '-' + dates[1].toString().padStart(2, '0') + '-' + dates[0].toString().padStart(2, '0')
 
-            document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[0].toString() + '<BR>' + dates[2].toString()
+            document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[0].toString() + ' ' + dates[2].toString()
 
            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
             setTimeout(() => {
@@ -424,8 +422,6 @@ menuTime.addEventListener('scroll', () => {
 });
 
 
-
-
 function showtripdata(triptempdata, startindex, endindex, setslider) {
     // displays part of trip data and appropriate endings for browsing
     while (menu.firstChild) {
@@ -433,27 +429,19 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     }
 
     var nroitems = Object.entries(triptempdata).length
-
     
-    if (startindex == 0) {
-        additemtopulldown('Previous Day', -1)
-    }
-
+ 
     if (nroitems == 0) {
         additemtopulldown('No trips', 2)
         return
     }
-
-    var startoffset = 0
-    if (return_dropdown.selectedIndex == 0 && departure_dropdown.selectedIndex == 0) {
-        var startoffset = 1
+    var startoffset = 1
+    if (startindex == 0 && return_dropdown.selectedIndex == 0 && departure_dropdown.selectedIndex == 0) {
+        startoffset -= 1
+        additemtopulldown('Previous Day', -1)
     }
     
-
-    const columnWidths = [25, 25, 25, 10, 10];
-
-
- 
+    const columnWidths = [21, 26, 29, 10, 10];
 
     for (let i = startindex; i < endindex; i++) {
 
@@ -492,7 +480,6 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                 
                 var dep_loc = [stationdata[triptempdata[thisitemnro]["did"]]["y"], stationdata[triptempdata[thisitemnro]["did"]]["x"]]
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
-
 
                 activestationid = triptempdata[thisitemnro]
                 writeinfoboard(triptempdata[thisitemnro]["did"], 'station', 0)
@@ -614,7 +601,12 @@ document.querySelector("#closemap").addEventListener("click", function () {
         stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
     }
     else {
-        stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+        stacknHide(['distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+        if (departure_dropdown.selectedIndex == 0 && return_dropdown.selectedIndex == 0) {
+            stacknHide(['currentdate', 'menu-time'],1,[])
+        }
+             
+
     }
 
 });
@@ -968,7 +960,7 @@ function additemtopulldown(text, mode) {
         item.addEventListener("click", function () {              
         startdatestring = incrementOrDecrementDate(startdatestring, mode)
         const dates = startdatestring.split("-").map(Number);
-        document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + '<BR>' + dates[0].toString() 
+        document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + ' ' + dates[0].toString() 
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)     
         });
     }
@@ -977,6 +969,13 @@ function additemtopulldown(text, mode) {
 }
 
 function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract) {
+
+    var edgedate = daterange[0][0].toString() + '-' + daterange[0][1].toString().padStart(2, '0') + '-' + daterange[0][2].toString().padStart(2, '0')
+    if (startdatestring == edgedate) { daysToAddOrSubtract = 0 }
+
+    var edgedate = daterange[1][0].toString() + '-' + daterange[1][1].toString().padStart(2, '0') + '-' + daterange[1][2].toString().padStart(2, '0')
+    if (startdatestring == edgedate) { daysToAddOrSubtract = 0 }
+
     var date = new Date(startdatestring);
     date.setDate(date.getDate() + daysToAddOrSubtract);
     var year = date.getFullYear();
