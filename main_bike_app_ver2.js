@@ -9,12 +9,15 @@ var tripdata
 var stationview = 1
 var pagerange
 var activestationid = 501
+var inforboardid = [0, 0]
+
 var heatmapmaxradius = 200
 var displaymap = 1
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
 var startdatestring = '2021-06-17'
+var arrowdirection  = 0
 var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 var name = 'Nimi'
 var address = 'Osoite'
@@ -141,22 +144,82 @@ return_dropdown.onchange = onSelectChange;
 
 
 document.getElementById('tripview').addEventListener("click", () => {
+    if (stationview == -1) { return }
+   
+    var startstatid = pulldownitemToStationID.indexOf(inforboardid[0])
+    var startstatid2 = pulldownitemToStationID.indexOf(inforboardid[1])
+
+    if (startstatid > -1 && startstatid2 == -1 && arrowdirection == 1) {
+        departure_dropdown.selectedIndex = startstatid + 1
+        return_dropdown.selectedIndex = 0
+    }
+    if (startstatid > -1 && startstatid2 == -1 && arrowdirection == -1) {
+        return_dropdown.selectedIndex = startstatid + 1
+        departure_dropdown.selectedIndex = 0
+    }
+
+    if (startstatid > -1 && startstatid2 > -1 && arrowdirection == 1) {
+        departure_dropdown.selectedIndex = startstatid + 1
+        return_dropdown.selectedIndex = startstatid2 + 1
+    }
+    if (startstatid > -1 && startstatid2 > -1 && arrowdirection == -1) {
+        return_dropdown.selectedIndex = startstatid + 1
+        departure_dropdown.selectedIndex = startstatid2 + 1
+    }
+
+    document.getElementById('arr1').innerHTML = ''
+    document.getElementById('arr2').innerHTML = ''
+    stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn','closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
 
     stationview = -1
     document.getElementById('stationview').style.backgroundColor = '#ffffff'
     document.getElementById('tripview').style.backgroundColor = '#eeeeee'
-    getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
+    onSelectChange()
 
 })
 
 
 document.getElementById('stationview').addEventListener("click", () => {
+    if (stationview == 1) { return }
+    document.getElementById('arr1').innerHTML = ''
+    document.getElementById('arr2').innerHTML = ''
+    stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
     document.getElementById('stationview').style.backgroundColor = '#eeeeee'
     showstations()
 })
 
+
+
+document.getElementById('infoboard').addEventListener("click", () => {
+    newbasestation(inforboardid[0])
+})
+
+document.getElementById('infoboard3').addEventListener("click", () => {
+    newbasestation(inforboardid[1])
+})
+
+function newbasestation(newstation) {
+    stationview = 1
+    document.getElementById('tripview').style.backgroundColor = '#ffffff'
+    document.getElementById('stationview').style.backgroundColor = '#eeeeee'
+        activestationid = newstation
+        erasemarkersandpolylines(regulargooglemarker, polyline)
+        document.getElementById('arr1').innerHTML = ''
+        document.getElementById('arr2').innerHTML = ''
+        stacknHide(['infoboard2'], 1, ['infoboard3'])
+        writeinfoboard(activestationid, 'station')
+        document.getElementById("infoboard2").innerHTML = 'Capacity:<BR>' + stationdata[activestationid]['Kapasiteet'] + ' bikes'
+
+        var coords = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
+        
+        showmap(coords)
+
+
+    
+}
 
 document.getElementById('currentdate').addEventListener("click", changeDate);
 
@@ -381,6 +444,12 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
         return
     }
 
+    var startoffset = 0
+    if (return_dropdown.selectedIndex == 0 && departure_dropdown.selectedIndex == 0) {
+        var startoffset = 1
+    }
+    
+
     const columnWidths = [25, 25, 25, 10, 10];
 
 
@@ -398,7 +467,14 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                 col.style.width = `${columnWidths[j - 1]}%`;
                 col.style.textAlign = "left";
                 col.style.overflow = "hidden";
-                if (j == 1) { col.textContent = triptempdata[i]["Departure"].substring(8, 10) + '.' + triptempdata[i]["Departure"].substring(5, 7) + ' ' + triptempdata[i]["Departure"].substring(11, 16) };
+                //if (j == 1) { col.textContent = triptempdata[i]["Departure"].substring(8, 10) + '.' + triptempdata[i]["Departure"].substring(5, 7) + ' ' + triptempdata[i]["Departure"].substring(11, 16) };
+                if (j == 1) {
+                    //alert(months(1))
+                    col.innerHTML = '&nbsp' + months[Number(triptempdata[i]["Departure"].substring(5, 7))-1]
+                    col.innerHTML += '&nbsp' +  triptempdata[i]["Departure"].substring(8, 10)
+                    col.innerHTML += '&nbsp&nbsp' + triptempdata[i]["Departure"].substring(11, 16)
+                };
+
                 if (j == 2) { col.textContent = stationdata[triptempdata[i]["did"]][name] };
                 if (j == 3) { col.textContent = stationdata[triptempdata[i]["rid"]][name] };
                 if (j == 4) { col.textContent = triptempdata[i]["dis"] };
@@ -412,7 +488,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                     it.style.backgroundColor = "";
                 }
                 this.style.backgroundColor = "gray";
-                var thisitemnro = startindex + 1 + Array.from(items).indexOf(this) - 1
+                var thisitemnro = startindex + startoffset + Array.from(items).indexOf(this) - 1
                 
                 var dep_loc = [stationdata[triptempdata[thisitemnro]["did"]]["y"], stationdata[triptempdata[thisitemnro]["did"]]["x"]]
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
@@ -444,7 +520,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
 
 function showstations() {
-
+    arrowdirection = 0
     stacknHide(['cleartext', 'filterStations', 'stationtitle', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
 
     while (stat_menu.firstChild) {
@@ -547,13 +623,17 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     // tofrom is either did or rid for dep or ret station id respectively
+    inforboardid[1] = ''
+
+
     erasemarkersandpolylines(regulargooglemarker, polyline)
     const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, stationdata, activestationid, tofrom)
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
 
     
     var arrowtext = '&nbsp&#8594&nbsp'
-    if (tofrom == 'did') { arrowtext = '&nbsp&#8592&nbsp' }
+    arrowdirection = 1
+    if (tofrom == 'did') { arrowtext = '&nbsp&#8592&nbsp'; arrowdirection = -1 }
     document.getElementById('arr1').innerHTML = arrowtext
     document.getElementById('arr2').innerHTML = arrowtext
   
@@ -578,10 +658,6 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
             var other_loc = [stationdata[stationPopularityIndices[1000 - i]]["y"], stationdata[stationPopularityIndices[1000 - i]]["x"]]
 
-            //stationPopularityIndices[1000 - i]
-            //
-            //alert(stationPopularityIndices[1000 - i])
-
             var nro2Trips = Object.entries(tempstatdata).length
             var distval = 0
             var timeval = 0
@@ -597,10 +673,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
                     ccounter++
             }
             }
-           // distval = distval / ccounter;
-          //  timeval = timeval / ccounter;
-          //  alert(ccounter + '  ' + distval + '  ' + timeval)
-
+ 
             toptripstats[0][i - 1] = ccounter
             toptripstats[1][i - 1] = Math.round(10 * distval / ccounter)/10
             toptripstats[2][i - 1] = Math.round(10 * timeval / ccounter) / 10
@@ -610,7 +683,6 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
              
             showmarker([other_loc[0], other_loc[1]], i.toString(), stationPopularityIndices[1000 - i], 'reg')
 
- 
         }
         
         return
@@ -750,18 +822,19 @@ function onSelectChange() {
 
 
     if (stationdid == 0 && stationrid == 0) {
-    
+        stacknHide(['currentdate'], 1, [])
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
-
         return
     }
     if (stationdid > 0) {
-        document.getElementById("currentdate").style.opacity = 0.4;
+        stacknHide([], 1, ['currentdate'])
+       // document.getElementById("currentdate").style.opacity = 0.4;
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=D' + stationdid.toString(), 3)
         return
     }
     if (stationdid == 0) {
-        document.getElementById("currentdate").style.opacity = 0.4;
+        stacknHide([], 1, ['currentdate'])
+      //  document.getElementById("currentdate").style.opacity = 0.4;
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=R' + stationrid.toString(), 3)
         return
     }
@@ -827,8 +900,16 @@ function getdata(thisaddress, mode, display) {
 function writeinfoboard(stationid, mode, whichtextfield) {
     // writes specific station info
     if (mode == 'trip') {
-        let temphtml = stationid["Departure"] + '<BR>Dist: '
-        temphtml += stationid["dis"] + ' km<BR>Time: ' + stationid["time"] + ' min'
+
+        document.getElementById('arr1').innerHTML = '&#8594'
+        document.getElementById('arr2').innerHTML = '&#8594'
+
+
+        let temphtml = months[Number(stationid["Departure"].substring(5, 7)) - 1]
+        temphtml += '&nbsp' + stationid["Departure"].substring(8, 10)
+        temphtml += '&nbsp' + stationid["Departure"].substring(11, 16)
+        temphtml += '<BR>Dist: '
+        temphtml += stationid["dis"] + ' km<BR>Length: ' + stationid["time"] + ' min'
         document.getElementById("infoboard2").innerHTML = temphtml
     }
 
@@ -847,9 +928,16 @@ function writeinfoboard(stationid, mode, whichtextfield) {
         else {
             temphtml += helsinki
         }
-        var whichboard ='infoboard'
-        if (whichtextfield == 2) { whichboard += '3' }
-        document.getElementById(whichboard).innerHTML = temphtml
+        
+        
+        if (whichtextfield == 2) { 
+            inforboardid[1] = stationid.toString()
+            document.getElementById('infoboard3').innerHTML = temphtml
+        }
+        else {
+            inforboardid[0] = stationid.toString()
+            document.getElementById('infoboard').innerHTML = temphtml
+        }
         
 
     }

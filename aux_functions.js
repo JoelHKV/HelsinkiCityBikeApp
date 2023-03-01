@@ -144,7 +144,7 @@ export function popupstations(stationdata, tempkeys, name) {
    // alert(pulldownitemToStationID)
     departure_dropdown.options.length = 0;
     return_dropdown.options.length = 0;
-    var pulldownitemToStationID = {}
+    var pulldownitemToStationID = []
     for (let i = -1; i < tempkeys.length; i++) {
         let option = document.createElement("option");
         if (i > -1) {
