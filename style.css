@@ -232,14 +232,14 @@
 
 
 #fin {
-    background-image: url('fi.svg');
+    background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/fi.svg');
 }
 #swe {
-    background-image: url('se.svg');
+    background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/se.svg');
     opacity: 0.4;
 }
 #eng {
-    background-image: url('gb.svg');
+    background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/gb.svg');
     opacity: 0.4;
 }
 

@@ -10,7 +10,7 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 0
+var displaymap = 1
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
@@ -108,11 +108,9 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
         }
         else {
             element.style.width = 'width:fit-content;'
-
-            
+           
         }
         element.style.height = containerheight * placeitems[i][4] / 100 + 'px'
-
 
     }
 
