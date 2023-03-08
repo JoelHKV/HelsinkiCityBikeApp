@@ -68,15 +68,17 @@ var placeitems = [['stationview', 10, 2, 30, 9],
 
 
 
-fixitemsize(placeitems, 0.9, 1, 1)
+fixitemsize(placeitems, 0.9, 1, 1.0)
 
+let timeoutId;
 
-
-// adjust layout after window resize
+// adjust layout after window resize, uses debouncing
 window.onresize = function () {
- 
-        fixitemsize(placeitems, 0.9, 1, 1)
- 
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(function () {
+        fixitemsize(placeitems, 0.9, 1, 1.0)
+    }, 250);
+
 };
 
 
@@ -90,16 +92,29 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
     var containerwidth = parseInt(window.getComputedStyle(containerelement).width)
     var containerheight = parseInt(window.getComputedStyle(containerelement).height)
 
+   
+    var minx = 100
+    var maxx = 0
+    for (let i = 0; i < placeitems.length; i++) {
+        minx = Math.min(minx, Math.abs(placeitems[i][1]))
+        maxx = Math.max(maxx, Math.abs(placeitems[i][1]) + Math.abs(placeitems[i][3]))
+    }
+    var xoff = -(minx + maxx - 100) / 2
+
+    if (containerwidth < 600) {    
+        xoff = xoff - (600-containerwidth)/12
+        containerwidth = 600
+    }
 
 
     for (let i = 0; i < placeitems.length; i++) {
 
         const element = document.getElementById(placeitems[i][0])
         if (placeitems[i][1] > 0) {
-            element.style.left = (containerwidth * placeitems[i][1] / 100 - woff) + 'px'
+            element.style.left = (containerwidth * (xoff+placeitems[i][1]) / 100) + 'px'
         }
         if (placeitems[i][1] < 0) {
-            element.style.right = (-containerwidth * placeitems[i][1] / 100 - woff) + 'px'
+            element.style.right = (-containerwidth * (xoff+ placeitems[i][1]) / 100) + 'px'
         }
 
         element.style.top = containerheight * placeitems[i][2] / 100 + 'px'

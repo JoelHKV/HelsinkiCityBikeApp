@@ -23,17 +23,13 @@
     border-radius: 30px;
 }
 
-#tripview {
-    background-color: #ffffff;
-}
+
+
 
 
 #menu, #stat_menu, #menu-time {
     overflow-y: scroll;
     border: 1px solid gray;
-}
-
-#menu, #stat_menu, #menu-time, #menutitle, #menutitleb {
     position: absolute;
     background-color: white;
     border: 3px solid gray;
@@ -44,14 +40,6 @@
 
 #menu-time {
     background-color: transparent
-}
-
-
-#menutitle, #menutitleb {
-    font-weight: bold;
-    display: flex;
-    font-size: 1.4rem;
-    overflow: hidden;
 }
 
 
@@ -99,9 +87,14 @@
         background-color: #ffffff;
     }
 
-#currentdate {
+
+#currentdate, #tripview {
     background-color: #ffffff;
 }
+
+
+
+
 #cleartext {
     position: absolute;
     text-align: center;
