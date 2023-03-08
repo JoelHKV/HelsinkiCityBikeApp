@@ -389,7 +389,7 @@ menu.addEventListener('scroll', () => {
 
     if (menu.scrollTop === 0) {
         const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
-        const scrollAmount = scrollHeight / coarseSteps;
+        const scrollAmount = scrollHeight / coarseSteps / 2;
         menuTime.scrollTop -= scrollAmount;
 
     }
@@ -397,7 +397,7 @@ menu.addEventListener('scroll', () => {
 
     if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight)) {
         const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
-        const scrollAmount = scrollHeight / coarseSteps;
+        const scrollAmount = scrollHeight / coarseSteps / 2;
         menuTime.scrollTop += scrollAmount;
     }
 
@@ -427,7 +427,9 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     }
 
     var nroitems = Object.entries(triptempdata).length
-    
+
+   // startindex=0
+   // endindex = nroitems-1
  
     if (nroitems == 0) {
         additemtopulldown('No trips', 2)

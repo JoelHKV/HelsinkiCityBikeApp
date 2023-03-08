@@ -28,12 +28,12 @@
 }
 
 
-#menu, #stat_menu, #menu-date, #menu-time {
+#menu, #stat_menu, #menu-time {
     overflow-y: scroll;
     border: 1px solid gray;
 }
 
-#menu, #stat_menu, #menu-date, #menu-time, #menutitle, #menutitleb {
+#menu, #stat_menu, #menu-time, #menutitle, #menutitleb {
     position: absolute;
     background-color: white;
     border: 3px solid gray;
@@ -195,12 +195,18 @@
 
 .col {
     padding: 4px;
+    padding-left: 13px;
     text-align: left;
     cursor: pointer;
     overflow: hidden;
+    white-space: nowrap;
 }
 
-
+#currentdate, #stationtitle, #operator, #capacity {
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+}
 
 #backgroundgray {
     position: absolute;
@@ -225,6 +231,8 @@
 .langselect {
     position: absolute;
     cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 
@@ -242,11 +250,9 @@
 
 
 
-#innercalendar, #distance, #duration, #closemap, #stationdetailsTo, #stationdetailsFrom, #stationdetailsTo2, #stationdetailsFrom2 {
-    transition: all 0.03s ease;
+#innercalendar, #distance, #duration, #closemap, .statdetails {
+    overflow: hidden;
+    transition: none;
 }
 
 
-#currentdate {
-    cursor: pointer;
-}
