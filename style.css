@@ -189,21 +189,18 @@
 
 
 
-.menu-item, .menu-date, .menu-time {
+.menu-item {
     display: flex;
 }
 
-.col, .menu-date, .menu-time {
-    width: 20%;
+.col {
     padding: 4px;
     text-align: left;
     cursor: pointer;
+    overflow: hidden;
 }
 
-.menu-date, .menu-time {
-    width: 100%;
- 
-}
+
 
 #backgroundgray {
     position: absolute;

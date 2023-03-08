@@ -10,7 +10,7 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 1
+var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 var coarseSteps=200
@@ -449,10 +449,10 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
             for (let j = 1; j <= 5; j++) {
                 const col = document.createElement("div");
-                col.classList.add(`col`, `col-${i}`);
+                col.classList.add(`col`, `colt-${j}`);
                 col.style.width = `${columnWidths[j - 1]}%`;
-                col.style.textAlign = "left";
-                col.style.overflow = "hidden";
+              //  col.style.textAlign = "left";
+             //   col.style.overflow = "hidden";
                 //if (j == 1) { col.textContent = triptempdata[i]["Departure"].substring(8, 10) + '.' + triptempdata[i]["Departure"].substring(5, 7) + ' ' + triptempdata[i]["Departure"].substring(11, 16) };
                 if (j == 1) {
                     //alert(months(1))
@@ -535,11 +535,11 @@ function showstations() {
             item.classList.add("menu-item");
             for (let j = 1; j <= 5; j++) {
                 const col = document.createElement("div");
-                col.classList.add(`col`, `col-${i}`);
+                col.classList.add(`col`, `col-${j}`);
                 //  col.style.width = `40%`;
                 col.style.width = `${columnWidths[j - 1]}%`;
-                col.style.textAlign = "left";
-                col.style.overflow = "hidden";
+              //  col.style.textAlign = "left";
+             //   col.style.overflow = "hidden";
                 if (j == 1) { col.textContent = thisname }
                 if (j == 2) { col.textContent = stationdata[stationskeys[i]][address] }
                 if (j == 3) {
