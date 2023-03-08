@@ -37,8 +37,12 @@
     border-radius: 10px;
 }
 
-
 #menu-time {
+    width: 130px
+
+
+}
+    #menu-time {
     background-color: transparent
 }
 

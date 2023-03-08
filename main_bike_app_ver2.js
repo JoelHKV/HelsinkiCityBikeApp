@@ -13,7 +13,11 @@ var heatmapmaxradius = 200
 var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
-var coarseSteps=200
+//var coarseSteps = 200
+
+var thispagepercentage = 49.5
+var pagerange=0.5
+var nroitems = 0
 var startdatestring = '2021-06-17'
 var arrowdirection  = 0
 var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -39,7 +43,7 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['tripview', 50, 2, 30, 9],
     ['menu', 10, 30, 70, 70],
     ['stat_menu', 10, 30, 70, 70],
-    ['menu-time', 10, 30, 13.5, 70],
+    ['menu-time', 10, 30, -1, 70],
     ['stationtitle', 10, 23, 20, 6],
     ['cleartext', 42.5, 24.5, 3, 3],
     ['operator', 57, 23, 11, 6],
@@ -344,7 +348,7 @@ function gettripdata(data) {
 
     tripdata = {}
     var counter = 0
-    var nroitems = Object.entries(data).length - 1
+    nroitems = Object.entries(data).length - 1
  
     for (let i = 0; i < nroitems; i++) {
         if (data[i]["did"] in stationdata && data[i]["rid"] in stationdata) {
@@ -367,7 +371,17 @@ function gettripdata(data) {
         stacknHide(['menu-time','currentdate'], 1, [])
 
         menu.scrollTop = menu.scrollHeight * 0.5
-        menuTime.scrollTop = menuTime.scrollHeight * (0.45 + 0.1 * Math.random())
+
+
+        thispagepercentage = 49.5     
+        nroitems = Number(Object.entries(tripdata).length - 1) 
+        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage /100
+
+        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
+
+
+
+
     }
     else {
         var triptempdata = []
@@ -395,28 +409,27 @@ function gettripdata(data) {
 
 const menu = document.querySelector("#menu");
 const stat_menu = document.querySelector("#stat_menu");
- 
 const menuTime = document.getElementById("menu-time");
-mockSlider(coarseSteps, menuTime)
-
+mockSlider(201, menuTime)
 
 menu.addEventListener('scroll', () => {
 
-    if (menu.scrollTop === 0) {
-        const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
-        const scrollAmount = scrollHeight / coarseSteps / 2;
-        menuTime.scrollTop -= scrollAmount;
-
+    if (menu.scrollTop === 0 && menuTime.scrollTop > 0) {
+        thispagepercentage -= pagerange
+        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
+        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
     }
 
 
-    if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight)) {
-        const scrollHeight = menuTime.scrollHeight - menuTime.clientHeight;
-        const scrollAmount = scrollHeight / coarseSteps / 2;
-        menuTime.scrollTop += scrollAmount;
+    if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight) && menuTime.scrollTop < (menuTime.scrollHeight - menuTime.clientHeight)) {
+        thispagepercentage += pagerange
+        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
+        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
+
     }
 
 });
+
 
 menuTime.addEventListener('scroll', () => {
 
@@ -424,15 +437,18 @@ menuTime.addEventListener('scroll', () => {
         return
     }
 
-    var nroitems = Number(Object.entries(tripdata).length - 1)  
-    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight) * (1 + 2 / coarseSteps) - 2 / coarseSteps;
+    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight)
+    thispagepercentage = Math.round(scrollPercentage * 200) / 2
     var scrollpos = 0.5
-    if (scrollPercentage < 0) { scrollPercentage = 0; scrollpos = 0 }
-    if (scrollPercentage >= 1) { scrollPercentage = 1 - 1 / coarseSteps; scrollpos = 1}
+    if (thispagepercentage < 0.5) { thispagepercentage = 0.5; scrollpos = 0 }
+    if (thispagepercentage > 99.5) { thispagepercentage = 99.5; scrollpos = 1 }
 
-    showtripdata(tripdata, Math.round(nroitems * scrollPercentage), Math.round(nroitems * (scrollPercentage + 1 / coarseSteps)), scrollpos)
+    showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), scrollpos)
+
 
 });
+
+
 
 
 function showtripdata(triptempdata, startindex, endindex, setslider) {
@@ -456,7 +472,15 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
         additemtopulldown('Previous Day', -1)
     }
     
-    const columnWidths = [21, 26, 29, 10, 10];
+    //const columnWidths = [21, 26, 29, 10, 10];
+
+    var wid = parseInt(document.getElementById("menu").style.width)
+    
+
+    const columnWidths = [100 * 130 / wid, 26, 29, 10, 10];
+
+
+
 
     for (let i = startindex; i < endindex; i++) {
 
@@ -468,14 +492,22 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                 const col = document.createElement("div");
                 col.classList.add(`col`, `colt-${j}`);
                 col.style.width = `${columnWidths[j - 1]}%`;
+
+             //   col.style.width = '190px'
               //  col.style.textAlign = "left";
              //   col.style.overflow = "hidden";
                 //if (j == 1) { col.textContent = triptempdata[i]["Departure"].substring(8, 10) + '.' + triptempdata[i]["Departure"].substring(5, 7) + ' ' + triptempdata[i]["Departure"].substring(11, 16) };
                 if (j == 1) {
                     //alert(months(1))
-                    col.innerHTML = '&nbsp' + months[Number(triptempdata[i]["Departure"].substring(5, 7))-1]
+                    col.innerHTML = months[Number(triptempdata[i]["Departure"].substring(5, 7))-1]
                     col.innerHTML += '&nbsp' +  triptempdata[i]["Departure"].substring(8, 10)
-                    col.innerHTML += '&nbsp&nbsp' + triptempdata[i]["Departure"].substring(11, 16)
+                    col.innerHTML += '&nbsp' + triptempdata[i]["Departure"].substring(11, 16)
+
+                    col.style.paddingLeft = '2px'
+                 //   col.style.paddingRight = '0px'
+                    //col.style.textAlign = "right"
+                   // col.style.marginLeft = '-65px'
+
                 };
 
                 if (j == 2) { col.textContent = stationdata[triptempdata[i]["did"]][name] };
