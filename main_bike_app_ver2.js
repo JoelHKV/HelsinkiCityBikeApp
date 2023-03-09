@@ -22,6 +22,9 @@ var startdatestring = '2021-06-17'
 var arrowdirection  = 0
 var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
+var intervalId
+
+
 var name = 'Nimi'
 var address = 'Osoite'
 var city = 'Kaupunki'
@@ -341,11 +344,17 @@ function changeDate() {
 
 }
 
+const buttons = document.querySelectorAll('button');
+
+
 
 function gettripdata(data) {
 
-    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, ['filterStations','stationtitle', 'cleartext', 'operator', 'capacity'])
+ 
 
+    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, [])
+    buttons.forEach(button => button.disabled = false);
+    clearInterval(intervalId);
     tripdata = {}
     var counter = 0
     nroitems = Object.entries(data).length - 1
@@ -663,8 +672,8 @@ document.querySelector("#closemap").addEventListener("click", function () {
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     // tofrom is either did or rid for dep or ret station id respectively
     inforboardid[1] = ''
-
-
+    buttons.forEach(button => button.disabled = false);
+    clearInterval(intervalId);
     erasemarkersandpolylines(regulargooglemarker, polyline)
     const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, stationdata, activestationid, tofrom)
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
@@ -899,9 +908,22 @@ window.onload = function () {
 
 
 function getdata(thisaddress, mode, display) {
-    // fetches the data from a google cloud function
+    buttons.forEach(button => button.disabled = true);
+    stacknHide([], 1, ['filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'])
+
+   // document.getElementById('downloadboard').style.transform = 'rotate(45deg)';
+
+    let rotation = 0;
+    intervalId = setInterval(() => {
+        rotation += 10;
+        document.getElementById('downloadboard').style.transform = `rotate(${rotation}deg)`;
+    }, 100); 
+
+
+
+
     if (mode != 'did' && mode != 'rid') {
-        document.getElementById('downloadboard').innerHTML = '<BR><BR>Downloading'
+       // document.getElementById('downloadboard').innerHTML = '<BR><BR>Downloading'
         stacknHide(['downloadboard'], 1, [])
     }
     fetchThis(thisaddress, mode, display)
@@ -911,7 +933,7 @@ function getdata(thisaddress, mode, display) {
             if (mode == 'did' || mode == 'rid') { stationDetailMap(data, mode, display) }
         })
         .catch(error => {
-            document.getElementById('downloadboard').innerHTML = '<BR><BR>Error downloading data<BR>refresh or try again later'
+         //   document.getElementById('downloadboard').innerHTML = '<BR><BR>Error downloading data<BR>refresh or try again later'
             stacknHide(['downloadboard'], 1, [])
         })
 
