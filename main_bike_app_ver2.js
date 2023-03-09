@@ -68,7 +68,7 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['HeatmapReturn', 53, 31, 10, 10],
     ['closemap', 70, 31, 10, 10],
     ['backgroundgray', 5, 13, 82, 94],
-    ['downloadboard', 10.5, 30.2, 68, 70],
+    ['downloadboard', 36, 45, 25, 25],
     ['fin', 69, 102, 3.4, 3.7],
     ['swe', 73, 102, 3.4, 3.7],
     ['eng', 77, 102, 3.4, 3.7]]
@@ -468,8 +468,6 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
     var nroitems = Object.entries(triptempdata).length
 
-   // startindex=0
-   // endindex = nroitems-1
  
     if (nroitems == 0) {
         additemtopulldown('No trips', 2)
@@ -564,7 +562,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
 function showstations() {
     arrowdirection = 0
-    stacknHide(['cleartext', 'filterStations', 'stationtitle', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+    stacknHide(['stat_menu','cleartext', 'filterStations', 'stationtitle', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
 
     while (stat_menu.firstChild) {
         stat_menu.removeChild(stat_menu.firstChild);
@@ -907,24 +905,37 @@ window.onload = function () {
 };
 
 
-function getdata(thisaddress, mode, display) {
+function prefetch() {
     buttons.forEach(button => button.disabled = true);
-    stacknHide([], 1, ['filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'])
 
-   // document.getElementById('downloadboard').style.transform = 'rotate(45deg)';
+  //  while (menu.firstChild) {
+  //      menu.removeChild(menu.firstChild);
+  //  }
 
+   
+
+    stacknHide(['downloadboard'], 1, ['menu', 'stat_menu', 'menu-time', 'filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'])
     let rotation = 0;
     intervalId = setInterval(() => {
         rotation += 10;
         document.getElementById('downloadboard').style.transform = `rotate(${rotation}deg)`;
-    }, 100); 
+    }, 100);
 
+}
+
+
+function getdata(thisaddress, mode, display) {
+
+   // document.getElementById('downloadboard').style.transform = 'rotate(45deg)';
+
+ 
+    prefetch()
 
 
 
     if (mode != 'did' && mode != 'rid') {
        // document.getElementById('downloadboard').innerHTML = '<BR><BR>Downloading'
-        stacknHide(['downloadboard'], 1, [])
+      //  stacknHide(['downloadboard'], 1, [])
     }
     fetchThis(thisaddress, mode, display)
         .then((data) => {
@@ -934,7 +945,7 @@ function getdata(thisaddress, mode, display) {
         })
         .catch(error => {
          //   document.getElementById('downloadboard').innerHTML = '<BR><BR>Error downloading data<BR>refresh or try again later'
-            stacknHide(['downloadboard'], 1, [])
+            clearInterval(intervalId);
         })
 
 

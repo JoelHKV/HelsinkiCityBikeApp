@@ -247,7 +247,7 @@
 
 
 
-#innercalendar, #distance, #duration, #closemap, .statdetails, #currentdate, #stationtitle {
+#innercalendar, #cleartext, #distance, #duration, #closemap, .statdetails, #currentdate, #stationtitle {
     overflow: hidden;
     transition: none;
 }
