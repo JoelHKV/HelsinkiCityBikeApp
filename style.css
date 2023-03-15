@@ -38,7 +38,7 @@
 }
 
 #menu-time {
-    width: 130px
+    width: 140px
 
 
 }
@@ -85,11 +85,14 @@
     font-weight: bold;
 }
 
+#currentdate, #departure_dropdown, #return_dropdown, #distance, #duration {
+    text-align: left;
+}
 #distance, #duration, #operator, #capacity {
-        border: none;
-        cursor: default;
-        background-color: #ffffff;
-    }
+    border: none;
+    cursor: default;
+    background-color: #ffffff;
+}
 
 
 #currentdate, #tripview {

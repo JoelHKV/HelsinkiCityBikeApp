@@ -482,11 +482,30 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     //const columnWidths = [21, 26, 29, 10, 10];
 
     var wid = parseInt(document.getElementById("menu").style.width)
+
+    var lef = parseInt(document.getElementById("menu").style.left)
+
+   // alert(lef)
     
+    var timeper = 100 * 164 / wid
+  //  alert(timeper)
+    const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3, (100 - timeper) / 6, (100 - timeper) / 6];
 
-    const columnWidths = [100 * 130 / wid, 26, 29, 10, 10];
+
+    var headerspaning = [lef, 140, lef + 145, wid * (100 - timeper) / 300 - 5,  lef + wid * (100 - timeper) / 300 + 150, wid * (100 - timeper) / 300 - 5,lef + wid * (100 - timeper) / 150 + 150, wid * (100 - timeper) / 600 - 5, lef + wid * (100 - timeper) / 125 + 150, wid * (100 - timeper) / 600 - 5 ]
 
 
+    document.getElementById("currentdate").style.width = headerspaning[1] + 'px'
+    document.getElementById("departure_dropdown").style.left = headerspaning[2] + 'px'
+    document.getElementById("departure_dropdown").style.width = headerspaning[3] + 'px'
+    document.getElementById("return_dropdown").style.left = headerspaning[4] + 'px'
+    document.getElementById("return_dropdown").style.width = headerspaning[5] + 'px'
+    document.getElementById("distance").style.left = headerspaning[6] + 'px'
+    document.getElementById("distance").style.width = '40px'
+
+
+
+    
 
 
     for (let i = startindex; i < endindex; i++) {
@@ -500,21 +519,11 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                 col.classList.add(`col`, `colt-${j}`);
                 col.style.width = `${columnWidths[j - 1]}%`;
 
-             //   col.style.width = '190px'
-              //  col.style.textAlign = "left";
-             //   col.style.overflow = "hidden";
-                //if (j == 1) { col.textContent = triptempdata[i]["Departure"].substring(8, 10) + '.' + triptempdata[i]["Departure"].substring(5, 7) + ' ' + triptempdata[i]["Departure"].substring(11, 16) };
-                if (j == 1) {
-                    //alert(months(1))
+                 if (j == 1) {
                     col.innerHTML = months[Number(triptempdata[i]["Departure"].substring(5, 7))-1]
                     col.innerHTML += '&nbsp' +  triptempdata[i]["Departure"].substring(8, 10)
                     col.innerHTML += '&nbsp' + triptempdata[i]["Departure"].substring(11, 16)
-
-                    col.style.paddingLeft = '2px'
-                 //   col.style.paddingRight = '0px'
-                    //col.style.textAlign = "right"
-                   // col.style.marginLeft = '-65px'
-
+                    col.style.paddingLeft = '4px'
                 };
 
                 if (j == 2) { col.textContent = stationdata[triptempdata[i]["did"]][name] };
