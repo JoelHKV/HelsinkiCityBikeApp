@@ -10,7 +10,7 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 0
+var displaymap = 1
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 //var coarseSteps = 200
@@ -61,6 +61,7 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['infoboard-container', 10, 16, 70, 10],
     ['infoboard', 10, 16, -1, 10],
     ['infoboard3', -20, 16, -1, 10],
+    ['arrimage', 35, 16, 20, 10],
     ['currentdate', 10, 23, 13, 6],
     ['TopDeparture', 12, 31, 10, 10],
     ['TopReturn', 24, 31, 10, 10],
@@ -113,7 +114,7 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
         containerwidth = 600
     }
 
-
+    //alert(xoff)
     for (let i = 0; i < placeitems.length; i++) {
 
         const element = document.getElementById(placeitems[i][0])
@@ -121,7 +122,7 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
             element.style.left = (containerwidth * (xoff+placeitems[i][1]) / 100) + 'px'
         }
         if (placeitems[i][1] < 0) {
-            element.style.right = (-containerwidth * (xoff+ placeitems[i][1]) / 100) + 'px'
+           // element.style.right = (-containerwidth * (xoff+ placeitems[i][1]) / 100) + 'px'
         }
 
         element.style.top = containerheight * placeitems[i][2] / 100 + 'px'
@@ -152,8 +153,37 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
     document.getElementById("duration").style.left = (lef + wid * (100 - timeper) / 120 + 150) + 'px'
     document.getElementById("duration").style.width = '50px'
 
+    var flagpos = wid + lef - 135
+    var flags = ['fin','swe','eng']
+    for (let i = 0; i < 3; i++) {
+        document.getElementById(flags[i]).style.width = '40px'
+        document.getElementById(flags[i]).style.height = '32px'
+        document.getElementById(flags[i]).style.left = flagpos + 'px'
+        flagpos +=50
+    }
 
 
+    var containerwidth = parseInt(window.getComputedStyle(containerelement).width)
+
+    document.getElementById("infoboard3").style.right = (containerwidth - wid - lef) + 'px'
+
+
+   // document.getElementById("infoboard2").style.center = '100px'
+
+
+   // document.getElementById("infoboard2").style.backgroundImage = "url('https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr2.png')";
+
+
+
+    var fontsize = 1.3
+
+    if (wid < 640) { fontsize = 1.2 }
+    if (wid < 590) { fontsize = 1.1 }
+    if (wid < 540) { fontsize = 0.95 }
+    if (wid < 490) { fontsize = 0.8 }
+    document.getElementById("infoboard").style.fontSize = fontsize + 'rem'
+    document.getElementById("infoboard2").style.fontSize = fontsize + 'rem'
+    document.getElementById("infoboard3").style.fontSize = fontsize + 'rem'
 }
 
 function stacknHide(stackElements, startZ, hideElements) {
@@ -168,7 +198,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
+stacknHide([], 1, ['arrimage','currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -680,8 +710,19 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
     
     var arrowtext = '&nbsp&#8594&nbsp'
+
+
+   // document.getElementById("infoboard2").style.backgroundImage = "url('https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr2.png')";
+
+
+
     arrowdirection = 1
-    if (tofrom == 'did') { arrowtext = '&nbsp&#8592&nbsp'; arrowdirection = -1 }
+    if (tofrom == 'did') {
+
+       // document.getElementById("infoboard2").style.backgroundImage = "url('https://storage.googleapis.com/joelvuolevi/bikeapp/arrowl2.png')";
+
+        arrowtext = '&nbsp&#8592&nbsp'; arrowdirection = -1
+    }
     document.getElementById('arr1').innerHTML = arrowtext
     document.getElementById('arr2').innerHTML = arrowtext
   
@@ -978,6 +1019,9 @@ function writeinfoboard(stationid, mode, whichtextfield) {
         document.getElementById('arr1').innerHTML = '&#8594'
         document.getElementById('arr2').innerHTML = '&#8594'
 
+       // document.getElementById('arrimage').style.zIndex=34
+       // 
+     //   stacknHide(['arrimage'], 0, [])
 
         let temphtml = months[Number(stationid["Departure"].substring(5, 7)) - 1]
         temphtml += '&nbsp' + stationid["Departure"].substring(8, 10)
@@ -986,8 +1030,6 @@ function writeinfoboard(stationid, mode, whichtextfield) {
         temphtml += stationid["dis"] + ' km<BR>Length: ' + stationid["time"] + ' min'
         document.getElementById("infoboard2").innerHTML = temphtml
     }
-
-
 
 
 

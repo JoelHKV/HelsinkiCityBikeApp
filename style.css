@@ -113,7 +113,7 @@
 }
 
 
-#downloadboard {
+#downloadboard, #arrimage {
     position: absolute;
     font-size: 2rem;
     background-color: #fefefe;
@@ -135,9 +135,10 @@
     vertical-align: middle;
 }
 
-#infoboard2 {
-    vertical-align: middle;
-}
+
+    #infoboard2 {
+        vertical-align: middle;
+    }
 
 #infoboard, #infoboard2, #infoboard3 {
     text-align: left;
@@ -154,7 +155,9 @@
 
 #infoboard2 {
     border: none;
-   
+    background-repeat: no-repeat;
+    transform: scaleX(1);
+    background-size: cover;
 }
 
     button {
