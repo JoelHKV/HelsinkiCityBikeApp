@@ -492,18 +492,28 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3, (100 - timeper) / 6, (100 - timeper) / 6];
 
 
-    var headerspaning = [lef, 140, lef + 145, wid * (100 - timeper) / 300 - 5,  lef + wid * (100 - timeper) / 300 + 150, wid * (100 - timeper) / 300 - 5,lef + wid * (100 - timeper) / 150 + 150, wid * (100 - timeper) / 600 - 5, lef + wid * (100 - timeper) / 125 + 150, wid * (100 - timeper) / 600 - 5 ]
+   // var headerspaning = [lef,
+       // 140,
+        //lef + 145,
+       // wid * (100 - timeper) / 300 - 15,
+       // lef + wid * (100 - timeper) / 300 + 140 + 0.025 * wid,
+        //wid * (100 - timeper) / 300 - 5,
+      // lef + wid * (100 - timeper) / 150 + 150,
+       // wid * (100 - timeper) / 600 - 5,
+        lef + wid * (100 - timeper) / 125 + 150,
+        //wid * (100 - timeper) / 600 - 5]
+  //  var headerspaning2 = (columnWidths[0] * wid/100)
 
-
-    document.getElementById("currentdate").style.width = headerspaning[1] + 'px'
-    document.getElementById("departure_dropdown").style.left = headerspaning[2] + 'px'
-    document.getElementById("departure_dropdown").style.width = headerspaning[3] + 'px'
-    document.getElementById("return_dropdown").style.left = headerspaning[4] + 'px'
-    document.getElementById("return_dropdown").style.width = headerspaning[5] + 'px'
-    document.getElementById("distance").style.left = headerspaning[6] + 'px'
+    document.getElementById("currentdate").style.width = '140px'
+    document.getElementById("departure_dropdown").style.left = (0.035* wid + lef + 135) + 'px'
+    document.getElementById("departure_dropdown").style.width = (wid * (100 - timeper) / 300  - 0.045 * wid) + 'px'
+    document.getElementById("return_dropdown").style.left = (lef + wid * (100 - timeper) / 300 + 140 + 0.025 * wid) + 'px'
+    document.getElementById("return_dropdown").style.width = (wid * (100 - timeper) / 300  - 0.045 * wid) + 'px'
+    document.getElementById("distance").style.left = (lef + wid * (100 - timeper) / 148 + 142) + 'px'
     document.getElementById("distance").style.width = '40px'
 
-
+    document.getElementById("duration").style.left = (lef + wid * (100 - timeper) / 120 + 150) + 'px'
+    document.getElementById("duration").style.width = '50px'
 
     
 
