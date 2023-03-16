@@ -113,7 +113,7 @@
 }
 
 
-#downloadboard, #arrimage {
+#downloadboard, #arrimage, #arrimageleft {
     position: absolute;
     font-size: 2rem;
     background-color: #fefefe;
@@ -136,6 +136,7 @@
     border: 3px solid gray;
     border-radius: 10px;
     font-weight: bold;
+    transition: none;
 }
 
 
@@ -242,7 +243,7 @@
 
 
 
-#innercalendar, #cleartext, #distance, #duration, #closemap, .statdetails, #currentdate, #stationtitle {
+#cleartext, #distance, #duration, #closemap, .statdetails, #currentdate, #stationtitle {
     overflow: hidden;
     transition: none;
 }
