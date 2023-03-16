@@ -122,18 +122,6 @@
 }
 
 
-#infoboard-container {
-    position: absolute;
-    border: none;
-    display: inline-block; 
-    text-align: center;
-}
-
-#arr1, #arr2 {
-    display: inline-block;
-    font-size: 4rem;
-    vertical-align: middle;
-}
 
 
     #infoboard2 {
@@ -141,6 +129,7 @@
     }
 
 #infoboard, #infoboard2, #infoboard3 {
+    position: absolute;
     text-align: left;
     font-size: 1.3rem;
     cursor: pointer;
@@ -149,16 +138,16 @@
     font-weight: bold;
 }
 
-#infoboard, #infoboard3 {
-    position: absolute;
-}
+
 
 #infoboard2 {
+ 
+    background-color: transparent;
     border: none;
-    background-repeat: no-repeat;
-    transform: scaleX(1);
-    background-size: cover;
+    outline: none;
+    box-shadow: none
 }
+
 
     button {
         transition: all 0.3s ease;
