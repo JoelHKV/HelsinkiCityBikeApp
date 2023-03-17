@@ -922,6 +922,20 @@ function onSelectChange() {
 }
 
 
+function loadScript(src, callback) {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+function initMap() {
+    // Create a new map centered at Oulu, Finland
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 65.01, lng: 25.46 },
+        zoom: 8,
+    });
+}
 
 
 showstations()
@@ -929,11 +943,11 @@ showstations()
 window.onload = function () {
 
     if (displaymap == 1) {
-        const maploc = { lat: 64, lng: 26 };
-        map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 5,
-            center: maploc,
+        loadScript("https://returnsecret-c2cjxe2frq-lz.a.run.app", function () {
+            // Google Maps API loaded, call initMap to create the map.
+            initMap()
         });
+
     }
 
 };
@@ -953,27 +967,19 @@ function prefetch() {
 
 
 function getdata(thisaddress, mode, display) {
-
-   // document.getElementById('downloadboard').style.transform = 'rotate(45deg)';
-
- 
     prefetch()
-
-
-
-    if (mode != 'did' && mode != 'rid') {
-       // document.getElementById('downloadboard').innerHTML = '<BR><BR>Downloading'
-      //  stacknHide(['downloadboard'], 1, [])
-    }
+ 
     fetchThis(thisaddress, mode, display)
         .then((data) => {
             stacknHide([], 1, ['downloadboard'])
             if (mode == 3) { gettripdata(data) }
+            if (mode == 5) { initthismap(data) }
             if (mode == 'did' || mode == 'rid') { stationDetailMap(data, mode, display) }
         })
         .catch(error => {
-         //   document.getElementById('downloadboard').innerHTML = '<BR><BR>Error downloading data<BR>refresh or try again later'
+
             clearInterval(intervalId);
+          //  alert('error')
         })
 
 
