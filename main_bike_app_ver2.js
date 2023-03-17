@@ -70,7 +70,7 @@ var placeitems = [['stationview', 10, 2, 30, 9],
     ['HeatmapReturn', 53, 31, 10, 10],
     ['closemap', 70, 31, 10, 10],
     ['backgroundgray', 5, 13, 82, 94],
-    ['downloadboard', 36, 45, 25, 25],
+    ['downloadboard', 30, 40, 30, -1],
     ['fin', 69, 102, 3.4, 3.7],
     ['swe', 73, 102, 3.4, 3.7],
     ['eng', 77, 102, 3.4, 3.7]]
@@ -130,11 +130,11 @@ function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
         if (placeitems[i][3] > 0) {
             element.style.width = wfac * (containerwidth * placeitems[i][3] / 100) + 'px'
         }
-        else {
-            element.style.width = 'width:fit-content;'
-           
+        else { element.style.width = 'width:fit-content;' }
+        if (placeitems[i][4] > 0) {
+            element.style.height = containerheight * placeitems[i][4] / 100 + 'px'
         }
-        element.style.height = containerheight * placeitems[i][4] / 100 + 'px'
+        else { element.style.height = 'height:fit-content;'  }
 
     }
 
@@ -234,9 +234,8 @@ document.getElementById('tripview').addEventListener("click", () => {
         departure_dropdown.selectedIndex = startstatid2 + 1
     }
 
-   // document.getElementById('arr1').innerHTML = ''
-   // document.getElementById('arr2').innerHTML = ''
-    stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn','closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+
+    stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage','arrimageleft'])
 
     stationview = -1
     document.getElementById('stationview').style.backgroundColor = '#ffffff'
@@ -249,7 +248,7 @@ document.getElementById('tripview').addEventListener("click", () => {
 document.getElementById('stationview').addEventListener("click", () => {
     if (stationview == 1) { return }
 
-    stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+    stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
 
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
@@ -325,6 +324,11 @@ languageButtons.forEach(button => {
         }
 
         document.getElementById(event.target.id).style.opacity = 1
+        stationview = 1
+        document.getElementById('tripview').style.backgroundColor = '#ffffff'
+        document.getElementById('stationview').style.backgroundColor = '#eeeeee'
+        stacknHide([], 1, ['arrimage', 'arrimageleft', 'currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
+
         showstations()
     });
  
@@ -941,7 +945,7 @@ function prefetch() {
     stacknHide(['downloadboard'], 1, ['menu', 'stat_menu', 'menu-time', 'filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'])
     let rotation = 0;
     intervalId = setInterval(() => {
-        rotation += 10;
+        rotation += 2;
         document.getElementById('downloadboard').style.transform = `rotate(${rotation}deg)`;
     }, 100);
 

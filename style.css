@@ -113,7 +113,7 @@
 }
 
 
-#downloadboard, #arrimage, #arrimageleft {
+#arrimage, #arrimageleft {
     position: absolute;
     font-size: 2rem;
     background-color: #fefefe;
@@ -121,7 +121,10 @@
     text-align: center;
 }
 
-
+#downloadboard {
+    position: absolute;
+    background-color: none;
+}
 
 
     #infoboard2 {
