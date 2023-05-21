@@ -45,38 +45,16 @@ import * as data2 from './stations_HelsinkiEspoo.json'
 var stationdata = data2.default
 
 // here we define the layout 
-var placeitems = [['stationview', 10, 2, 30, 9],
-    ['tripview', 50, 2, 30, 9],
-    ['menu', 10, 30, 70, 70],
-    ['stat_menu', 10, 30, 70, 70],
-    ['menu-time', 10, 30, -1, 70],
-    ['stationtitle', 10, 23, 20, 6],
-    ['cleartext', 42.5, 24.5, 3, 3],
-    ['operator', 57, 23, 11, 6],
-    ['capacity', 69, 23, 11, 6],
-    ['distance', 62.7, 23, 6, 6],
-    ['duration', 70.5, 23, 6, 6],
-    ['filterStations', 31.5, 23, 11, 5],
-    ['map-container', 10, 30, 70, 70],
-    ['innercalendar', 10, 30, 70, 70],
-    ['departure_dropdown', 25, 23, 16, 6],
-    ['return_dropdown', 43, 23, 16, 6],
-    ['infoboard', 10, 16, -1, 10],
+var placeitems = [   ['infoboard', 10, 16, -1, 10],
     ['infoboard3', -20, 16, -1, 10],
     ['infoboard2', 37, 16, 20, 10],
     ['arrimage', 36.5, 12.8, 21, 16.4],
     ['arrimageleft', 32, 12.8, 21, 16.4],
-    ['currentdate', 10, 23, 13, 6],
     ['TopDeparture', 12, 31, 10, 10],
     ['TopReturn', 24, 31, 10, 10],
     ['HeatmapDeparture', 41, 31, 10, 10],
     ['HeatmapReturn', 53, 31, 10, 10],
-    ['closemap', 70, 31, 10, 10],
-    ['backgroundgray', 5, 13, 82, 94],
-    ['downloadboard', 30, 40, 30, -1],
-    ['fin', 69, 102, 3.4, 3.7],
-    ['swe', 73, 102, 3.4, 3.7],
-    ['eng', 77, 102, 3.4, 3.7]]
+    ['closemap', 70, 31, 10, 10]]
 
 
 

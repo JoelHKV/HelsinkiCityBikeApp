@@ -10,60 +10,100 @@
 </head>
 <body>
 
-    <div class="container" id="container">
-        <div id="backgroundgray" style="padding: 0px;"></div>
+    <div class="grid-container" id="grid-container">
+        <div class="grid-item titletext unselectable" id="titletitle" style="padding-top: 0vh; border: none; text-align: center; color: #000000; ">Bike App</div>
+        <button class="grid-item stationview unselectable" id="stationview">Stations</button>
+        <button class="grid-item tripview unselectable" id="tripview">Trips</button>
 
-        <div id="map-container">
+
+        <select class="grid-item departure_dropdown" id="departure_dropdown"></select>
+        <select class="grid-item return_dropdown" id="return_dropdown"></select>
+
+
+        <button class="grid-item distance basicobject unselectable" id="distance">km</button>
+        <button class="grid-item duration basicobject unselectable" id="duration">min</button>
+
+        <button class="grid-item stationtitle basicobject unselectable" id="stationtitle">Station name:</button>
+
+        <button class="grid-item operator basicobject unselectable" id="operator">Operator:</button>
+        <button class="grid-item capacity basicobject unselectable" id="capacity">Capacity:</button>
+
+        <div class="grid-item searchstation">
+            <div class="input-group">
+                <input type="text" id="filterStations" placeholder="Search">
+                <button class="  basicobject unselectable" style=" top: 0; right: 0px;" id="cleartext"></button>
+
+            </div>
+        </div>
+
+
+        <div class="grid-item labelrow" id="labelrow">AAAA</div>
+        
+        
+        <div class="grid-item stationlist" id="stat_menu"></div>
+
+        <div class="grid-item triplist" id="menu"></div>
+        <div class="grid-item triptime" id="menu-time"></div>
+        <div class="grid-item map-container" id="map-container">
             <div class="image" id="map"></div>
         </div>
+        <div class="grid-item downloadboard">
+            <img  id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
+        </div>
+            <div class="grid-item calendar" id="innercalendar"></div>
+
+
+
+
+            <button class="grid-item basicobject currentdate" id="currentdate">Jun 17 2021</button>
+
+
+
+            <div class="grid-item flags dropdown">
+                <button class="langselect" id="fin"></button>
+                <button class="langselect" id="swe"></button>
+                <button class="langselect" id="eng"></button>
+            </div>
+
+        </div>
+
+    <div class="container" id="container">
+
+
         <button id="infoboard"></button>
         <button id="infoboard2"></button>
         <button id="infoboard3"></button>
         <img id="arrimage" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
         <img id="arrimageleft" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
 
-        <div id="downloadboard2"></div>
+
         <button id="closemap">Close</button>
         <button class="statdetails" id="TopDeparture">Top<BR>Departure</button>
         <button class="statdetails" id="TopReturn">Top<BR>Return</button>
 
         <button class="statdetails" id="HeatmapDeparture">Heatmap<BR>Departure</button>
         <button class="statdetails" id="HeatmapReturn">Heatmap<BR>Return</button>
+ 
 
-        <div id="innercalendar"></div>
 
-        <button id="stationview">Stations</button>
-        <button id="tripview">Trips</button>
 
-        <button class="langselect" id="fin"></button>
-        <button class="langselect" id="swe"></button>
-        <button class="langselect" id="eng"></button>
 
-        <select id="departure_dropdown"></select>
-        <select id="return_dropdown"></select>
-        <button id="distance">km</button>
-        <button id="duration">min</button>
 
-        <button id="stationtitle">Station name:</button>
-        <button id="cleartext"></button>
-        <button id="operator">Operator:</button>
-        <button id="capacity">Capacity:</button>
 
-        <img id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
 
-        <input type="text" id="filterStations" placeholder="Search">
 
-        <div id="menu-time"></div>
-        <div id="menu"></div>
-        <div id="stat_menu"></div>
+       
 
-        <button id="currentdate">Jun 17 2021</button>
+
+
+
+
 
         <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
 
     </div>
 
-       <script type="module" src="/main_bike_app_ver2.js"></script>
+        <script type="module" src="/main_bike_app_ver2.js"></script>
 
 </body>
 </html>
