@@ -24,6 +24,9 @@ var toptripstats = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
 var intervalId
 
+// starting new layout design
+
+
 
 var name = 'Nimi'
 var address = 'Osoite'
