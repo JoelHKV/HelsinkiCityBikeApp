@@ -16,17 +16,15 @@
         <button class="grid-item tripview unselectable" id="tripview">Trips</button>
 
 
-        <select class="grid-item departure_dropdown" id="departure_dropdown"></select>
-        <select class="grid-item return_dropdown" id="return_dropdown"></select>
 
+        <div class="grid-item tripviewlabelrow" id="tripviewlabelrow">
+            <div class="grid-item calendar" id="innercalendar"></div>
+            <select class="grid-item departure_dropdown" id="departure_dropdown"></select>
+            <select class="grid-item return_dropdown" id="return_dropdown"></select>
+            <button class="grid-item distance basicobject unselectable" id="distance">km</button>
+            <button class="grid-item duration basicobject unselectable" id="duration">min</button>
+        </div>
 
-        <button class="grid-item distance basicobject unselectable" id="distance">km</button>
-        <button class="grid-item duration basicobject unselectable" id="duration">min</button>
-
-        <button class="grid-item stationtitle basicobject unselectable" id="stationtitle">Station name:</button>
-
-        <button class="grid-item operator basicobject unselectable" id="operator">Operator:</button>
-        <button class="grid-item capacity basicobject unselectable" id="capacity">Capacity:</button>
 
         <div class="grid-item searchstation">
             <div class="input-group">
@@ -36,10 +34,10 @@
             </div>
         </div>
 
+        <div class="grid-item labelrow" id="labelrow"><div class="menu-itemb"><div class="col col-1" style="width: 30%;">Station name:</div><div class="col col-2" style="width: 30%;">Address:</div><div class="col col-3" style="width: 12%;">Place:</div><div class="col col-4" style="width: 20%;">Operator:</div><div class="col col-5" style="width: 10%;">Capacity:</div></div></div>
 
-        <div class="grid-item labelrow" id="labelrow">AAAA</div>
-        
-        
+
+
         <div class="grid-item stationlist" id="stat_menu"></div>
 
         <div class="grid-item triplist" id="menu"></div>
@@ -48,48 +46,44 @@
             <div class="image" id="map"></div>
         </div>
         <div class="grid-item downloadboard">
-            <img  id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
-        </div>
-            <div class="grid-item calendar" id="innercalendar"></div>
-
-
-
-
-            <button class="grid-item basicobject currentdate" id="currentdate">Jun 17 2021</button>
-
-
-
-            <div class="grid-item flags dropdown">
-                <button class="langselect" id="fin"></button>
-                <button class="langselect" id="swe"></button>
-                <button class="langselect" id="eng"></button>
-            </div>
-
+            <img id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
         </div>
 
-    <div class="container" id="container">
-
-
-        <button id="infoboard"></button>
-        <button id="infoboard2"></button>
-        <button id="infoboard3"></button>
-        <img id="arrimage" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
-        <img id="arrimageleft" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
-
-
-        <button id="closemap">Close</button>
-        <button class="statdetails" id="TopDeparture">Top<BR>Departure</button>
-        <button class="statdetails" id="TopReturn">Top<BR>Return</button>
-
-        <button class="statdetails" id="HeatmapDeparture">Heatmap<BR>Departure</button>
-        <button class="statdetails" id="HeatmapReturn">Heatmap<BR>Return</button>
- 
 
 
 
 
+        <button class="grid-item basicobject currentdate" id="currentdate">Jun 17 2021</button>
 
 
+
+        <div class="grid-item mapbuttons" id="mapbuttons">
+            <button class="statdetails" id="TopDeparture">Top Departure</button>
+            <button class="statdetails" id="TopReturn">Top Return</button>
+            <button class="statdetails" id="HeatmapDeparture">Heatmap Departure</button>
+            <button class="statdetails" id="HeatmapReturn">Heatmap Return</button>
+            <button class="statdetails" id="closemap">Close</button>
+        </div>
+
+
+        <button class="grid-item basicobject infoboard" id="infoboard"></button>
+        <button class="grid-item basicobject infoboard2" id="infoboard2"></button>
+        <button class="grid-item basicobject infoboard3" id="infoboard3"></button>
+        <img class="grid-item arrimage" id="arrimage" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
+        <img class="grid-item arrimageleft" id="arrimageleft" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
+
+
+
+
+        <div class="grid-item flags dropdown">
+            <button class="langselect" id="fin"></button>
+            <button class="langselect" id="swe"></button>
+            <button class="langselect" id="eng"></button>
+        </div>
+
+    </div>
+
+        <div class="container" id="container">
 
 
        
@@ -99,9 +93,22 @@
 
 
 
-        <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
 
-    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+            <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
+
+        </div>
 
         <script type="module" src="/main_bike_app_ver2.js"></script>
 

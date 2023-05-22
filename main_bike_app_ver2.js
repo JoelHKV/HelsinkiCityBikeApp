@@ -10,7 +10,7 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 1
+var displaymap = 0
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 //var coarseSteps = 200
@@ -38,27 +38,18 @@ const ctx = canvas.getContext("2d");
 
 
 
+
+
+
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // station data transformed to json where station id is the key. json is imported and hardcoded into js for speed and importance
 import * as data2 from './stations_HelsinkiEspoo.json'
 var stationdata = data2.default
 
-// here we define the layout 
-var placeitems = [   ['infoboard', 10, 16, -1, 10],
-    ['infoboard3', -20, 16, -1, 10],
-    ['infoboard2', 37, 16, 20, 10],
-    ['arrimage', 36.5, 12.8, 21, 16.4],
-    ['arrimageleft', 32, 12.8, 21, 16.4],
-    ['TopDeparture', 12, 31, 10, 10],
-    ['TopReturn', 24, 31, 10, 10],
-    ['HeatmapDeparture', 41, 31, 10, 10],
-    ['HeatmapReturn', 53, 31, 10, 10],
-    ['closemap', 70, 31, 10, 10]]
 
 
-
-fixitemsize(placeitems, 0.9, 1, 1.0)
+//fixitemsize(placeitems, 0.9, 1, 1.0)
 
 let timeoutId;
 
@@ -71,116 +62,21 @@ window.onresize = function () {
 
 };
 
-
-
-
-function fixitemsize(placeitems, containerreltoScreen, woff, wfac) {
-    // measure the container and place everything in relation
-    document.getElementById('container').style.height = containerreltoScreen * window.innerHeight + 'px'
-
-    const containerelement = document.querySelector("#container");
-    var containerwidth = parseInt(window.getComputedStyle(containerelement).width)
-    var containerheight = parseInt(window.getComputedStyle(containerelement).height)
-
-   
-    var minx = 100
-    var maxx = 0
-    for (let i = 0; i < placeitems.length; i++) {
-        minx = Math.min(minx, Math.abs(placeitems[i][1]))
-        maxx = Math.max(maxx, Math.abs(placeitems[i][1]) + Math.abs(placeitems[i][3]))
-    }
-    var xoff = -(minx + maxx - 100) / 2
-
-    if (containerwidth < 600) {    
-        xoff = xoff - (600-containerwidth)/12
-        containerwidth = 600
-    }
-
-    //alert(xoff)
-    for (let i = 0; i < placeitems.length; i++) {
-
-        const element = document.getElementById(placeitems[i][0])
-        if (placeitems[i][1] > 0) {
-            element.style.left = (containerwidth * (xoff+placeitems[i][1]) / 100) + 'px'
-        }
-        if (placeitems[i][1] < 0) {
-           // element.style.right = (-containerwidth * (xoff+ placeitems[i][1]) / 100) + 'px'
-        }
-
-        element.style.top = containerheight * placeitems[i][2] / 100 + 'px'
-        if (placeitems[i][3] > 0) {
-            element.style.width = wfac * (containerwidth * placeitems[i][3] / 100) + 'px'
-        }
-        else { element.style.width = 'width:fit-content;' }
-        if (placeitems[i][4] > 0) {
-            element.style.height = containerheight * placeitems[i][4] / 100 + 'px'
-        }
-        else { element.style.height = 'height:fit-content;'  }
-
-    }
-
-
-    var wid = parseInt(document.getElementById("menu").style.width)
-    var lef = parseInt(document.getElementById("menu").style.left)
-    var timeper = 100 * 164 / wid
-   
-    document.getElementById("currentdate").style.width = '140px'
-    document.getElementById("departure_dropdown").style.left = (0.035 * wid + lef + 135) + 'px'
-    document.getElementById("departure_dropdown").style.width = (wid * (100 - timeper) / 300 - 0.045 * wid) + 'px'
-    document.getElementById("return_dropdown").style.left = (lef + wid * (100 - timeper) / 300 + 140 + 0.025 * wid) + 'px'
-    document.getElementById("return_dropdown").style.width = (wid * (100 - timeper) / 300 - 0.045 * wid) + 'px'
-    document.getElementById("distance").style.left = (lef + wid * (100 - timeper) / 148 + 142) + 'px'
-    document.getElementById("distance").style.width = '40px'
-
-    document.getElementById("duration").style.left = (lef + wid * (100 - timeper) / 120 + 150) + 'px'
-    document.getElementById("duration").style.width = '50px'
-
-    var flagpos = wid + lef - 135
-    var flags = ['fin','swe','eng']
-    for (let i = 0; i < 3; i++) {
-        document.getElementById(flags[i]).style.width = '40px'
-        document.getElementById(flags[i]).style.height = '32px'
-        document.getElementById(flags[i]).style.left = flagpos + 'px'
-        flagpos +=50
-    }
-
-
-    var containerwidth = parseInt(window.getComputedStyle(containerelement).width)
-
-    document.getElementById("infoboard3").style.right = (containerwidth - wid - lef) + 'px'
-
-
-   // document.getElementById("infoboard2").style.center = '100px'
-
-
-   // document.getElementById("infoboard2").style.backgroundImage = "url('https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr2.png')";
-
-    document.getElementById("arrimageleft").style.transform = "scaleX(-1)"
-
-    var fontsize = 1.3
-
-    if (wid < 640) { fontsize = 1.2 }
-    if (wid < 590) { fontsize = 1.1 }
-    if (wid < 540) { fontsize = 0.95 }
-    if (wid < 490) { fontsize = 0.8 }
-    document.getElementById("infoboard").style.fontSize = fontsize + 'rem'
-    document.getElementById("infoboard2").style.fontSize = fontsize + 'rem'
-    document.getElementById("infoboard3").style.fontSize = fontsize + 'rem'
-}
+ 
 
 function stacknHide(stackElements, startZ, hideElements) {
     // makes elements visible and hidden based on what the user is doing
     for (let i = 0; i < stackElements.length; i++) {
-        document.getElementById(stackElements[i]).style.zIndex = startZ + 30 - i
-        document.getElementById(stackElements[i]).style.visibility = "visible"
+       document.getElementById(stackElements[i]).style.zIndex = startZ + 30 - i
+        document.getElementById(stackElements[i]).style.display = 'block'
     }
     for (let i = 0; i < hideElements.length; i++) {
-        document.getElementById(hideElements[i]).style.visibility = "hidden"
+        document.getElementById(hideElements[i]).style.display = 'none'
     }
 }
 
 //  this is the starting view arrangement
-stacknHide([], 1, ['arrimage', 'arrimageleft','currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
+stacknHide(['labelrow', 'stat_menu'], 1, ['filterStations', 'tripviewlabelrow', 'mapbuttons', 'arrimage','arrimageleft','currentdate', 'menu', 'menu-time', 'circle', 'downloadboard',  'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -192,8 +88,16 @@ return_dropdown.onchange = onSelectChange;
 
 
 document.getElementById('tripview').addEventListener("click", () => {
+
+    
+   // stacknHide(['tripviewlabelrow'], 1, [])
     if (stationview == -1) { return }
-   
+    stacknHide(['menu', 'menu-time', 'tripviewlabelrow'], 31, ['labelrow', 'stat_menu'])
+
+    
+
+
+
     var startstatid = pulldownitemToStationID.indexOf(inforboardid[0])
     var startstatid2 = pulldownitemToStationID.indexOf(inforboardid[1])
 
@@ -216,7 +120,20 @@ document.getElementById('tripview').addEventListener("click", () => {
     }
 
 
-    stacknHide(['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage','arrimageleft'])
+
+
+
+    // document.getElementById('tripviewlabelrow').style.display = 'none'
+    //document.getElementById('labelrow').style.display = 'none'
+    //document.getElementById('mapbuttons').style.display = 'block'
+    //document.getElementById('tripviewlabelrow').style.display = 'none'
+    //document.getElementById('tripviewlabelrow').style.display = 'block'
+
+
+   // stacknHide(['mapbuttons'], 1, ['labelrow'])
+
+    
+    //stacknHide([], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage','arrimageleft'])
 
     stationview = -1
     document.getElementById('stationview').style.backgroundColor = '#ffffff'
@@ -227,9 +144,24 @@ document.getElementById('tripview').addEventListener("click", () => {
 
 
 document.getElementById('stationview').addEventListener("click", () => {
-    if (stationview == 1) { return }
 
-    stacknHide(['filterStations', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
+    stacknHide(['labelrow'], 1, ['tripviewlabelrow'])
+
+
+    if (stationview == 1) { return }
+   
+    stacknHide(['stat_menu', 'labelrow'], 31, ['tripviewlabelrow', 'menu-time', 'menu'])
+
+
+
+   // document.getElementById('tripviewlabelrow').style.display = 'none'
+   // document.getElementById('labelrow').style.display = 'block'
+
+
+    
+
+
+  //  stacknHide(['filterStations', 'cleartext'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
 
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
@@ -253,7 +185,7 @@ function newbasestation(newstation) {
     document.getElementById('stationview').style.backgroundColor = '#eeeeee'
         activestationid = newstation
         erasemarkersandpolylines(regulargooglemarker, polyline)
-        stacknHide(['infoboard2'], 1, ['infoboard3'])
+      //  stacknHide(['infoboard2'], 1, ['infoboard3'])
         writeinfoboard(activestationid, 'station')
         document.getElementById("infoboard2").innerHTML = 'Capacity:<BR>' + stationdata[activestationid]['Kapasiteet'] + ' bikes'
 
@@ -308,7 +240,7 @@ languageButtons.forEach(button => {
         stationview = 1
         document.getElementById('tripview').style.backgroundColor = '#ffffff'
         document.getElementById('stationview').style.backgroundColor = '#eeeeee'
-        stacknHide([], 1, ['arrimage', 'arrimageleft', 'currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn', 'map-container'])
+     //   stacknHide([], 1, ['arrimage', 'arrimageleft', 'currentdate', 'menu', 'menu-time', 'circle', 'downloadboard', 'distance', 'duration', 'departure_dropdown', 'return_dropdown', 'infoboard', 'infoboard2', 'infoboard3', 'closemap', 'map-container'])
 
         showstations()
     });
@@ -383,7 +315,7 @@ function gettripdata(data) {
 
  
 
-    stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, [])
+  //  stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, [])
     buttons.forEach(button => button.disabled = false);
     clearInterval(intervalId);
     tripdata = {}
@@ -408,7 +340,7 @@ function gettripdata(data) {
 
     if (stationdid == 0 && stationrid == 0) {
 
-        stacknHide(['menu-time','currentdate'], 1, [])
+       // stacknHide(['menu-time','currentdate'], 1, [])
 
         menu.scrollTop = menu.scrollHeight * 0.5
 
@@ -426,7 +358,7 @@ function gettripdata(data) {
     else {
         var triptempdata = []
 
-        stacknHide([], 1, ['menu-time', 'currentdate'])
+      //  stacknHide([], 1, ['menu-time', 'currentdate'])
 
         for (let i = 0; i < Object.entries(tripdata).length; i++) {
             if (tripdata[i]["did"] == stationdid && tripdata[i]["rid"] == stationrid) {
@@ -510,9 +442,22 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
         additemtopulldown('Previous Day', -1)
     }
     
- 
-    var timeper = 100 * 164 / parseInt(document.getElementById("menu").style.width)
+    var thiselement = document.getElementById("menu").getBoundingClientRect()
+    var timeper = 100 * 164 / parseInt(thiselement.width)
     const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3, (100 - timeper) / 6, (100 - timeper) / 6];
+
+     
+    document.getElementById("departure_dropdown").style.marginLeft = columnWidths[0] +'%'
+    document.getElementById("departure_dropdown").style.width = columnWidths[1] - 4 + '%'
+    document.getElementById("return_dropdown").style.marginLeft = columnWidths[0] + columnWidths[1] + '%'
+    document.getElementById("return_dropdown").style.width = columnWidths[2] - 4 + '%'
+    document.getElementById("distance").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + '%'
+    document.getElementById("duration").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + '%'
+
+
+    
+    
+
 
     for (let i = startindex; i < endindex; i++) {
 
@@ -575,7 +520,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
 function showstations() {
     arrowdirection = 0
-    stacknHide(['stat_menu','cleartext', 'filterStations', 'stationtitle', 'operator', 'capacity'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
+  //  stacknHide(['stat_menu','cleartext', 'filterStations'], 1, ['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'])
 
     while (stat_menu.firstChild) {
         stat_menu.removeChild(stat_menu.firstChild);
@@ -627,7 +572,7 @@ function showstations() {
                 if (j == 5) { col.textContent = stationdata[stationskeys[i]]['Kapasiteet'] }
                 item.appendChild(col);
             }
-
+           
             item.addEventListener("click", function () {
                 const items = stat_menu.querySelectorAll(".menu-item");
                 for (const it of items) {
@@ -637,7 +582,7 @@ function showstations() {
                 var thisitemnro = Array.from(items).indexOf(this)
 
                 writeinfoboard(filteredkeys[thisitemnro], 'station')
-                stacknHide(['infoboard2'], 1, [])
+              //  stacknHide(['infoboard2'], 1, [])
                 document.getElementById("infoboard2").innerHTML = 'Capacity:<BR>' + stationdata[filteredkeys[thisitemnro]]['Kapasiteet'] + ' bikes'
                 //writeinfoboard(stationdata[filteredkeys[thisitemnro]]['Kapasiteet'], 'bikes', 1)
 
@@ -664,12 +609,12 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
 
     if (stationview == 1) {
-        stacknHide(['filterStations', 'stat_menu', 'cleartext', 'stationtitle', 'operator', 'capacity'], 1, ['HeatmapDeparture', 'TopDeparture', 'HeatmapReturn', 'TopReturn', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
+      //  stacknHide(['filterStations', 'stat_menu', 'cleartext'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
     }
     else {
-        stacknHide(['distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
+     //   stacknHide(['distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
         if (departure_dropdown.selectedIndex == 0 && return_dropdown.selectedIndex == 0) {
-            stacknHide(['currentdate', 'menu-time'],1,[])
+         //   stacknHide(['currentdate', 'menu-time'],1,[])
         }
              
 
@@ -687,7 +632,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     erasemarkersandpolylines(regulargooglemarker, polyline)
     const { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices } = computeStatDir(tempstatdata, stationdata, activestationid, tofrom)
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
-    stacknHide([], 1, ['arrimage', 'arrimageleft'])
+  //  stacknHide([], 1, ['arrimage', 'arrimageleft'])
     
     var whicharray = 'arrimage'
 
@@ -700,7 +645,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 
     if (isheatmap == 1) {
-        stacknHide(['infoboard2', whicharray], 1, ['infoboard3'])
+    //    stacknHide(['infoboard2', whicharray], 1, ['infoboard3'])
         document.getElementById('infoboard2').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
 
         var movingAverage = movingaveragecalc(circularArray)     
@@ -711,7 +656,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     }
 
     if (isheatmap == 0) {
-        stacknHide(['infoboard3', whicharray], 1, ['infoboard2'])
+       // stacknHide(['infoboard3', whicharray], 1, ['infoboard2'])
         document.getElementById('infoboard3').innerHTML = 'Click markers<BR>for route info.'
 
 
@@ -755,10 +700,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 function showmap(coords) {
         if (displaymap == 0) { return }
-    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2'], 1, ['stationtitle','stat_menu'])
 
-    stacknHide(['HeatmapReturn', 'TopReturn'], 1, ['filterStations', 'cleartext', 'operator', 'capacity'])
-    stacknHide(['HeatmapDeparture', 'TopDeparture'], 1, [])
         map.setCenter({ lat: coords[0], lng: coords[1] });
 
     showmarker(coords, ' ', 0, 'reg')
@@ -774,7 +716,7 @@ function showmaptrip(dep_loc, ret_loc) {
     if (displaymap == 0) { return }
 
 
-    stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage'], 1, ['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown', 'arrimageleft'])
+   // stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage'], 1, ['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown', 'arrimageleft'])
 
     map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
     fitMapToBounds([
@@ -828,7 +770,7 @@ function showmarker(coords, labeltext, thisid, type) {
     temp.addListener('click', function () {
         writeinfoboard(thisid, 'station', 2)
 
-        stacknHide(['infoboard2'], 1, [])
+      //  stacknHide(['infoboard2'], 1, [])
         document.getElementById('infoboard2').innerHTML = 'Trips: ' + toptripstats[0][Number(labeltext) - 1] + '<BR>Avg dist: ' + toptripstats[1][Number(labeltext) - 1] + ' km<BR>Avg time: ' + toptripstats[2][Number(labeltext) - 1] + ' min'
 
     });
@@ -883,18 +825,18 @@ function onSelectChange() {
 
 
     if (stationdid == 0 && stationrid == 0) {
-        stacknHide(['currentdate'], 1, [])
+        //stacknHide(['currentdate'], 1, [])
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
         return
     }
     if (stationdid > 0) {
-        stacknHide([], 1, ['currentdate'])
+       // stacknHide([], 1, ['currentdate'])
        // document.getElementById("currentdate").style.opacity = 0.4;
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=D' + stationdid.toString(), 3)
         return
     }
     if (stationdid == 0) {
-        stacknHide([], 1, ['currentdate'])
+       // stacknHide([], 1, ['currentdate'])
       //  document.getElementById("currentdate").style.opacity = 0.4;
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=R' + stationrid.toString(), 3)
         return
@@ -937,7 +879,7 @@ window.onload = function () {
 function prefetch() {
     buttons.forEach(button => button.disabled = true);
 
-    stacknHide(['downloadboard'], 1, ['menu', 'stat_menu', 'menu-time', 'filterStations', 'stationtitle', 'cleartext', 'operator', 'capacity'])
+   // stacknHide(['downloadboard'], 1, ['menu', 'stat_menu', 'menu-time', 'filterStations', 'cleartext'])
     let rotation = 0;
     intervalId = setInterval(() => {
         rotation += 2;
@@ -952,7 +894,7 @@ function getdata(thisaddress, mode, display) {
  
     fetchThis(thisaddress, mode, display)
         .then((data) => {
-            stacknHide([], 1, ['downloadboard'])
+          //  stacknHide([], 1, ['downloadboard'])
             if (mode == 3) { gettripdata(data) }
             if (mode == 5) { initthismap(data) }
             if (mode == 'did' || mode == 'rid') { stationDetailMap(data, mode, display) }
