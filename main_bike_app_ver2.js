@@ -1,5 +1,5 @@
 import './style.css'
-import { openCalendarWindow, popupstations, mockSlider, drawCircle, computeStatDir, movingaveragecalc, koira, erasemarkersandpolylines } from './aux_functions.js';
+import { generateCalendarHTML, popupstations, mockSlider, drawCircle, computeStatDir, movingaveragecalc, koira, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -76,8 +76,7 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide(['labelrow', 'stat_menu'], 1, ['closemap', 'tripviewlabelrow', 'mapbuttons', 'innercalendar', 'menu', 'menu-time', 'circle', 'downloadboard', 'arr1','arr2', 'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
-
+stacknHide(['labelrow', 'stat_menu'], 1, ['closemap', 'tripviewlabelrow', 'mapbuttons', 'innercalendar', 'menu', 'menu-time', 'circle', 'arr1','arr2', 'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
 
 
 
@@ -281,7 +280,7 @@ function changeDate() {
     const selectedDateNumerical = startdatestring.split("-").map(Number);
     var sss = selectedDateNumerical[2] + '.' + selectedDateNumerical[1] + '.' + selectedDateNumerical[0]
  
-    var generatedHTML = openCalendarWindow(daterange[0][0], daterange[0][1] - 1, daterange[1][1], sss)
+    var generatedHTML = generateCalendarHTML(daterange[0][0], daterange[0][1] - 1, daterange[1][1], sss)
     document.getElementById("innercalendar").innerHTML = generatedHTML;
     
     let generatedCells = document.getElementsByClassName("generatedCell");
@@ -312,8 +311,9 @@ const buttons = document.querySelectorAll('button');
 
 function gettripdata(data) {
 
+    document.getElementById('downloadboarddiv').style.zIndex = -1
 
-  //  stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, [])
+   
     buttons.forEach(button => button.disabled = false);
     clearInterval(intervalId);
     tripdata = {}
@@ -898,8 +898,10 @@ window.onload = function () {
 
 function prefetch() {
     buttons.forEach(button => button.disabled = true);
+    document.getElementById('downloadboarddiv').style.zIndex = 900
 
-   // stacknHide(['downloadboard'], 1, ['menu', 'stat_menu', 'menu-time', 'filterStations', 'cleartext'])
+     
+   // stacknHide(['downloadboard'], 1, ['tripviewlabelrow', 'labelrow','menu', 'stat_menu', 'menu-time', 'innercalendar','map-container'])
     let rotation = 0;
     intervalId = setInterval(() => {
         rotation += 2;
@@ -910,7 +912,7 @@ function prefetch() {
 
 
 function getdata(thisaddress, mode, display) {
-    prefetch()
+    if (mode == 3) { prefetch() }
  
     fetchThis(thisaddress, mode, display)
         .then((data) => {
