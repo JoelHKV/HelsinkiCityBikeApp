@@ -1,22 +1,29 @@
 
 
-
 .grid-container {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: 9vh 9vh 9vh 9vh 40vh 4vh 4vh 4vh 4vh 4vh 4vh;
+    grid-template-rows: 9vh 9vh 9vh 2.2em 60vh;
     max-width: 1100px;
-    height: 30vh;
+    height: 99vh;
     margin: auto;
     background-color: #dddddd;
     background-position: center;
     background-size: cover;
+    padding: 1vmax;
+    border-radius: 1vmax;
 }
 
 .grid-item {
     padding: 0px;
-    border: none;
+    border: 0;
 }
+
+.unselectable {
+    user-select: none;
+}
+
+
 
 .titletext {
     grid-column: 1 / 13;
@@ -28,28 +35,22 @@
     
 }
 
+.stationview, .tripview {
+    font-size: 2vmax;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #eeeeee;
+    border-radius: 2vmax;
+}
+
 .stationview {
     grid-column: 2 / 6;
-    grid-row: 2;
-    font-size: 1.65vw;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #eeeeee;
-    border-radius: 30px;
+    border: 2px solid black;
 }
-
 .tripview {
     grid-column: 8 / 12;
-    grid-row: 2;
-    font-size: 1.65vw;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #eeeeee;
-    border-radius: 30px;
 }
-
-
-.departure_dropdown, .return_dropdown {
+    .departure_dropdown, .return_dropdown {
    
     text-align: left;
     font-size: 1.3rem;
@@ -59,14 +60,11 @@
     font-weight: bold;
 }
 
- 
-
-
 .searchstation {
-    grid-column: 1;
+    grid-column: 1/13;
     grid-row: 3;
+    margin-top: auto;
 }
-
 
 .tripviewlabelrow, .labelrow {
     grid-column: 1 / 13;
@@ -75,22 +73,46 @@
     display: flex;
     font-weight: bold;
     padding-right: 1vw;
+  
 }
 
-.infoboard {
-    grid-column: 5 / 8;
-    grid-row: 2;
-}
-.infoboard2 {
-    grid-column: 5 / 8;
+.infoinfo {
+    grid-column: 1 / 13;
     grid-row: 3;
-}
-.infoboard3 {
-    grid-column: 8 / 13;
-    grid-row: 2;
+    display: flex;
+    justify-content: center;
+    width: auto;
+ 
 }
 
-.arrimage {
+#infoboard, #infoboard2, #infoboard3 {
+    text-align: left;
+    font-size: 1.3rem;
+    cursor: pointer;
+    border: 3px solid gray;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: none;
+}
+
+
+#infoboard2 {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none
+}
+
+.arrow-right-button {
+    font-size: 4rem;
+    background-color: transparent;
+    border: 0;
+   
+}
+.arrow-left-button {
+    transform: scaleX(-1);
+}
+    .arrimage {
     grid-column: 1 / 7;
     grid-row: 1;
 }
@@ -102,37 +124,27 @@
 
 .menu-itemb {
     display: flex;
+    align-items: center;
     padding-right: 1vw;
 }
 
 
-
-
-
 .currentdate, .departure_dropdown, .return_dropdown, .duration, .distance {
+    top: 0;
     position: absolute;
 }
 
-.stationlist, .triplist, .triptime, .map-container, .calendar, .downloadboard {
+.stationlist, .triplist, .triptime, .map-container, .downloadboard, .innercalendar, .closemap {
     grid-column: 1 / 13;
     grid-row: 5;
 }
 
-
 .downloadboard {
- 
     width: 20%;
     height: 20%;
     margin-left: 40%;
     margin-top: 2%;
 }
-
-
-
-
-
-
-
 
 
 .mapbuttons {
@@ -143,19 +155,30 @@
     width: 100%;
 }
 
-    .mapbuttons button {
+    .mapbuttons button, #closemap {
         cursor: pointer;
         line-height: 1.3;
         border: 2px solid gray;
         border-radius: 10px;
         font-size: 1.1rem;
-        width: 19%;
+        width: 24%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-        
-        
-        .flags {
-    grid-column: 10 / 13;
-    grid-row: 6;
+
+#closemap {
+    width: 6rem;
+    height: 6rem;
+    z-index: 100;
+    justify-self: end;
+}
+
+.flags {
+    grid-column: 8 / 13;
+    grid-row: 1;
+    justify-self: end;
+
 }
 
 .langselect {
@@ -163,8 +186,6 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
-
-
 
 .basicobject {
    
@@ -177,25 +198,11 @@
 }
 
 
-.container {
-    max-width: 1200px;
-    height: 1200px;
-    margin: auto;
-    position: relative;
-    border: none
-}
-
 .image {
     width: 100%;
     height: 100%;
     position: relative;
 }
-
-
-
-
-
-
 
 
 #menu-time, #menu, #stat_menu, .labelrow {
@@ -212,12 +219,11 @@
 }
 
 
-    #menu-time {
-        width: 140px
-    }
-    #menu-time {
-    background-color: transparent
+#menu-time {
+    width: 140px;
+    background-color: transparent;
 }
+    
 
 
 
@@ -228,17 +234,17 @@
     border: 3px solid gray;
 }
 
-#innercalendar {
-   
+#innercalendar {  
     overflow: scroll;
     background-color: white;
-    border: 1px solid gray;
-    border-radius: 10px;
+    border: 3px solid gray;
+    border-radius: 10px;   
+    cursor: pointer;
 }
 
 
 #filterStations {
-    position: absolute;
+  
     text-align: left;
     padding: 0.15rem 1rem;
     font-size: 1.3rem;
@@ -248,68 +254,29 @@
     border-radius: 10px;
 }
 
-
-
 #distance, #duration {
     border: none;
     cursor: default;
     background-color: #ffffff;
 }
 
-
 #currentdate, #tripview {
     background-color: #ffffff;
 }
 
-
-
-
 #cleartext {
-   
-    text-align: center;
-    font-size: 1.6rem;
+    position: absolute;
+    padding: 0.5rem;
+    font-size: 1.1rem;
     border: none;
-    background-color: #aaaaaa;
+    background-color: transparent;
     cursor: pointer;
     color: #555555
-}
-
-
-#arrimage, #arrimageleft {
- 
-    font-size: 2rem;
-    background-color: #fefefe;
-    border-radius: 10px;
-    text-align: center;
 }
 
 #downloadboard {
      
     background-color: none;
-}
-
-
-   
-
-#infoboard, #infoboard2, #infoboard3 {
-    
-    text-align: left;
-    font-size: 1.3rem;
-    cursor: pointer;
-    border: 3px solid gray;
-    border-radius: 10px;
-    font-weight: bold;
-    transition: none;
-}
-
-
-
-#infoboard2 {
- 
-    background-color: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none
 }
 
 
@@ -328,7 +295,6 @@
 }
 
 
-
 ::-webkit-scrollbar-track {
     background-color: #f1f1f1;
 }
@@ -343,12 +309,9 @@
     }
 
 
-
-
 .menu-item {
     display: flex;
 }
-
 
 
 .col {
@@ -366,28 +329,19 @@
     white-space: nowrap;
 }
 
-
-
-
-
-
-
-
+#fin, #swe, #eng {
+    width: 2.4rem;
+    height: 1.8rem;
+}
 #fin {
     background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/fi.svg');
-    width: 3vw;
-    height: 2.4vw;
 }
 #swe {
     background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/se.svg');
-    width: 3vw;
-    height: 2.4vw;
     opacity: 0.4;
 }
 #eng {
     background-image: url('https://storage.googleapis.com/joelvuolevi/bikeapp/gb.svg');
-    width: 3vw;
-    height: 2.4vw;
     opacity: 0.4;
 }
 
@@ -399,3 +353,29 @@
 }
 
 
+
+@media screen and (max-width: 900px) and (min-width: 690px) {
+    #infoboard, #infoboard2, #infoboard3 {
+        font-size: 1.1rem;
+    }
+
+    .arrow-right-button {
+        font-size: 3rem;
+    }
+}
+
+
+
+@media screen and (max-width: 700px) and (min-width: 200px) {
+    #infoboard, #infoboard2, #infoboard3 {
+  
+        font-size: 0.85rem;
+
+    }
+
+    .arrow-right-button {
+        font-size: 2rem;
+      
+    }
+
+}

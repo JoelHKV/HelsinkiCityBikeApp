@@ -10,7 +10,7 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 var heatmapmaxradius = 200
-var displaymap = 0
+var displaymap = 1
 var daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
 //var coarseSteps = 200
@@ -76,7 +76,9 @@ function stacknHide(stackElements, startZ, hideElements) {
 }
 
 //  this is the starting view arrangement
-stacknHide(['labelrow', 'stat_menu'], 1, ['filterStations', 'tripviewlabelrow', 'mapbuttons', 'arrimage','arrimageleft','currentdate', 'menu', 'menu-time', 'circle', 'downloadboard',  'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
+stacknHide(['labelrow', 'stat_menu'], 1, ['closemap', 'tripviewlabelrow', 'mapbuttons', 'innercalendar', 'menu', 'menu-time', 'circle', 'downloadboard', 'arr1','arr2', 'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
+
+
 
 
 let departure_dropdown = document.getElementById("departure_dropdown");
@@ -89,14 +91,13 @@ return_dropdown.onchange = onSelectChange;
 
 document.getElementById('tripview').addEventListener("click", () => {
 
-    
+   
    // stacknHide(['tripviewlabelrow'], 1, [])
     if (stationview == -1) { return }
-    stacknHide(['menu', 'menu-time', 'tripviewlabelrow'], 31, ['labelrow', 'stat_menu'])
-
     
+    stacknHide(['menu-time', 'menu', 'tripviewlabelrow'], 31, ['labelrow', 'stat_menu', 'filterStations', 'arr1', 'arr2', 'infoboard', 'infoboard2', 'infoboard3','mapbuttons' ])
 
-
+  
 
     var startstatid = pulldownitemToStationID.indexOf(inforboardid[0])
     var startstatid2 = pulldownitemToStationID.indexOf(inforboardid[1])
@@ -119,38 +120,24 @@ document.getElementById('tripview').addEventListener("click", () => {
         departure_dropdown.selectedIndex = startstatid2 + 1
     }
 
-
-
-
-
-    // document.getElementById('tripviewlabelrow').style.display = 'none'
-    //document.getElementById('labelrow').style.display = 'none'
-    //document.getElementById('mapbuttons').style.display = 'block'
-    //document.getElementById('tripviewlabelrow').style.display = 'none'
-    //document.getElementById('tripviewlabelrow').style.display = 'block'
-
-
-   // stacknHide(['mapbuttons'], 1, ['labelrow'])
-
-    
-    //stacknHide([], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage','arrimageleft'])
-
     stationview = -1
     document.getElementById('stationview').style.backgroundColor = '#ffffff'
+    document.getElementById('stationview').style.border = 'none'
     document.getElementById('tripview').style.backgroundColor = '#eeeeee'
-    onSelectChange()
+    document.getElementById('tripview').style.border='2px solid black'
 
+    onSelectChange()
+   
 })
 
 
 document.getElementById('stationview').addEventListener("click", () => {
 
-    stacknHide(['labelrow'], 1, ['tripviewlabelrow'])
-
+ 
 
     if (stationview == 1) { return }
    
-    stacknHide(['stat_menu', 'labelrow'], 31, ['tripviewlabelrow', 'menu-time', 'menu'])
+    stacknHide(['stat_menu', 'labelrow', 'filterStations'], 31, ['tripviewlabelrow', 'menu-time', 'menu', 'arr1', 'arr2', 'infoboard', 'infoboard2', 'infoboard3','mapbuttons'])
 
 
 
@@ -166,6 +153,10 @@ document.getElementById('stationview').addEventListener("click", () => {
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
     document.getElementById('stationview').style.backgroundColor = '#eeeeee'
+
+    document.getElementById('tripview').style.border = 'none'
+    document.getElementById('stationview').style.border = '2px solid black'
+
     showstations()
 })
 
@@ -183,18 +174,19 @@ function newbasestation(newstation) {
     stationview = 1
     document.getElementById('tripview').style.backgroundColor = '#ffffff'
     document.getElementById('stationview').style.backgroundColor = '#eeeeee'
+    document.getElementById('tripview').style.border = 'none'
+    document.getElementById('stationview').style.border = '2px solid black'
+
+
         activestationid = newstation
         erasemarkersandpolylines(regulargooglemarker, polyline)
-      //  stacknHide(['infoboard2'], 1, ['infoboard3'])
+    stacknHide([], 1, ['infoboard', 'infoboard2','infoboard3', 'arr1', 'arr2'])
         writeinfoboard(activestationid, 'station')
         document.getElementById("infoboard2").innerHTML = 'Capacity:<BR>' + stationdata[activestationid]['Kapasiteet'] + ' bikes'
 
         var coords = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
         
-        showmap(coords)
-
-
-    
+        showmap(coords)   
 }
 
 document.getElementById('currentdate').addEventListener("click", changeDate);
@@ -257,9 +249,13 @@ statDetailButtons.forEach(button => {
         var addr = 'https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?'
        
         if (event.target.id == 'TopDeparture') {
+            document.getElementById("arr1").classList.remove('arrow-left-button');
+            document.getElementById("arr2").classList.remove('arrow-left-button');
             getdata(addr + 'action=D' + activestationid.toString(), 'rid', 0)
         }
         if (event.target.id == 'TopReturn') {
+            document.getElementById("arr1").classList.add('arrow-left-button');
+            document.getElementById("arr2").classList.add('arrow-left-button');
             getdata(addr + 'action=R' + activestationid.toString(), 'did', 0)
         }
         if (event.target.id == 'HeatmapDeparture') {
@@ -272,9 +268,14 @@ statDetailButtons.forEach(button => {
 });
 
 
-
 function changeDate() {
 
+
+    if (document.getElementById("currentdate").style.opacity == 0.4) { return };
+
+    
+    stacknHide(['innercalendar'], 1, ['menu', 'menu-time']);
+    
     if (stationview == 1 || departure_dropdown.selectedIndex != 0 || return_dropdown.selectedIndex != 0) { return }
 
     const selectedDateNumerical = startdatestring.split("-").map(Number);
@@ -299,7 +300,7 @@ function changeDate() {
 
            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
             setTimeout(() => {
-                document.getElementById("innercalendar").style.zIndex = -1
+                stacknHide(['menu', 'menu-time'], 1, ['innercalendar'])
             }, 400)
 
         });
@@ -309,11 +310,8 @@ function changeDate() {
 
 const buttons = document.querySelectorAll('button');
 
-
-
 function gettripdata(data) {
 
- 
 
   //  stacknHide(['departure_dropdown', 'return_dropdown', 'distance', 'duration', 'currentdate', 'menu', 'menu-time'], 1, [])
     buttons.forEach(button => button.disabled = false);
@@ -446,7 +444,10 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     var timeper = 100 * 164 / parseInt(thiselement.width)
     const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3, (100 - timeper) / 6, (100 - timeper) / 6];
 
-     
+    document.getElementById("currentdate").style.marginLeft = 0
+    document.getElementById("currentdate").style.width = columnWidths[0] - 4 + '%'
+
+
     document.getElementById("departure_dropdown").style.marginLeft = columnWidths[0] +'%'
     document.getElementById("departure_dropdown").style.width = columnWidths[1] - 4 + '%'
     document.getElementById("return_dropdown").style.marginLeft = columnWidths[0] + columnWidths[1] + '%'
@@ -496,6 +497,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
                 var ret_loc = [stationdata[triptempdata[thisitemnro]["rid"]]["y"], stationdata[triptempdata[thisitemnro]["rid"]]["x"]]
 
                 activestationid = triptempdata[thisitemnro]
+            
                 writeinfoboard(triptempdata[thisitemnro]["did"], 'station', 0)
                 writeinfoboard(triptempdata[thisitemnro]["rid"], 'station', 2)
                 writeinfoboard(triptempdata[thisitemnro], 'trip', 0)          
@@ -607,13 +609,16 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
     erasemarkersandpolylines(regulargooglemarker, polyline)
 
+    
 
     if (stationview == 1) {
-      //  stacknHide(['filterStations', 'stat_menu', 'cleartext'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
+        stacknHide(['stat_menu', 'labelrow', 'filterStations'], 1, ['arr1', 'arr2', 'mapbuttons', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
     }
     else {
-     //   stacknHide(['distance', 'duration', 'departure_dropdown', 'return_dropdown'], 1, ['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage', 'arrimageleft'])
-        if (departure_dropdown.selectedIndex == 0 && return_dropdown.selectedIndex == 0) {
+        stacknHide(['menu', 'menu-time', 'tripviewlabelrow'], 1, ['arr1', 'arr2', 'mapbuttons', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3'])
+
+
+       if (departure_dropdown.selectedIndex == 0 && return_dropdown.selectedIndex == 0) {
          //   stacknHide(['currentdate', 'menu-time'],1,[])
         }
              
@@ -625,6 +630,12 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
 
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
+
+     
+    stacknHide(['infoboard2'], 1, ['arr1', 'arr2','infoboard3'])
+    
+
+
     // tofrom is either did or rid for dep or ret station id respectively
     inforboardid[1] = ''
     buttons.forEach(button => button.disabled = false);
@@ -634,11 +645,11 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     var this_loc = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]] 
   //  stacknHide([], 1, ['arrimage', 'arrimageleft'])
     
-    var whicharray = 'arrimage'
+    //var whicharray = 'arrimage'
 
     arrowdirection = 1
     if (tofrom == 'did') {
-        whicharray = 'arrimageleft'
+      //  whicharray = 'arrimageleft'
         arrowdirection = -1
     
     }
@@ -647,7 +658,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
     if (isheatmap == 1) {
     //    stacknHide(['infoboard2', whicharray], 1, ['infoboard3'])
         document.getElementById('infoboard2').innerHTML = 'Trips: ' + nroTrips + '<BR>Avg dist: ' + averageDist + ' km<BR>Avg time: ' + averageTime + ' min'
-
+        stacknHide(['infoboard2'], 1, [])
         var movingAverage = movingaveragecalc(circularArray)     
         var customMarker = drawCircle(movingAverage, canvas, ctx)
 
@@ -657,8 +668,8 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
     if (isheatmap == 0) {
        // stacknHide(['infoboard3', whicharray], 1, ['infoboard2'])
-        document.getElementById('infoboard3').innerHTML = 'Click markers<BR>for route info.'
-
+        document.getElementById('infoboard2').innerHTML = 'Click markers<BR>for route info.'
+        stacknHide(['infoboard2'], 1, [])
 
         
         for (var i = 1; i <= 5; i++) {
@@ -699,7 +710,12 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 
 function showmap(coords) {
-        if (displaymap == 0) { return }
+    if (displaymap == 0) { return }
+     
+    stacknHide(['mapbuttons', 'closemap', 'map-container', 'infoboard'], 1, ['stat_menu', 'menu', 'menu-time', 'tripviewlabelrow', 'labelrow','filterStations'])
+
+  
+
 
         map.setCenter({ lat: coords[0], lng: coords[1] });
 
@@ -714,9 +730,8 @@ function showmap(coords) {
 
 function showmaptrip(dep_loc, ret_loc) {
     if (displaymap == 0) { return }
-
-
-   // stacknHide(['closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3', 'arrimage'], 1, ['distance', 'duration', 'currentdate', 'menu-time', 'departure_dropdown', 'return_dropdown', 'arrimageleft'])
+    
+    stacknHide(['closemap','map-container', 'infoboard', 'infoboard2', 'infoboard3'], 1, ['mapbuttons','stat_menu', 'menu', 'menu-time', 'tripviewlabelrow', 'labelrow'])
 
     map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
     fitMapToBounds([
@@ -730,7 +745,6 @@ function showmaptrip(dep_loc, ret_loc) {
 
 
 function showmarker(coords, labeltext, thisid, type) {
-
 
     if (type == 'reg') {
 
@@ -769,7 +783,6 @@ function showmarker(coords, labeltext, thisid, type) {
     if (thisid > 0) { 
     temp.addListener('click', function () {
         writeinfoboard(thisid, 'station', 2)
-
       //  stacknHide(['infoboard2'], 1, [])
         document.getElementById('infoboard2').innerHTML = 'Trips: ' + toptripstats[0][Number(labeltext) - 1] + '<BR>Avg dist: ' + toptripstats[1][Number(labeltext) - 1] + ' km<BR>Avg time: ' + toptripstats[2][Number(labeltext) - 1] + ' min'
 
@@ -825,19 +838,26 @@ function onSelectChange() {
 
 
     if (stationdid == 0 && stationrid == 0) {
-        //stacknHide(['currentdate'], 1, [])
+      //  stacknHide(['currentdate'], 1, [])
+
+        if (document.getElementById("currentdate").style.opacity == 0.4) {
+            document.getElementById("currentdate").innerHTML = 'Choose date'
+        }
+        document.getElementById("currentdate").style.opacity = 1;
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
         return
     }
     if (stationdid > 0) {
-       // stacknHide([], 1, ['currentdate'])
-       // document.getElementById("currentdate").style.opacity = 0.4;
+      // stacknHide([], 1, ['currentdate'])
+        document.getElementById("currentdate").style.opacity = 0.4;   
+        document.getElementById("currentdate").innerHTML='All dates'
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=D' + stationdid.toString(), 3)
         return
     }
     if (stationdid == 0) {
-       // stacknHide([], 1, ['currentdate'])
-      //  document.getElementById("currentdate").style.opacity = 0.4;
+       //stacknHide([], 1, ['currentdate'])
+        document.getElementById("currentdate").style.opacity = 0.4;      
+        document.getElementById("currentdate").innerHTML = 'All dates'
         getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=R' + stationrid.toString(), 3)
         return
     }
@@ -955,6 +975,9 @@ function writeinfoboard(stationid, mode, whichtextfield) {
         
         if (whichtextfield == 2) { 
             inforboardid[1] = stationid.toString()
+
+
+            stacknHide(['infoboard3', 'arr1', 'arr2'], 1, [])
             document.getElementById('infoboard3').innerHTML = temphtml
         }
         else {
