@@ -1,5 +1,127 @@
 
 
+
+
+
+
+
+
+export function showpointmap(coords, map) {
+
+    map.setCenter({ lat: coords[0], lng: coords[1] });
+
+    
+
+    fitMapToBounds([
+        { lat: coords[0] + 0.005, lng: coords[1] + 0.005 },
+        { lat: coords[0] - 0.005, lng: coords[1] - 0.005 },
+    ], map);
+}
+
+
+
+
+export function centermapfortrip(dep_loc, ret_loc, map) {
+
+    map.setCenter({ lat: (dep_loc[0] + ret_loc[0]) / 2, lng: (dep_loc[1] + ret_loc[1]) / 2 });
+
+    fitMapToBounds([
+        { lat: Math.max(dep_loc[0], ret_loc[0]), lng: Math.max(dep_loc[1], ret_loc[1]) },
+        { lat: Math.min(dep_loc[0], ret_loc[0]), lng: Math.min(dep_loc[1], ret_loc[1]) },
+    ], map);
+
+}
+
+
+export function showmarker(coords, labeltext, thisid, type, map, writeinfoboard, infoboardtext) {
+    let temp;
+    const heatmapmaxradius = 200
+    if (type === 'reg') {
+        temp = new google.maps.Marker({
+            position: { lat: coords[0], lng: coords[1] },
+            map: map,
+            label: {
+                text: labeltext,
+                color: 'black',
+                fontSize: '24px',
+                fontWeight: 'bold'
+            }
+        });
+    }
+
+    if (type === 'custom') {
+        const markerImage = new google.maps.MarkerImage(
+            labeltext,
+            new google.maps.Size(2 * heatmapmaxradius, 2 * heatmapmaxradius),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(heatmapmaxradius, heatmapmaxradius)
+        );
+
+        temp = new google.maps.Marker({
+            position: { lat: coords[0], lng: coords[1] },
+            map: map,
+            icon: markerImage
+        });
+    }
+
+    if (thisid > 0) {
+        temp.addListener('click', function () {
+               writeinfoboard(thisid, 'station', 2);
+            writeinfoboard('', 'force', infoboardtext) 
+
+        });
+    }
+    return temp
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function showpolyline(dep_loc, ret_loc, map) {
+    //  draw polyline and return the handle
+    const start = { lat: dep_loc[0], lng: dep_loc[1] };
+    const end = { lat: ret_loc[0], lng: ret_loc[1] };
+
+    const temp = new google.maps.Polyline({
+        path: [start, end],
+        geodesic: true,
+        strokeColor: "#ff0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 4,
+        icons: [{
+            icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
+            offset: "100%"
+        }],
+        map: map
+    });
+    return temp;
+}
+
+
+
+// selects the area of google maps so that start and end is visible 
+export function fitMapToBounds(latLngArray, map) {
+    const bounds = new google.maps.LatLngBounds();
+    for (let i = 0; i < latLngArray.length; i++) {
+        bounds.extend(latLngArray[i]);
+    }
+    map.fitBounds(bounds);
+}
+
+
+
+
+
 export function erasemarkersandpolylines(regulargooglemarker, polyline) {
     // Erase markers and polylines on Google Maps
     regulargooglemarker.forEach(marker => marker.setMap(null));
@@ -123,6 +245,24 @@ export function computeStatDir(tempstatdata, stationdata, activestationid, tofro
     return { averageDist, averageTime, nroTrips, circularArray, stationPopularityIndices };
 }
 
+export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract, daterange) {
+    var edgedate = daterange[0][0].toString() + '-' + daterange[0][1].toString().padStart(2, '0') + '-' + daterange[0][2].toString().padStart(2, '0');
+
+    if (startdatestring === edgedate) {
+        daysToAddOrSubtract = 0;
+    }
+
+    var date = new Date(startdatestring);
+    date.setDate(date.getDate() + daysToAddOrSubtract);
+
+    var year = date.getFullYear();
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+
+    return year + '-' + month + '-' + day;
+}
+
+
 
 export function mockSlider(coarseSteps, menuTime) {
     //coarse slider on the left of the tripview
@@ -167,11 +307,6 @@ export function popupstations(stationdata, tempkeys, name) {
 }
 
 
-
-
-export function koira(startdatestring) {
-    stacknHide(['downloadboard'], 1, [])
-}
 
 
 export function generateCalendarHTML(currentYear, startMonth, endMonth, graydate) {
