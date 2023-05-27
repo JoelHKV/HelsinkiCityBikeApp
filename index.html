@@ -4,68 +4,87 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <title>Bike App</title>
 
-  <script type="module" crossorigin src="https://joelhkv.github.io/HelsinkiCityBikeApp/assets/index.847b2d89.js"></script>
-  <link rel="stylesheet" href="https://joelhkv.github.io/HelsinkiCityBikeApp/assets/index.c1b1a759.css">
+  <script type="module" crossorigin src="https://joelhkv.github.io/HelsinkiCityBikeApp/assets/index.cf256410.js"></script>
+  <link rel="stylesheet" href="https://joelhkv.github.io/HelsinkiCityBikeApp/assets/index.b54cc881.css">
 </head>
 <body>
 
-    <div class="container" id="container">
-        <div id="backgroundgray" style="padding: 0px;"></div>
+    <div class="grid-container" id="grid-container">
+        <div class="grid-item titletext unselectable" id="titletitle" style="padding-top: 0vh; border: none; text-align: center; color: #000000; ">Bike App</div>
+        <button class="grid-item stationview unselectable" id="stationview">Stations</button>
+        <button class="grid-item tripview unselectable" id="tripview">Trips</button>
 
-        <div id="map-container">
+
+
+        <div class="grid-item tripviewlabelrow unselectable" id="tripviewlabelrow">
+
+            <button class="grid-item basicobject currentdate unselectable" id="currentdate">Jun 17 2021</button>
+
+            <select class="grid-item departure_dropdown unselectable" id="departure_dropdown"></select>
+            <select class="grid-item return_dropdown unselectable" id="return_dropdown"></select>
+            <button class="grid-item distance basicobject unselectable" id="distance">km</button>
+            <button class="grid-item duration basicobject unselectable" id="duration">min</button>
+        </div>
+
+        <div class="grid-item innercalendar unselectable" id="innercalendar"></div>
+
+        <div class="grid-item dummy-row"></div>
+
+        <div class="grid-item searchstation">
+            <div class="input-group" style=" position: relative">
+                <input type="text" id="filterStations" placeholder="Search">
+                <button class=" basicobject unselectable" style="position: absolute; top: 0; right: -2rem" id="cleartext"></button>
+
+            </div>
+        </div>
+
+
+        <div class="grid-item labelrow unselectable" id="labelrow"><div class="menu-itemb"><div class="col col-1" style="width: 30%;">Station name:</div><div class="col col-2" style="width: 30%;">Address:</div><div class="col col-3" style="width: 12%;">Place:</div><div class="col col-4" style="width: 20%;">Operator:</div><div class="col col-5" style="width: 10%;">Capacity:</div></div></div>
+        <div class="grid-item stationlist unselectable" id="stat_menu"></div>
+
+        <div class="grid-item triplist unselectable" id="menu"></div>
+        <div class="grid-item triptime unselectable" id="menu-time"></div>
+        <div class="grid-item map-container unselectable" id="map-container">
             <div class="image" id="map"></div>
         </div>
-        <button id="infoboard"></button>
-        <button id="infoboard2"></button>
-        <button id="infoboard3"></button>
-        <img id="arrimage" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
-        <img id="arrimageleft" src="https://storage.googleapis.com/joelvuolevi/bikeapp/arrowr4.png" alt="">
+        <div class="grid-item downloadboard unselectable" id="downloadboarddiv">
+            <img id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
+        </div>
 
-        <div id="downloadboard2"></div>
-        <button id="closemap">Close</button>
-        <button class="statdetails" id="TopDeparture">Top<BR>Departure</button>
-        <button class="statdetails" id="TopReturn">Top<BR>Return</button>
 
-        <button class="statdetails" id="HeatmapDeparture">Heatmap<BR>Departure</button>
-        <button class="statdetails" id="HeatmapReturn">Heatmap<BR>Return</button>
+        <div class="grid-item mapbuttons unselectable" id="mapbuttons">
+            <button class="statdetails unselectable" id="HeatmapDeparture">Avg. Departure</button>
+            <button class="statdetails unselectable" id="HeatmapReturn">Avg. Return</button>
+            <button class="statdetails unselectable" id="TopDeparture">Top Departure</button>
+            <button class="statdetails unselectable" id="TopReturn">Top Return</button>
 
-        <div id="innercalendar"></div>
 
-        <button id="stationview">Stations</button>
-        <button id="tripview">Trips</button>
+        </div>
 
-        <button class="langselect" id="fin"></button>
-        <button class="langselect" id="swe"></button>
-        <button class="langselect" id="eng"></button>
+        <button class="grid-item closemap statdetails unselectable" id="closemap">Close</button>
 
-        <select id="departure_dropdown"></select>
-        <select id="return_dropdown"></select>
-        <button id="distance">km</button>
-        <button id="duration">min</button>
+        <div class="grid-item infoinfo unselectable" id="infoinfo">
+            <button class="basicobject infoboard unselectable" id="infoboard"></button>
+            <button class="arrow-right-button unselectable"><i id="arr1" class="fas fa-arrow-right"></i></button>
+            <button class="basicobject infoboard unselectable" id="infoboard2"></button>
+            <button class="arrow-right-button unselectable"><i id="arr2" class="fas fa-arrow-right"></i></button>
+            <button class="basicobject infoboard unselectable" id="infoboard3"></button>
+        </div>
 
-        <button id="stationtitle">Station name:</button>
-        <button id="cleartext"></button>
-        <button id="operator">Operator:</button>
-        <button id="capacity">Capacity:</button>
-
-        <img id="downloadboard" src="https://storage.googleapis.com/joelvuolevi/bikeapp/wheel.svg" alt="Downloading">
-
-        <input type="text" id="filterStations" placeholder="Search">
-
-        <div id="menu-time"></div>
-        <div id="menu"></div>
-        <div id="stat_menu"></div>
-
-        <button id="currentdate">Jun 17 2021</button>
-
-        <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
+        <div class="grid-item flags dropdown unselectable">
+            <button class="langselect unselectable" id="fin"></button>
+            <button class="langselect unselectable" id="swe"></button>
+            <button class="langselect unselectable" id="eng"></button>
+        </div>
 
     </div>
 
-       
+    <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
+    
 
 </body>
 </html>
