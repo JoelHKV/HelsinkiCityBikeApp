@@ -66,10 +66,15 @@ You will also need to download and import ```stations_HelsinkiEspoo.json```
 or have it delivered dynamically by a cloud function:
 ```https://jsonhandler-c2cjxe2frq-lz.a.run.app/?action=stations```
 
-Finally, you will need an API key for Google Maps. To run the app locally you can simply create secret.js file as follows (see index.html how to use it):
+
+Finally, you will need an API key for Google Maps. To keep the API key secure this version uses a Google Cloud Function for granting permissions. For local use you can simply add the following tag and js file.
+
 
 ```
-const API_KEY = “API_KEY” 
+<script src="secret.js"></script>
+
+secret.js:
+const API_KEY = “API_KEY....” 
 const script = document.createElement('script');
 script.src = API_KEY;
 script.async = true;
@@ -81,6 +86,12 @@ document.head.appendChild(script);
 The frontend is written in JavaScript, HTML, and CSS and the backend is powered by Google Cloud Functions.
 
 ## Testing
+
+
+### Pseudo-random navigation with Selenium
+
+With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See [See AllYouCanClick.mp4](./AllYouCanClick.mp4)  for Chrome results.
+
 
 ```
 from selenium import webdriver
@@ -169,38 +180,63 @@ def click_random_button(driver, excluded_buttons=[]):
     
 
 
-driver=openbroswer('Edge')
+driver=openbroswer('Chrome')
 
 url='http://127.0.0.1:5173/HelsinkiCityBikeApp/'
 driver.get(url)
 
-function_probabilities = [0,0.2,0.2,0.2,0.2,0.2] 
+function_probabilities = [0.2,0.2,0.2,0.2,0.2] 
 
 for x in range(50):
-    #time.sleep(0.3)
+    
+    driver.set_window_size(random.randint(370, 1920), random.randint(768, 1080))
+    
     random_index = random.choices(range(len(function_probabilities)), function_probabilities)[0]
     if random_index==0:
-        clickrandomdiv("tripview","menu","div.menu-item","close")
-    if random_index==1:
         clickrandomdiv("stationview","stat_menu","div.menu-item","noclose")
         time.sleep(1)
         specialbuttons = ['TopDeparture', 'TopReturn', 'HeatmapDeparture', 'HeatmapReturn']
         clickspecialbutton(specialbuttons)
         time.sleep(1)
         clickspecialbutton(['closemap'])
-    if random_index==2:
+    if random_index==1:
         clickrandomdiv("tripview","menu","div.menu-item","close")
-    if random_index==3:
+    if random_index==2:
         clickrandomdiv("stationview","stat_menu","div.menu-item","close")        
-    if random_index==4:
+    if random_index==3:
         randomdate()
-    if random_index==5:
+    if random_index==4:
         click_random_button(driver, excluded_buttons=['currentdate','cleartext',"''",'fin','swe','eng','distance','duration'])
 
+
 driver.quit()
+
 ```
 
 
+### Bombardiering the DOM
+
+With the following AHK script we random-click the screen every 2ms. [See BombardieringTheDom.mp4](./BombardieringTheDom.mp4) for results.
+
+```
+Loop
+{
+    WinGetPos, X, Y, Width, Height, Bike App
+    Random, ClickX, X, X+Width
+    Random, ClickY, Y+150, Y+Height-150
+    ControlClick, x%ClickX% y%ClickY%, Bike App
+    Sleep 2
+   
+    
+    ; Check if the "Q" key is pressed
+    if GetKeyState("Q", "P")
+    {
+        MsgBox Exiting the script.
+        ExitApp ; Exit the script
+    }
+}
+
+```
 
 
 
@@ -343,9 +379,5 @@ def readcsv(request):
 ```
 
 ## Room for improvement
-- Add more flexibility in browsing trips and stations
-- Improve the effectiveness of the calendar pop-up for all types of filtering
-- Introduce more filters and sorting options
-- Address issues with very small layout sizes
-- Enhance the language selection window.
+- Add 
 
