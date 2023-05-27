@@ -27,29 +27,34 @@ Here are some screenshots from the app:
 
 
 
- **Figure 1: Browse trips and view them as arrows on the map:**
  
  <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/bikeapp_feature1.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig1.png" width="750" height="450">
  </p>
+ **Figure 1: Main Station view**
  
-
-
-**Figure 2: Browse stations and view the most popular destinations/origins as clickable markers:**
-
 <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/bikeapp_feature2.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig2.png" width="750" height="450">
  </p>
 
+ **Figure 2: Station view and average trips including a radial heatmap for bike directions**
 
-
-**Figure 3: Browse stations and view departing/arriving traffic as heatmaps indicating the direction bikes are heading to/arriving from:**
-
-<p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/bikeapp_feature3.png" width="750" height="450">
+ <p align="left">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig3.png" width="750" height="450">
  </p>
- 
-The heatmap data can provide insight into bike traffic patterns and help the bike operator allocate bikes more efficiently.
+
+ **Figure 3: Station view and Top 5 trip destinations**
+
+  
+ <p align="left">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig4.png" width="750" height="450">
+ </p>
+ **Figure 4: Main Trip view**
+
+ <p align="left">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig5.png" width="750" height="450">
+ </p>
+ **Figure 5: Trip view with a particular trip shown**
 
 
 
@@ -90,7 +95,7 @@ The frontend is written in JavaScript, HTML, and CSS and the backend is powered 
 
 ### Pseudo-random navigation with Selenium
 
-With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See [See AllYouCanClick.mp4](./AllYouCanClick.mp4)  for Chrome results.
+With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See [See AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4) for Chrome results.
 
 
 ```
@@ -216,7 +221,7 @@ driver.quit()
 
 ### Bombardiering the DOM
 
-With the following AHK script we random-click the screen every 2ms. [See BombardieringTheDom.mp4](./BombardieringTheDom.mp4) for results.
+With the following AHK script we random-click the screen every 2ms. [See BombardieringTheDom.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/BombardieringTheDom.mp4) for results.
 
 ```
 Loop
