@@ -4,7 +4,7 @@
 
 
 
-
+// aux functions related to google maps
 
 export function showpointmap(coords, map) {
 
@@ -74,16 +74,6 @@ export function showmarker(coords, labeltext, thisid, type, map, writeinfoboard,
     return temp
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -165,7 +155,11 @@ export function drawCircle(radiusList, canvas, ctx) {
     return dataURI;
 }
 
+
+
+
 export function movingaveragecalc(circularArray) {
+    // compute radial moving avarage for heatmap
     const movingAverageWindow = 10;
     const movingAverage = [];
     let MAAverage = 0;
@@ -201,6 +195,7 @@ export function movingaveragecalc(circularArray) {
 
 
 export function computeStatDir(tempstatdata, stationdata, activestationid, tofrom) {
+     // compute trip popularity etc
     const nroTrips = Object.entries(tempstatdata).length;
     const distArray = [];
     const timeArray = [];
@@ -246,6 +241,7 @@ export function computeStatDir(tempstatdata, stationdata, activestationid, tofro
 }
 
 export function incrementOrDecrementDate(startdatestring, daysToAddOrSubtract, daterange) {
+    // increment or decrement one day from date, factor in the boundaries
     var edgedate = daterange[0][0].toString() + '-' + daterange[0][1].toString().padStart(2, '0') + '-' + daterange[0][2].toString().padStart(2, '0');
 
     if (startdatestring === edgedate) {
@@ -278,6 +274,7 @@ export function mockSlider(coarseSteps, menuTime) {
 
 
 export function popupstations(stationdata, tempkeys, name) {
+    // populate drop down menus based on existing stations 
     departure_dropdown.innerHTML = '';
     return_dropdown.innerHTML = '';
 
@@ -310,7 +307,7 @@ export function popupstations(stationdata, tempkeys, name) {
 
 
 export function generateCalendarHTML(currentYear, startMonth, endMonth, graydate) {
-    // custom calendar popup function
+    // custom calendar html generation function
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"

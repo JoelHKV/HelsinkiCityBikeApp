@@ -1,5 +1,5 @@
 import './style.css'
-import { showmarker, incrementOrDecrementDate, showpointmap, centermapfortrip, showpolyline, fitMapToBounds, generateCalendarHTML, popupstations, mockSlider, drawCircle, computeStatDir, movingaveragecalc, erasemarkersandpolylines } from './aux_functions.js';
+import { showmarker, incrementOrDecrementDate, showpointmap, centermapfortrip, showpolyline, generateCalendarHTML, popupstations, mockSlider, drawCircle, computeStatDir, movingaveragecalc, erasemarkersandpolylines } from './aux_functions.js';
 var map;
 var regulargooglemarker = []
 var polyline = [];
@@ -10,25 +10,32 @@ var activestationid = 501
 var inforboardid = [0, 0]
 
 
-var displaymap = 1
-var daterange = [[2021, 5, 1], [2021, 7, 31]]
+const displaymap = 1
+const daterange = [[2021, 5, 1], [2021, 7, 31]]
 var pulldownitemToStationID = []
-//var coarseSteps = 200
 
 var thispagepercentage = 49.5
 var pagerange=0.5
 var nroitems = 0
 var startdatestring = '2021-06-17'
 
+const filterStations = document.getElementById('filterStations')
+const cleartext = document.getElementById('cleartext')
+
+const departure_dropdown = document.getElementById("departure_dropdown");
+const return_dropdown = document.getElementById("return_dropdown");
+
+departure_dropdown.onchange = onSelectChange;
+return_dropdown.onchange = onSelectChange;
 
 const menu = document.querySelector("#menu");
 const stat_menu = document.querySelector("#stat_menu");
 const menuTime = document.getElementById("menu-time");
 mockSlider(201, menuTime)
 
+const buttons = document.querySelectorAll('button');
 
 var intervalId
-
 
 var name = 'Nimi'
 var address = 'Osoite'
@@ -38,28 +45,32 @@ var helsinki = 'Helsinki'
 const canvas = document.getElementById("circle");
 const ctx = canvas.getContext("2d");
 
-
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// station data transformed to json where station id is the key. json is imported and hardcoded into js for speed and importance
+// station data transformed to json where station id is the key.
 import * as data2 from './stations_HelsinkiEspoo.json'
-var stationdata = data2.default
+const stationdata = data2.default
 
 
 let timeoutId;
+
+
+showstations()
+
+
 
 // adjust layout after window resize, uses debouncing
 window.onresize = function () {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(function () {
-        
+        setcolwidths()
     }, 250);
 
 };
 
 
 function stacknHide(stackElements, startZ, hideElements) {
-    // makes elements visible and hidden based on what the user is doing
+    // displays or hides elements based on what the user is doing
     for (let i = 0; i < stackElements.length; i++) {
        document.getElementById(stackElements[i]).style.zIndex = startZ + 30 - i
         document.getElementById(stackElements[i]).style.display = 'block'
@@ -73,40 +84,22 @@ function stacknHide(stackElements, startZ, hideElements) {
 stacknHide(['labelrow', 'stat_menu'], 1, ['closemap', 'tripviewlabelrow', 'mapbuttons', 'innercalendar', 'menu', 'menu-time', 'circle', 'arr1','arr2', 'infoboard', 'infoboard2', 'infoboard3', 'map-container'])
 
 
-let departure_dropdown = document.getElementById("departure_dropdown");
-let return_dropdown = document.getElementById("return_dropdown");
-
-departure_dropdown.onchange = onSelectChange;
-return_dropdown.onchange = onSelectChange;
-
-
 
 document.getElementById('tripview').addEventListener("click", () => {
-
+    // user clicks the tripview button
     if (stationview == -1) { return }
-    
     stacknHide(['menu-time', 'menu', 'tripviewlabelrow'], 31, ['labelrow', 'stat_menu', 'filterStations', 'arr1', 'arr2', 'infoboard', 'infoboard2', 'infoboard3','mapbuttons' ])
-
-
     stationview = -1
-    viewtoggle('tripview', 'stationview')
-     
+    viewtoggle('tripview', 'stationview')    
     onSelectChange()
-   
 })
 
-
 document.getElementById('stationview').addEventListener("click", () => {
-
- 
-
-    if (stationview == 1) { return }
-   
+      // user clicks the stationview button
+    if (stationview == 1) { return }  
     stacknHide(['stat_menu', 'labelrow', 'filterStations'], 31, ['tripviewlabelrow', 'menu-time', 'menu', 'arr1', 'arr2', 'infoboard', 'infoboard2', 'infoboard3','mapbuttons'])
-
     stationview = 1
     viewtoggle('stationview', 'tripview')
-
     showstations()
 })
 
@@ -120,52 +113,18 @@ function viewtoggle(active, passive) {
 }
 
 
-document.getElementById('infoboard').addEventListener("click", () => {
-    newbasestation(inforboardid[0])
-})
-
-document.getElementById('infoboard3').addEventListener("click", () => {
-    newbasestation(inforboardid[1])
-})
-
-
-
-
-
-function newbasestation(newstation) {
-    stationview = 1
-    viewtoggle('stationview', 'tripview')
-
-
-        activestationid = newstation
-        erasemarkersandpolylines(regulargooglemarker, polyline)
-    stacknHide([], 1, ['infoboard', 'infoboard2','infoboard3', 'arr1', 'arr2'])
-        writeinfoboard(activestationid, 'station')
-      
-        var coords = [stationdata[activestationid]["y"], stationdata[activestationid]["x"]]
-        
-    if (displaymap !== 0) {
-        stacknHide(['mapbuttons', 'closemap', 'map-container', 'infoboard'], 1, ['stat_menu', 'menu', 'menu-time', 'tripviewlabelrow', 'labelrow', 'filterStations']);
-        showpointmap(coords, map)
-        regulargooglemarker.push(showmarker(coords, ' ', 0, 'reg', map));
-    }  
-}
-
-
-
-const filterStations = document.getElementById('filterStations')
 
 filterStations.addEventListener("input", () => {
+    // add clear button if search bar has content
     if (filterStations.value == "") { var xbutton = '' }
     else { var xbutton = 'X' }
-    document.getElementById('cleartext').innerHTML = xbutton
+    cleartext.innerHTML = xbutton
     showstations()
 })
 
-const cleartext = document.getElementById('cleartext')
-
 cleartext.addEventListener("click", () => {
-    document.getElementById('cleartext').innerHTML = ''
+    // clear search bar
+    cleartext.innerHTML = ''
     filterStations.value = "";
     showstations()
 })
@@ -173,6 +132,7 @@ cleartext.addEventListener("click", () => {
 
 
 document.querySelectorAll('.langselect').forEach(button => {
+    // language selection - affects actual data only menus etc only in english
     button.addEventListener('click', event => {
         document.getElementById('fin').style.opacity = 0.4;
         document.getElementById('swe').style.opacity = 0.4;
@@ -190,23 +150,23 @@ document.querySelectorAll('.langselect').forEach(button => {
         }
         if (event.target.id === 'eng') {
             name = 'Name';
-            address = 'Address';
+            address = 'Osoite'; // english address is finnish address
             helsinki = 'Helsinki';
         }
 
         document.getElementById(event.target.id).style.opacity = 1;
-        stationview = 1;
-        document.getElementById('tripview').style.backgroundColor = '#ffffff';
-        document.getElementById('stationview').style.backgroundColor = '#eeeeee';
-
+       
+        // we return to starting view whenever language has been changed
+        stacknHide(['stat_menu', 'labelrow', 'filterStations'], 31, ['tripviewlabelrow', 'menu-time', 'menu', 'arr1', 'arr2', 'infoboard', 'infoboard2', 'infoboard3', 'mapbuttons'])
+        stationview = 1
+        viewtoggle('stationview', 'tripview')
         showstations();
     });
 });
 
 
-
-
 document.querySelectorAll('.statdetails').forEach(button => {
+    // deal with station detail buttons
     button.addEventListener('click', event => {
         const addr = 'https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?';
 
@@ -233,6 +193,7 @@ document.querySelectorAll('.statdetails').forEach(button => {
  
 
 document.getElementById('currentdate').addEventListener("click", () => {
+    // open calendar view and add event listeners to get the relevant data once date has been clicked
     if (document.getElementById("currentdate").style.opacity == 0.4) {
         return;
     }
@@ -271,9 +232,77 @@ document.getElementById('currentdate').addEventListener("click", () => {
     }
 });
 
-const buttons = document.querySelectorAll('button');
+
+// in trip view, menu is the scrollable div that contains all the data
+menu.addEventListener('scroll', () => {
+
+    if (menu.scrollTop === 0 && menuTime.scrollTop > 0) {
+        thispagepercentage -= pagerange
+        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
+        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
+    }
+
+
+    if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight) && menuTime.scrollTop < (menuTime.scrollHeight - menuTime.clientHeight)) {
+        thispagepercentage += pagerange
+        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
+        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
+
+    }
+
+});
+
+// in trip view, menuTime is the aux dummy div for coarse scrolling
+menuTime.addEventListener('scroll', () => {
+
+    if (departure_dropdown.selectedIndex > 0 || return_dropdown.selectedIndex > 0) {
+        return
+    }
+
+    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight)
+    thispagepercentage = Math.round(scrollPercentage * 200) / 2
+    var scrollpos = 0.5
+    if (thispagepercentage < 0.5) { thispagepercentage = 0.5; scrollpos = 0 }
+    if (thispagepercentage > 99.5) { thispagepercentage = 99.5; scrollpos = 1 }
+
+    showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), scrollpos)
+
+
+});
+
+
+// these two event listener and the following functions are for switching to station view from trip details 
+document.getElementById('infoboard').addEventListener("click", () => {
+    newbasestation(inforboardid[0])
+})
+
+document.getElementById('infoboard3').addEventListener("click", () => {
+    newbasestation(inforboardid[1])
+})
+
+
+function newbasestation(newstation) {
+    stationview = 1;
+    viewtoggle('stationview', 'tripview');
+
+    activestationid = newstation;
+    erasemarkersandpolylines(regulargooglemarker, polyline);
+    stacknHide([], 1, ['infoboard', 'infoboard2', 'infoboard3', 'arr1', 'arr2']);
+    writeinfoboard(activestationid, 'station');
+
+    var coords = [stationdata[activestationid].y, stationdata[activestationid].x];
+
+    if (displaymap !== 0) {
+        stacknHide(['mapbuttons', 'closemap', 'map-container', 'infoboard'], 1, ['stat_menu', 'menu', 'menu-time', 'tripviewlabelrow', 'labelrow', 'filterStations']);
+        showpointmap(coords, map);
+        regulargooglemarker.push(showmarker(coords, ' ', 0, 'reg', map));
+    }
+}
+
+
 
 function gettripdata(data) {
+    // this sorts out the incoming trip data
     document.getElementById('downloadboarddiv').style.zIndex = -1;
 
     buttons.forEach(button => button.disabled = false);
@@ -324,47 +353,31 @@ function gettripdata(data) {
 }
 
 
+function setcolwidths() {
+    // we need fixed width for the first column and relative width for the rest - do this smarter next time
+    var thiselement = document.getElementById("menu").getBoundingClientRect();
+    var timeper = 100 * 164 / parseInt(thiselement.width);
+    const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3.2, (100 - timeper) / 6, (100 - timeper) / 6];
 
-menu.addEventListener('scroll', () => {
-
-    if (menu.scrollTop === 0 && menuTime.scrollTop > 0) {
-        thispagepercentage -= pagerange
-        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
-        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
+    for (let j = 1; j <= 5; j++) {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `.colt-${j} { width: ${columnWidths[j - 1]}%; }`;
+        document.head.appendChild(styleElement);
     }
 
+    document.getElementById("currentdate").style.marginLeft = 0;
+    document.getElementById("currentdate").style.width = columnWidths[0] - 2 + '%';
+    document.getElementById("departure_dropdown").style.marginLeft = columnWidths[0] + '%';
+    document.getElementById("departure_dropdown").style.width = columnWidths[1] - 4 + '%';
+    document.getElementById("return_dropdown").style.marginLeft = columnWidths[0] + columnWidths[1] + '%';
+    document.getElementById("return_dropdown").style.width = columnWidths[2] - 4 + '%';
+    document.getElementById("distance").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + '%';
+    document.getElementById("duration").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + '%';
 
-    if (menu.scrollTop === (menu.scrollHeight - menu.clientHeight) && menuTime.scrollTop < (menuTime.scrollHeight - menuTime.clientHeight)) {
-        thispagepercentage += pagerange
-        menuTime.scrollTop = menuTime.scrollHeight * thispagepercentage / 100
-        showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), 0.5)
-
-    }
-
-});
-
-
-menuTime.addEventListener('scroll', () => {
-
-    if (departure_dropdown.selectedIndex > 0 || return_dropdown.selectedIndex > 0) {
-        return
-    }
-
-    var scrollPercentage = menuTime.scrollTop / (menuTime.scrollHeight - menuTime.clientHeight)
-    thispagepercentage = Math.round(scrollPercentage * 200) / 2
-    var scrollpos = 0.5
-    if (thispagepercentage < 0.5) { thispagepercentage = 0.5; scrollpos = 0 }
-    if (thispagepercentage > 99.5) { thispagepercentage = 99.5; scrollpos = 1 }
-
-    showtripdata(tripdata, Math.round(nroitems * (thispagepercentage - pagerange) / 100), Math.round(nroitems * (thispagepercentage + pagerange) / 100), scrollpos)
-
-
-});
-
-
-
+}
 
 function showtripdata(triptempdata, startindex, endindex, setslider) {
+    // dynamical generation of the trip view html
     while (menu.firstChild) {
         menu.removeChild(menu.firstChild);
     }
@@ -372,7 +385,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     var nroitems = Object.entries(triptempdata).length;
 
     if (nroitems === 0) {
-        additemtopulldown('No trips', 2);
+        additem('No trips', 2);
         return;
     }
 
@@ -380,21 +393,10 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
 
     if (startindex === 0 && return_dropdown.selectedIndex === 0 && departure_dropdown.selectedIndex === 0) {
         startoffset -= 1;
-        additemtopulldown('Previous Day', -1);
+        additem('Previous Day', -1);
     }
 
-    var thiselement = document.getElementById("menu").getBoundingClientRect();
-    var timeper = 100 * 164 / parseInt(thiselement.width);
-    const columnWidths = [timeper, (100 - timeper) / 3, (100 - timeper) / 3, (100 - timeper) / 6, (100 - timeper) / 6];
-
-    document.getElementById("currentdate").style.marginLeft = 0;
-    document.getElementById("currentdate").style.width = columnWidths[0] - 4 + '%';
-    document.getElementById("departure_dropdown").style.marginLeft = columnWidths[0] + '%';
-    document.getElementById("departure_dropdown").style.width = columnWidths[1] - 4 + '%';
-    document.getElementById("return_dropdown").style.marginLeft = columnWidths[0] + columnWidths[1] + '%';
-    document.getElementById("return_dropdown").style.width = columnWidths[2] - 4 + '%';
-    document.getElementById("distance").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + '%';
-    document.getElementById("duration").style.marginLeft = columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + '%';
+    setcolwidths()
 
     for (let i = startindex; i < endindex; i++) {
         const item = document.createElement("div");
@@ -403,7 +405,7 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
         for (let j = 1; j <= 5; j++) {
             const col = document.createElement("div");
             col.classList.add(`col`, `colt-${j}`);
-            col.style.width = `${columnWidths[j - 1]}%`;
+           // col.style.width = `${columnWidths[j - 1]}%`;
 
             if (j === 1) {
                 col.innerHTML = months[Number(triptempdata[i]["Departure"].substring(5, 7)) - 1] + '&nbsp;' + triptempdata[i]["Departure"].substring(8, 10) + '&nbsp;' + triptempdata[i]["Departure"].substring(11, 16);
@@ -457,14 +459,46 @@ function showtripdata(triptempdata, startindex, endindex, setslider) {
     var nroitems = Number(Object.entries(tripdata).length - 1);
 
     if (endindex === nroitems) {
-        additemtopulldown('Next Day', 1);
+        additem('Next Day', 1);
     }
 
     menu.scrollTop = menu.scrollHeight * setslider;
 }
 
 
+
+function additem(text, mode) {
+
+    // adds a nontrip item to trip pulldown such as "Previous date"
+    const item = document.createElement("div");
+    item.classList.add("menu-item");
+    const col = document.createElement("div");
+    col.classList.add(`col`, `col-1`);
+    col.style.width = `100%`;
+    if (mode == -1 || mode == 1) {
+        col.style.border = '1px solid black'
+        col.style.backgroundColor = '#A5A5A5'
+    }
+    col.style.textAlign = "center";
+    col.textContent = text
+    item.appendChild(col);
+
+    if (mode == -1 || mode == 1) {
+        item.addEventListener("click", function () {
+            startdatestring = incrementOrDecrementDate(startdatestring, mode, daterange)
+            const dates = startdatestring.split("-").map(Number);
+            document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + ' ' + dates[0].toString()
+            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
+        });
+    }
+    menu.appendChild(item)
+
+}
+
+
+
 function showstations() {
+    // dynamical generation of the station view html
     while (stat_menu.firstChild) {
         stat_menu.removeChild(stat_menu.firstChild);
     }
@@ -555,12 +589,13 @@ function showstations() {
 
 
 document.querySelector("#closemap").addEventListener("click", function () {
+    // clears google map markers, polylines, and closes the map view
     erasemarkersandpolylines(regulargooglemarker, polyline);
 
     if (stationview === 1) {
         stacknHide(['stat_menu', 'labelrow', 'filterStations'], 1, ['arr1', 'arr2', 'mapbuttons', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3']);
     } else {
-        stacknHide(['menu', 'menu-time', 'tripviewlabelrow'], 1, ['arr1', 'arr2', 'mapbuttons', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3']);
+        stacknHide(['menu-time', 'menu', 'tripviewlabelrow'], 1, ['arr1', 'arr2', 'mapbuttons', 'closemap', 'map-container', 'infoboard', 'infoboard2', 'infoboard3']);
 
         if (departure_dropdown.selectedIndex === 0 && return_dropdown.selectedIndex === 0) {
             // stacknHide(['currentdate', 'menu-time'], 1, []);
@@ -571,6 +606,7 @@ document.querySelector("#closemap").addEventListener("click", function () {
 
 
 function stationDetailMap(tempstatdata, tofrom, isheatmap) {
+    // shows station detail data
     stacknHide(['infoboard2'], 1, ['arr1', 'arr2', 'infoboard3']);
 
     inforboardid[1] = '';
@@ -656,6 +692,7 @@ function stationDetailMap(tempstatdata, tofrom, isheatmap) {
 
 
 function onSelectChange() {
+    // is trip date filtered by stations?
     var stationdid = 0;
     var stationrid = 0;
 
@@ -693,6 +730,7 @@ function onSelectChange() {
 
 
 function loadScript(src, callback) {
+    // aux function to get the google maps API key
     const script = document.createElement("script");
     script.src = src;
     script.onload = callback;
@@ -701,30 +739,26 @@ function loadScript(src, callback) {
 
 
 
-showstations()
 
 window.onload = function () {
-
+    // loads google maps afte page load - uses a Google cloud functions to get the API key
     if (displaymap == 1) {
         loadScript("https://returnsecret-c2cjxe2frq-lz.a.run.app", function () {
             // Google Maps API loaded, create the map.
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 65.01, lng: 25.46 },
-                zoom: 8,
-            });
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 65.01, lng: 25.46 },
+            zoom: 8,
+        });
         });
     }
 };
 
 
 
-
 function prefetch() {
+    // shows the spinning bike wheel while fetching trip data
     buttons.forEach(button => button.disabled = true);
     document.getElementById('downloadboarddiv').style.zIndex = 900
-
-     
-   // stacknHide(['downloadboard'], 1, ['tripviewlabelrow', 'labelrow','menu', 'stat_menu', 'menu-time', 'innercalendar','map-container'])
     let rotation = 0;
     intervalId = setInterval(() => {
         rotation += 2;
@@ -735,19 +769,21 @@ function prefetch() {
 
 
 function getdata(thisaddress, mode, display) {
+    // gets trip data from google cloud functions
     if (mode == 3) { prefetch() }
  
     fetchThis(thisaddress, mode, display)
         .then((data) => {
-          //  stacknHide([], 1, ['downloadboard'])
             if (mode == 3) { gettripdata(data) }
-            if (mode == 5) { initthismap(data) }
+          //  if (mode == 5) { initthismap(data) }
             if (mode == 'did' || mode == 'rid') { stationDetailMap(data, mode, display) }
         })
         .catch(error => {
 
-            clearInterval(intervalId);
-          //  alert('error')
+            clearInterval(intervalId); // stops the spin if error
+            setTimeout(() => {
+                location.reload(); // reloads the page
+            }, 1000);
         })
 
 
@@ -772,6 +808,7 @@ function getdata(thisaddress, mode, display) {
 
 
 function writeinfoboard(stationid, mode, whichtextfield) {
+    // shows detailed station or trip data
     if (mode === 'force') {
         document.getElementById("infoboard2").innerHTML = whichtextfield;
         return
@@ -809,32 +846,4 @@ function writeinfoboard(stationid, mode, whichtextfield) {
 
 
 
-
-function additemtopulldown(text, mode) {
-
-    // populate station data to pull down menus
-    const item = document.createElement("div");
-    item.classList.add("menu-item");
-    const col = document.createElement("div");
-    col.classList.add(`col`, `col-1`);
-    col.style.width = `100%`;
-    if (mode == -1 || mode == 1) {
-        col.style.border = '1px solid black'
-        col.style.backgroundColor = '#A5A5A5'
-    }
-    col.style.textAlign = "center";
-    col.textContent = text
-    item.appendChild(col);
-
-    if (mode == -1 || mode == 1) {
-        item.addEventListener("click", function () {              
-            startdatestring = incrementOrDecrementDate(startdatestring, mode, daterange)
-        const dates = startdatestring.split("-").map(Number);
-        document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + ' ' + dates[0].toString() 
-        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)     
-        });
-    }
-    menu.appendChild(item)
-
-}
 

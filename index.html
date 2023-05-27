@@ -30,12 +30,12 @@
 
         <div class="grid-item innercalendar unselectable" id="innercalendar"></div>
 
-
+        <div class="grid-item dummy-row"></div>
 
         <div class="grid-item searchstation">
             <div class="input-group" style=" position: relative">
                 <input type="text" id="filterStations" placeholder="Search">
-                <button class=" basicobject unselectable" style=" top: 0; right: 0;" id="cleartext"></button>
+                <button class=" basicobject unselectable" style="position: absolute; top: 0; right: -2rem" id="cleartext"></button>
 
             </div>
         </div>
@@ -55,10 +55,11 @@
 
 
         <div class="grid-item mapbuttons unselectable" id="mapbuttons">
+            <button class="statdetails unselectable" id="HeatmapDeparture">Avg. Departure</button>
+            <button class="statdetails unselectable" id="HeatmapReturn">Avg. Return</button>
             <button class="statdetails unselectable" id="TopDeparture">Top Departure</button>
             <button class="statdetails unselectable" id="TopReturn">Top Return</button>
-            <button class="statdetails unselectable" id="HeatmapDeparture">Heatmap Departure</button>
-            <button class="statdetails unselectable" id="HeatmapReturn">Heatmap Return</button>
+
 
         </div>
 
@@ -72,9 +73,6 @@
             <button class="basicobject infoboard unselectable" id="infoboard3"></button>
         </div>
 
-
-
-
         <div class="grid-item flags dropdown unselectable">
             <button class="langselect unselectable" id="fin"></button>
             <button class="langselect unselectable" id="swe"></button>
@@ -83,7 +81,6 @@
 
     </div>
 
-  
     <canvas class="overlayImage" id="circle" width="400" height="400"></canvas>
     <script type="module" src="/main_bike_app_ver2.js"></script>
 
