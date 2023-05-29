@@ -1,43 +1,49 @@
 # HelsinkiCityBikeApp
 
-[The app is deployed to Google Cloud](https://storage.googleapis.com/joelvuolevi/bikeapp/index.html)
+[The app is deployed to GitHub](https://joelhkv.github.io/HelsinkiCityBikeApp/)
 
 
 ## General Information
 
-The app is designed for exploring stations and trips made with Helsinki city bikes.
+The app is designed for exploring trips made with Helsinki city bikes and providing aggregated data for business optimization.
 
-## Features
+## Instructions and Features
 
-In 'Station' mode, users can browse through a list of stations where bikes can be rented or returned. After clicking on a station, Google Maps will be displayed along with additional buttons for details.
+In 'Station' mode, the user can browse through a list of stations where bikes can be rented or returned. The list contains five columns: station name, address, place, operator and capacity. The user can also search a particular station with a search bar.
+   
+Each station on the list can be clicked for details. 
+
+A click will show the location of the station on Google Maps alongsize additional buttons for details.
 
 - 'Ave Departure' will display aggregated trip data from the station, as well as a radial heatmap revealing the direction bikes are headed.
 - 'Ave Return' will display aggregated trip data to the station, as well as a radial heatmap revealing the direction bikes are coming from.
 - 'Top Departure' will show the top 5 departures from this station as clickable Google Map markers. Clicking on a marker will reveal details about the specific journey.
 - 'Top Return' will similarly show the top 5 returns to this station as clickable Google Map markers. Clicking on a marker will reveal details about the specific journey.
 
-The station view also includes a search bar.
 
-In 'Trip' mode, users can browse through individual trips from one station to another. These trips are sorted by time and shown one day at a time. Due to the large number of trips, even within one day, the trip view allows for coarse scrolling on the left and fine (normal) scrolling on the right. At the beginning and end of the scrollable section, there are buttons for 'Previous Day' and 'Next Day', respectively. Users can also change the date by clicking the date button.
+In 'Trip' mode, the user can browse through individual trips from one station to another. Due to the large number of trips, there are two scrolling options. The coarse scrolling on the left and the fine (normal) scrolling on the right. The data section is populated one day at the time and the user can change the date by clicking the date button. Also, at the beginning and end of the data section, there are buttons for 'Previous Day' and 'Next Day', respectively. 
 
-With the Departure and Return dropdown menus, users can filter trips from and to a particular station. Since the amount of data is much smaller in this view, the entire date range will be shown. Finally, when the user clicks on a particular trip, it will be displayed on Google Maps. From there, the user can also click on the departure or return station to return to the station view.
+With the Departure and Return dropdown menus, the user can filter trips from and to a particular station. Since the amount of data is much smaller in this view, the entire date range will be shown. Finally, when the user clicks on a particular trip, it will be displayed on Google Maps. From there, the user can also click on the departure or return station to return to the station view.
 
 
 Here are some screenshots from the app:
 
 
-
- 
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig1.png" width="750" height="450">
  </p>
+
  **Figure 1: Main Station view**
  
+
+
 <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig2.png" width="750" height="450">
  </p>
 
  **Figure 2: Station view and average trips including a radial heatmap for bike directions**
+
+
 
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig3.png" width="750" height="450">
@@ -46,14 +52,19 @@ Here are some screenshots from the app:
  **Figure 3: Station view and Top 5 trip destinations**
 
   
+
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig4.png" width="750" height="450">
  </p>
+
  **Figure 4: Main Trip view**
+
+
 
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig5.png" width="750" height="450">
  </p>
+
  **Figure 5: Trip view with a particular trip shown**
 
 
@@ -61,18 +72,22 @@ Here are some screenshots from the app:
 
 ## Setup
 
-To run the app you will need:
+The app contains the following code files:
 - index.html
 - main_bike_app2.js
 - aux_functions.js
 - style.css
 
-You will also need to download and import ```stations_HelsinkiEspoo.json```
-or have it delivered dynamically by a cloud function:
+The app also need the following data file:
+
+```stations_HelsinkiEspoo.json```
+
+Alternately, the station data file is served by a cloud function:
+
 ```https://jsonhandler-c2cjxe2frq-lz.a.run.app/?action=stations```
 
 
-Finally, you will need an API key for Google Maps. To keep the API key secure this version uses a Google Cloud Function for granting permissions. For local use you can simply add the following tag and js file.
+Finally, to run the app the user will need an API key for Google Maps. This version uses a Google Cloud Function to keep the API key secure. For local use you can simply add the following tag to index.html and create an additional JS file.
 
 
 ```
@@ -95,7 +110,7 @@ The frontend is written in JavaScript, HTML, and CSS and the backend is powered 
 
 ### Pseudo-random navigation with Selenium
 
-With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See [See AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4) for Chrome results.
+With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See the following video [AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4) for Chrome results.
 
 
 ```
@@ -160,10 +175,7 @@ def clickspecialbutton(specialbuttons):
     random_item = random.choice(specialbuttons)
     element = driver.find_element(By.ID, random_item)
     element.click()        
-        
-        
-        
-        
+              
 def click_random_button(driver, excluded_buttons=[]):
     elements = driver.find_elements(By.XPATH, "//button")
     ids = [element.get_attribute("id") for element in elements if element.get_attribute("id") not in excluded_buttons]
@@ -221,7 +233,7 @@ driver.quit()
 
 ### Bombardiering the DOM
 
-With the following AHK script we random-click the screen every 2ms. [See BombardieringTheDom.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/BombardieringTheDom.mp4) for results.
+With the following AHK script we random-click the screen every 2ms. [BombardieringTheDom.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/BombardieringTheDom.mp4).
 
 ```
 Loop
@@ -242,8 +254,6 @@ Loop
 }
 
 ```
-
-
 
 ## Data
 
@@ -384,5 +394,7 @@ def readcsv(request):
 ```
 
 ## Room for improvement
-- Add 
+- reset pull-down menus with a clear button
+- layout optimization for certain screen resolutions
+- automated data collection and cross-testing with raw data
 
