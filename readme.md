@@ -25,7 +25,7 @@ Below are some screenshots from the app:
 
 
  <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig1.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig1.png" width="600" height="450">
  </p>
 
  **Figure 1: Main Station view**
@@ -34,7 +34,7 @@ Below are some screenshots from the app:
 
 
 <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig2.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig2.png" width="600" height="450">
  </p>
 
  **Figure 2: Station view and average trips including a radial heatmap for bike directions**
@@ -43,7 +43,7 @@ Below are some screenshots from the app:
 
 
  <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig3.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig3.png" width="600" height="450">
  </p>
 
  **Figure 3: Station view and Top 5 trip destinations**
@@ -52,7 +52,7 @@ Below are some screenshots from the app:
 
 
  <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig4.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig4.png" width="600" height="450">
  </p>
 
  **Figure 4: Main Trip view**
@@ -61,7 +61,7 @@ Below are some screenshots from the app:
 
 
  <p align="left">
- <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig5.png" width="750" height="450">
+ <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig5.png" width="600" height="450">
  </p>
 
  **Figure 5: Trip view with a particular trip shown**
@@ -106,7 +106,6 @@ The frontend is written in JavaScript, HTML, and CSS, while the backend is power
 ## Testing
 
 ### Pseudo-random navigation with Selenium
-
 
 With the following Python script, we navigate through menus and change the window size to test the app. We have tested the app with Chrome, Firefox, and Edge (but not Safari). Please refer to the following video for the results in Chrome: [AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4).
 
