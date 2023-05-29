@@ -5,28 +5,23 @@
 
 ## General Information
 
-The app is designed for exploring trips made with Helsinki city bikes and providing aggregated data for business optimization.
+The app is designed to facilitate exploration of trips made with Helsinki city bikes and provide aggregated data for business optimization purposes.
 
 ## Instructions and Features
 
-In 'Station' mode, the user can browse through a list of stations where bikes can be rented or returned. The list contains five columns: station name, address, place, operator and capacity. The user can also search a particular station with a search bar.
-   
-Each station on the list can be clicked for details. 
+In 'Station' mode, users can browse a list of stations where bikes can be rented or returned. The list includes five columns: station name, address, place, operator, and capacity. Users can also search for a specific station using the search bar.
 
-A click will show the location of the station on Google Maps alongsize additional buttons for details.
+Each station in the list can be clicked to view more details. Clicking on a station will display its location on Google Maps, along with additional buttons for more information.
 
-- 'Ave Departure' will display aggregated trip data from the station, as well as a radial heatmap revealing the direction bikes are headed.
-- 'Ave Return' will display aggregated trip data to the station, as well as a radial heatmap revealing the direction bikes are coming from.
-- 'Top Departure' will show the top 5 departures from this station as clickable Google Map markers. Clicking on a marker will reveal details about the specific journey.
-- 'Top Return' will similarly show the top 5 returns to this station as clickable Google Map markers. Clicking on a marker will reveal details about the specific journey.
+- 'Avg Departure' displays aggregated trip data from the station, including a radial heatmap that shows the direction bikes are headed.
+- 'Avg Return' displays aggregated trip data to the station, along with a radial heatmap showing the direction bikes are coming from.
+- 'Top Departure' shows the top 5 departures from the station as clickable Google Map markers. Clicking on a marker reveals details about the specific journey.
+- 'Top Return' similarly shows the top 5 returns to the station as clickable Google Map markers. Clicking on a marker reveals details about the specific journey.
+In 'Trip' mode, users can browse individual trips from one station to another. Due to the large number of trips, there are two scrolling options: coarse scrolling on the left and fine (normal) scrolling on the right. The data section is populated one day at a time, and users can change the date by clicking the date button. Additionally, buttons for 'Previous Day' and 'Next Day' are available at the beginning and end of the data section, respectively.
 
+Using the Departure and Return dropdown menus, users can filter trips from and to a particular station. Since the amount of data is smaller in this view, the entire date range is shown. When a user clicks on a specific trip, it is displayed on Google Maps. From there, users can also click on the departure or return station to return to the station view.
 
-In 'Trip' mode, the user can browse through individual trips from one station to another. Due to the large number of trips, there are two scrolling options. The coarse scrolling on the left and the fine (normal) scrolling on the right. The data section is populated one day at the time and the user can change the date by clicking the date button. Also, at the beginning and end of the data section, there are buttons for 'Previous Day' and 'Next Day', respectively. 
-
-With the Departure and Return dropdown menus, the user can filter trips from and to a particular station. Since the amount of data is much smaller in this view, the entire date range will be shown. Finally, when the user clicks on a particular trip, it will be displayed on Google Maps. From there, the user can also click on the departure or return station to return to the station view.
-
-
-Here are some screenshots from the app:
+Below are some screenshots from the app:
 
 
  <p align="left">
@@ -34,6 +29,7 @@ Here are some screenshots from the app:
  </p>
 
  **Figure 1: Main Station view**
+
  
 
 
@@ -45,6 +41,7 @@ Here are some screenshots from the app:
 
 
 
+
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig3.png" width="750" height="450">
  </p>
@@ -53,11 +50,13 @@ Here are some screenshots from the app:
 
   
 
+
  <p align="left">
  <img src="https://storage.googleapis.com/joelvuolevi/bikeapp/BikeFig4.png" width="750" height="450">
  </p>
 
  **Figure 4: Main Trip view**
+
 
 
 
@@ -72,23 +71,22 @@ Here are some screenshots from the app:
 
 ## Setup
 
-The app contains the following code files:
+The app contains of the following code files:
 - index.html
 - main_bike_app2.js
 - aux_functions.js
 - style.css
 
-The app also need the following data file:
+Additionally, the app requires the following data file:
 
 ```stations_HelsinkiEspoo.json```
 
-Alternately, the station data file is served by a cloud function:
+Alternatively, the station data file is served by a cloud function:
 
 ```https://jsonhandler-c2cjxe2frq-lz.a.run.app/?action=stations```
 
 
-Finally, to run the app the user will need an API key for Google Maps. This version uses a Google Cloud Function to keep the API key secure. For local use you can simply add the following tag to index.html and create an additional JS file.
-
+To run the app, the user will need an API key for Google Maps. In this version, a Google Cloud Function is used to keep the API key secure. For local use, you can simply add the following tag to index.html and create an additional JS file:
 
 ```
 <script src="secret.js"></script>
@@ -103,14 +101,14 @@ document.head.appendChild(script);
 ```
 
 ## Technologies Used
-The frontend is written in JavaScript, HTML, and CSS and the backend is powered by Google Cloud Functions.
+The frontend is written in JavaScript, HTML, and CSS, while the backend is powered by Google Cloud Functions.
 
 ## Testing
 
-
 ### Pseudo-random navigation with Selenium
 
-With the following python script we navigate through menus and change the window size. We test the app with Chrome, Firefox and Edge (but not Safari). See the following video [AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4) for Chrome results.
+
+With the following Python script, we navigate through menus and change the window size to test the app. We have tested the app with Chrome, Firefox, and Edge (but not Safari). Please refer to the following video for the results in Chrome: [AllYouCanClick.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/AllYouCanClick.mp4).
 
 
 ```
@@ -233,7 +231,7 @@ driver.quit()
 
 ### Bombardiering the DOM
 
-With the following AHK script we random-click the screen every 2ms. [BombardieringTheDom.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/BombardieringTheDom.mp4).
+With the following AHK script, we randomly click the screen every 2ms. You can refer to the following video for the demonstration: [BombardieringTheDom.mp4](https://storage.googleapis.com/joelvuolevi/bikeapp/BombardieringTheDom.mp4).
 
 ```
 Loop
@@ -350,7 +348,7 @@ for startmonth in range(5,7):
 
 ```
 
-The data files are saved as CSV and uploaded to Google Storage. They are served by a cloud function written in Python, which returns the data in JSON format. The code for the cloud function is here.
+The data files are saved as CSV and uploaded to Google Cloud Storage. They are served by a Cloud Function written in Python, which returns the data in JSON format. The code for the cloud function is here:
 
 
 ```
@@ -394,7 +392,9 @@ def readcsv(request):
 ```
 
 ## Room for improvement
-- reset pull-down menus with a clear button
-- layout optimization for certain screen resolutions
-- automated data collection and cross-testing with raw data
+- Implement a clear button to reset pull-down menus: Add a clear button functionality to the pull-down menus, allowing users to easily reset their selections and start fresh.
+
+- Better optimize layout for different screen resolutions: Ensure that the app's layout is optimized to provide a seamless user experience across various screen resolutions. Test and adjust the design to accommodate different screen sizes and aspect ratios.
+
+- Explore automated data collection methods and perform cross-testing with raw data to validate the app's results and ensure the correctness of the aggregated data.
 
