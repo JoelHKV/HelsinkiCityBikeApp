@@ -19,6 +19,10 @@ var pagerange=0.5
 var nroitems = 0
 var startdatestring = '2021-06-17'
 
+//const addr = 'https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?';
+const addr = 'https://bikeappdatadelivery-42285002133.europe-north1.run.app/?'
+
+
 const filterStations = document.getElementById('filterStations')
 const cleartext = document.getElementById('cleartext')
 
@@ -168,8 +172,7 @@ document.querySelectorAll('.langselect').forEach(button => {
 document.querySelectorAll('.statdetails').forEach(button => {
     // deal with station detail buttons
     button.addEventListener('click', event => {
-        const addr = 'https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?';
-
+        
         if (event.target.id === 'TopDeparture') {
             document.getElementById("arr1").classList.remove('arrow-left-button');
             document.getElementById("arr2").classList.remove('arrow-left-button');
@@ -224,7 +227,7 @@ document.getElementById('currentdate').addEventListener("click", () => {
 
             document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[0].toString() + ' ' + dates[2].toString();
 
-            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3);
+            getdata(addr + startdatestring, 3);
             setTimeout(() => {
                 stacknHide(['menu-time', 'menu'], 1, ['innercalendar']);
             }, 400);
@@ -488,7 +491,7 @@ function additem(text, mode) {
             startdatestring = incrementOrDecrementDate(startdatestring, mode, daterange)
             const dates = startdatestring.split("-").map(Number);
             document.getElementById("currentdate").innerHTML = months[dates[1] - 1] + ' ' + dates[2].toString() + ' ' + dates[0].toString()
-            getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3)
+            getdata(addr + 'action=' + startdatestring, 3)
         });
     }
     menu.appendChild(item)
@@ -709,21 +712,21 @@ function onSelectChange() {
             document.getElementById('currentdate').innerHTML = 'Choose date';
         }
         document.getElementById('currentdate').style.opacity = 1;
-        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=' + startdatestring, 3);
+        getdata(addr + 'action=' + startdatestring, 3);
         return;
     }
 
     if (stationdid > 0) {
         document.getElementById('currentdate').style.opacity = 0.4;
         document.getElementById('currentdate').innerHTML = 'All dates';
-        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=D' + stationdid.toString(), 3);
+        getdata(addr + 'action=D' + stationdid.toString(), 3);
         return;
     }
 
     if (stationdid === 0) {
         document.getElementById('currentdate').style.opacity = 0.4;
         document.getElementById('currentdate').innerHTML = 'All dates';
-        getdata('https://readlocalcsvdeliverjson-c2cjxe2frq-lz.a.run.app/?action=R' + stationrid.toString(), 3);
+        getdata(addr + 'action=R' + stationrid.toString(), 3);
         return;
     }
 }
@@ -738,12 +741,12 @@ function loadScript(src, callback) {
 }
 
 
-
+// https://returnsecret-c2cjxe2frq-lz.a.run.app
 
 window.onload = function () {
     // loads google maps afte page load - uses a Google cloud functions to get the API key
     if (displaymap == 1) {
-        loadScript("https://returnsecret-c2cjxe2frq-lz.a.run.app", function () {
+        loadScript("https://return-secret-2-42285002133.europe-north1.run.app", function () {
             // Google Maps API loaded, create the map.
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 65.01, lng: 25.46 },
